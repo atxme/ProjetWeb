@@ -72,7 +72,7 @@ CREATE TABLE Concours (
     theme VARCHAR(100),
     dateDeb DATE,
     dateFin DATE,
-    etat VARCHAR(50),
+    etat ENUM('pas commence', 'en cours', 'attente', 'resultat', 'evalue'),
     FOREIGN KEY (numPresident) REFERENCES President(numPresident)
 );
 
