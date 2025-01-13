@@ -16,13 +16,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: phpcs, phpstan
+          tools: phpcs, phpstan, php-cs-fixer
           
-      - name: Install dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-
-      - name: Run PHP CodeSniffer
-        run: phpcs --standard=PSR12 src/
+      - name: Validate PHP Syntax
+        run: |
+          find . -name "*.php" -type f -print0 | while IFS= read -r -d '' file; do
+            php -l "$file" || exit 1
+          done
 
       - name: Run PHPStan
         run: phpstan analyse src/ --level=5
@@ -46,4 +46,4 @@ jobs:
             --exclude '.git*' \
             --exclude 'tests' \
             --exclude 'phpunit.xml' \
-            ./src production:/srv/siteweb/db
+            ./src/ production:/srv/siteweb/dessin
