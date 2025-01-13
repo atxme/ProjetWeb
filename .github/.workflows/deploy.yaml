@@ -1,0 +1,49 @@
+name: PHP Validation & Deployment
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpcs, phpstan
+          
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+
+      - name: Run PHP CodeSniffer
+        run: phpcs --standard=PSR12 src/
+
+      - name: Run PHPStan
+        run: phpstan analyse src/ --level=5
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          cat >>~/.ssh/config <<END
+          Host production
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            StrictHostKeyChecking no
+          END
+
+      - name: Deploy to production
+        run: |
+          rsync -avz --delete \
+            --exclude '.git*' \
+            --exclude 'tests' \
+            --exclude 'phpunit.xml' \
+            ./src production:/srv/siteweb/db
