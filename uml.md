@@ -17,6 +17,7 @@ class Club {
 class Utilisateur {
   -numUtilisateur: String
   ..
+  -age: String
   -nom: String
   -prenom: String
   -adresse: String
@@ -27,9 +28,14 @@ class Utilisateur {
 class Concours {
   -numConcours: String
   ..
+  -descriptif:String
   -theme: String
   -dateDebut: Date
   -dateFin: Date
+  -nbClub: Integer
+  -nbParticipant: Integer
+  -descriptif: String
+  
   -etat: enum {pas commence, en cours, attente, resultat, evalue}
 }
 
@@ -50,6 +56,8 @@ class Evaluation {
 
 class Competiteur {
   -datePremiereParticipation: Date
+  -classement: String
+  -note_moyenne: Float
 }
 
 class President {
