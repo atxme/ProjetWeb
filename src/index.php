@@ -1,16 +1,26 @@
 <?php
 session_start();
-require_once 'includes/config.php';
+require_once 'include/config.php';
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Connexion - Concours de Dessins</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
     <div class="login-container">
         <h2>Connexion</h2>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger">
+                <?php
+                echo $_SESSION['error'];
+                unset($_SESSION['error']);
+                ?>
+            </div>
+        <?php endif; ?>
         <form method="POST" action="auth.php">
             <div class="form-group">
                 <label>Identifiant</label>
@@ -24,4 +34,5 @@ require_once 'includes/config.php';
         </form>
     </div>
 </body>
+
 </html>
