@@ -53,3 +53,12 @@ jobs:
           rsync -avz --delete \
             ./init/ production:/srv/init
 
+      - name: Init database
+        run: |
+          ssh production "sudo mysql dessin < /srv/init/database.sql"
+          ssh production "sudo mysql dessin < /srv/init/insertion.sql"
+
+      - name: Deploy fill_password.php
+        run: |
+          ssh production "php -f /srv/init/fill_password.php"
+

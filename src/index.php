@@ -1,27 +1,67 @@
 <?php
 session_start();
-require_once 'includes/config.php';
+require_once 'include/config.php';
+
+// Génération du token CSRF
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Connexion - Concours de Dessins</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Concours de Dessin</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Connexion</h2>
-        <form method="POST" action="auth.php">
-            <div class="form-group">
-                <label>Identifiant</label>
-                <input type="text" name="login" required>
+    <div class="container">
+        <div class="login-box">
+            <div class="login-header">
+                <h2>Connexion</h2>
+                <p>Concours de Dessin</p>
             </div>
-            <div class="form-group">
-                <label>Mot de passe</label>
-                <input type="password" name="password" required>
-            </div>
-            <button class = "torch-button" type="submit">Se connecter</button>
-        </form>
+            
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?php 
+                        echo htmlspecialchars($_SESSION['error']);
+                        unset($_SESSION['error']); 
+                    ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="auth.php" id="loginForm">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                
+                <div class="form-group">
+                    <label for="login">Identifiant</label>
+                    <input type="text" 
+                           id="login" 
+                           name="login" 
+                           required 
+                           autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div class="password-container">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required 
+                               autocomplete="current-password">
+                        <span class="toggle-password" title="Afficher/Masquer le mot de passe">
+                            <i class="eye-icon">👁️</i>
+                        </span>
+                    </div>
+                </div>
+
+                <button class = "torch-button" type="submit">Se connecter</button>
+            </form>
+        </div>
     </div>
+    <script src="assets/js/authentification.js"></script>
 </body>
 </html>
