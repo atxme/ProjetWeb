@@ -17,3 +17,34 @@
     gap: 15px;
     padding: 20px;
 }
+
+.torch-button {
+    position: relative;
+    padding: 20px 40px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #444;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+  }
+  
+  .torch-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent 60%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .torch-button:hover::after {
+    opacity: 1;
+  }

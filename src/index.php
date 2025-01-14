@@ -20,7 +20,7 @@ require_once 'includes/config.php';
                 <label>Mot de passe</label>
                 <input type="password" name="password" required>
             </div>
-            <button type="submit">Se connecter</button>
+            <button class = "torch-button" type="submit">Se connecter</button>
         </form>
     </div>
 </body>
