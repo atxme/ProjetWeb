@@ -74,7 +74,7 @@ CREATE TABLE
         age INT,
         adresse VARCHAR(255),
         login VARCHAR(50),
-        mdp VARCHAR(50),
+        mdp VARCHAR(60),
         FOREIGN KEY (numClub) REFERENCES Club (numClub)
     );
 

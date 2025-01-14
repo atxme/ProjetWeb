@@ -31,6 +31,34 @@ class Database
         return $this->conn;
     }
 
+    // Fonction pour créer un nouvel utilisateur avec mot de passe hashé
+    public function createUser($login, $password, $role = 'user')
+    {
+        try {
+            // Vérifier si l'utilisateur existe déjà
+            $check = $this->conn->prepare("SELECT id FROM utilisateurs WHERE login = ?");
+            $check->execute([$login]);
+            if ($check->fetch()) {
+                return false; // Utilisateur existe déjà
+            }
+
+            // Hasher le mot de passe
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insérer le nouvel utilisateur
+            $query = "INSERT INTO utilisateurs (login, password, role) VALUES (:login, :password, :role)";
+            $stmt = $this->conn->prepare($query);
+            return $stmt->execute([
+                'login' => $login,
+                'password' => $hashed_password,
+                'role' => $role
+            ]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la création de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
+    }
+
     // Fonction pour vérifier les identifiants de connexion
     public function verifyLogin($login, $password)
     {
