@@ -39,10 +39,17 @@ $_SESSION['last_activity'] = time();
 <body>
     <div class="status-bar">
         <div class="status">
-            <!-- Contenu de la barre d'état -->
+            <?php echo htmlspecialchars($_SESSION['login']); ?>
         </div>
         <div class="logout">
-            <a href="../../logout.php">Déconnexion</a>
+            <?php
+            if(isset($_GET['logout'])) {
+                session_destroy();
+                header('Location: ../../index.php');
+                exit;
+            }
+            ?>
+            <a href="?logout=true">Déconnexion</a>
         </div>
     </div>
     <div class="admin-container">

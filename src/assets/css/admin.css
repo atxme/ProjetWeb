@@ -1,8 +1,11 @@
 body {
-    background-image: url('../images/font.jpg');
+    background-image: url('../../images/font.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 .admin-container {
@@ -13,10 +16,6 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 30px;
-    background-image: url('../images/font.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
 }
 
 .admin-box {
