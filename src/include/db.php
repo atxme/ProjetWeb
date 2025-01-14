@@ -63,21 +63,42 @@ class Database
         }
     }
 
-    public function verifyLogin($login, $password)
+    public function verifyLogin($p_Login, $password) 
     {
         try {
-            $query = "SELECT * FROM Utilisateur WHERE login = :login";
+            // Modification de la requête pour récupérer tous les champs nécessaires
+            $query = "SELECT numUtilisateur, nom, prenom, login, mdp 
+                     FROM Utilisateur 
+                     WHERE login = :login";
+                     
             $stmt = $this->conn->prepare($query);
-            $stmt->execute(['login' => $login]);
+            $stmt->execute(['login' => $p_Login]);
             $user = $stmt->fetch();
-
+    
             if ($user && password_verify($password, $user['mdp'])) {
-                return $user;
+                return [
+                    'success' => true,
+                    'user' => [
+                        'numUtilisateur' => $user['numUtilisateur'],
+                        'nom' => $user['nom'],
+                        'prenom' => $user['prenom'],
+                        'login' => $user['login']
+                    ]
+                ];
             }
-            return false;
+            
+            return [
+                'success' => false,
+                'message' => 'Identifiants incorrects'
+            ];
+            
         } catch (PDOException $e) {
             error_log("Erreur lors de la vérification du login : " . $e->getMessage());
-            return false;
+            return [
+                'success' => false,
+                'message' => 'Erreur technique'
+            ];
         }
     }
+    
 }
