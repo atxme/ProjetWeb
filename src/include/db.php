@@ -36,7 +36,7 @@ class Database
     {
         try {
             // Vérifier si l'utilisateur existe déjà
-            $check = $this->conn->prepare("SELECT id FROM utilisateurs WHERE login = ?");
+            $check = $this->conn->prepare("SELECT id FROM Utilisateur WHERE numUtilisateur = ?");
             $check->execute([$login]);
             if ($check->fetch()) {
                 return false; // Utilisateur existe déjà
@@ -46,7 +46,7 @@ class Database
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Insérer le nouvel utilisateur
-            $query = "INSERT INTO utilisateurs (login, password, role) VALUES (:login, :password, :role)";
+            $query = "INSERT INTO Utilisateur (numUtilisateur, mdp, role) VALUES (:login, :password, :role)";
             $stmt = $this->conn->prepare($query);
             return $stmt->execute([
                 'login' => $login,
@@ -63,7 +63,7 @@ class Database
     public function verifyLogin($login, $password)
     {
         try {
-            $query = "SELECT * FROM utilisateurs WHERE login = :login";
+            $query = "SELECT * FROM Utilisateur WHERE login = :login";
             $stmt = $this->conn->prepare($query);
             $stmt->execute(['login' => $login]);
             $user = $stmt->fetch();
