@@ -12,7 +12,7 @@ if (empty($_SESSION['csrf_token'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Concours de Dessin</title>
+    <title>Connexion - Concours de Dessin - kaku kaku</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
