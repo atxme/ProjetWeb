@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header('Location: index.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,8 +19,7 @@
             <div class="admin-header">
                 <h2>Gestion des Concours</h2>
             </div>
-            
-            <form id="concoursForm" class="form-group">
+            <form id="concoursForm" method="post" action="process_concours.php">
                 <div class="form-group">
                     <label for="theme">Thème du concours</label>
                     <input type="text" id="theme" name="theme" required>
@@ -47,17 +53,18 @@
 
                 <button type="submit" class="btn-submit">Créer le concours</button>
             </form>
+        </div>
 
+        <div class="admin-box">
             <div class="admin-header">
                 <h2>Gestion des Utilisateurs</h2>
             </div>
-
-            <form id="userForm" class="form-group">
+            <form id="userForm" method="post" action="process_user.php">
                 <div class="form-group">
                     <label for="userType">Type d'utilisateur</label>
                     <select id="userType" name="userType">
-                        <option value="competiteur">Compétiteur</option>
                         <option value="evaluateur">Évaluateur</option>
+                        <option value="competiteur">Compétiteur</option>
                     </select>
                 </div>
 
