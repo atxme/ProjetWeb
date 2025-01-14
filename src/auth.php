@@ -89,6 +89,8 @@ class Auth {
         $_SESSION['login'] = $user['login'];
         $_SESSION['last_activity'] = time();
         
+        $this->generateCSRFToken();
+        
         $this->logLogin($user['numUtilisateur'], true);
 
         if ($user['type'] === 'admin') 
