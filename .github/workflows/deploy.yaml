@@ -47,3 +47,9 @@ jobs:
             --exclude 'tests' \
             --exclude 'phpunit.xml' \
             ./src/ production:/srv/siteweb/dessin
+
+      - name: Deploy database
+        run: |
+          rsync -avz --delete \
+            ./init/ production:/srv/init
+
