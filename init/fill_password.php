@@ -1,5 +1,5 @@
 <?php
-require_once '/srv/src/include/db.php';
+require_once '/srv/siteweb/dessin/include/db.php';
 
 $passwords = [
     'pwd123' => 'admin',
