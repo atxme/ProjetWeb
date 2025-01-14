@@ -31,27 +31,31 @@ class Database
         return $this->conn;
     }
 
-    // Fonction pour créer un nouvel utilisateur avec mot de passe hashé
-    public function createUser($login, $password, $role = 'user')
+    public function createUser($numUtilisateur, $nom, $prenom, $age, $adresse, $login, $password, $numClub = null)
     {
         try {
             // Vérifier si l'utilisateur existe déjà
-            $check = $this->conn->prepare("SELECT id FROM Utilisateur WHERE numUtilisateur = ?");
+            $check = $this->conn->prepare("SELECT numUtilisateur FROM Utilisateur WHERE login = ?");
             $check->execute([$login]);
             if ($check->fetch()) {
-                return false; // Utilisateur existe déjà
+                return false;
             }
 
-            // Hasher le mot de passe
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insérer le nouvel utilisateur
-            $query = "INSERT INTO Utilisateur (numUtilisateur, mdp, role) VALUES (:login, :password, :role)";
+            $query = "INSERT INTO Utilisateur (numUtilisateur, numClub, nom, prenom, age, adresse, login, mdp) 
+                     VALUES (:numUtilisateur, :numClub, :nom, :prenom, :age, :adresse, :login, :mdp)";
+            
             $stmt = $this->conn->prepare($query);
             return $stmt->execute([
+                'numUtilisateur' => $numUtilisateur,
+                'numClub' => $numClub,
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'age' => $age,
+                'adresse' => $adresse,
                 'login' => $login,
-                'password' => $hashed_password,
-                'role' => $role
+                'mdp' => $hashed_password
             ]);
         } catch (PDOException $e) {
             error_log("Erreur lors de la création de l'utilisateur : " . $e->getMessage());
@@ -59,7 +63,6 @@ class Database
         }
     }
 
-    // Fonction pour vérifier les identifiants de connexion
     public function verifyLogin($login, $password)
     {
         try {
@@ -68,7 +71,7 @@ class Database
             $stmt->execute(['login' => $login]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($user && password_verify($password, $user['mdp'])) {
                 return $user;
             }
             return false;
