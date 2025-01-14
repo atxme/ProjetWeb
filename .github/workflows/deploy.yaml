@@ -55,8 +55,8 @@ jobs:
 
       - name: Init database
         run: |
-          ssh production "mysql dessin < /srv/init/database.sql"
-          ssh production "mysql dessin < /srv/init/insertion.sql"
+          ssh production "sudo mysql dessin < /srv/init/database.sql"
+          ssh production "sudo mysql dessin < /srv/init/insertion.sql"
 
       - name: Deploy fill_password.php
         run: |
