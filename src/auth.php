@@ -6,7 +6,7 @@ class Auth {
     private $db;
     private $conn;
     private const MAX_LOGIN_ATTEMPTS = 3;
-    private const LOCKOUT_TIME = 900; // 15 minutes en secondes
+    private const LOCKOUT_TIME = 900;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -18,7 +18,6 @@ class Auth {
             $this->redirectToLogin();
         }
 
-        // Vérification du token CSRF
         if (!$this->validateCSRFToken()) {
             $this->setError("Session invalide, veuillez réessayer");
             $this->redirectToLogin();
@@ -27,21 +26,18 @@ class Auth {
         $login = trim($_POST['login'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        // Validation des champs
         if (empty($login) || empty($password)) {
             $this->setError("Veuillez remplir tous les champs");
             $this->redirectToLogin();
         }
 
-        // Vérification du nombre de tentatives
         if ($this->isAccountLocked($login)) {
             $this->setError("Compte temporairement bloqué. Veuillez réessayer plus tard");
             $this->redirectToLogin();
         }
 
-        // Tentative de connexion avec bypass du hash
-        $user = $this->bypassHashVerification($login, $password);
-
+        $user = $this->verifyCredentials($login, $password);
+        
         if ($user) {
             $this->handleSuccessfulLogin($user);
         } else {
@@ -49,18 +45,15 @@ class Auth {
         }
     }
 
-    private function bypassHashVerification($login, $password) {
+    private function verifyCredentials($login, $password) {
         try {
             $query = "SELECT * FROM Utilisateur WHERE login = :login";
             $stmt = $this->conn->prepare($query);
             $stmt->execute(['login' => $login]);
             $user = $stmt->fetch();
-
-            if ($user) {
-                // Comparaison directe avec le mot de passe stocké
-                if ($password === $user['password']) {
-                    return $user;
-                }
+            
+            if ($user && password_verify($password, $user['mdp'])) {
+                return $user;
             }
             return false;
         } catch (PDOException $e) {
@@ -69,7 +62,6 @@ class Auth {
         }
     }
 
-    // Le reste du code reste identique...
     private function validateCSRFToken(): bool {
         return isset($_POST['csrf_token']) && 
                isset($_SESSION['csrf_token']) && 
@@ -79,7 +71,7 @@ class Auth {
     private function isAccountLocked(string $login): bool {
         $attempts = $_SESSION['login_attempts'][$login] ?? 0;
         $lastAttempt = $_SESSION['last_attempt'][$login] ?? 0;
-
+        
         if ($attempts >= self::MAX_LOGIN_ATTEMPTS) {
             if (time() - $lastAttempt < self::LOCKOUT_TIME) {
                 return true;
@@ -92,20 +84,19 @@ class Auth {
     private function handleSuccessfulLogin(array $user): void {
         session_regenerate_id(true);
         $this->resetLoginAttempts($user['login']);
-
-        $_SESSION['user_id'] = $user['id'];
+        
+        $_SESSION['user_id'] = $user['numUtilisateur'];
         $_SESSION['login'] = $user['login'];
-        $_SESSION['role'] = $user['role'];
         $_SESSION['last_activity'] = time();
-
-        $this->logLogin($user['id'], true);
-        $this->redirectByRole($user['role']);
+        
+        $this->logLogin($user['numUtilisateur'], true);
+        $this->redirectToHome();
     }
 
     private function handleFailedLogin(string $login): void {
         $_SESSION['login_attempts'][$login] = ($_SESSION['login_attempts'][$login] ?? 0) + 1;
         $_SESSION['last_attempt'][$login] = time();
-
+        
         $this->logLogin(null, false);
         $this->setError("Identifiants incorrects");
         $this->redirectToLogin();
@@ -119,12 +110,11 @@ class Auth {
     private function logLogin(?int $userId, bool $success): void {
         $ip = $_SERVER['REMOTE_ADDR'];
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        // Implémentez votre logique de journalisation ici
+        // Implémentation de la journalisation
     }
 
-    private function redirectByRole(string $role): void {
-        $destination = $role === 'admin' ? 'admin/dashboard.php' : 'dashboard.php';
-        header("Location: $destination");
+    private function redirectToHome(): void {
+        header('Location: dashboard.php');
         exit;
     }
 
@@ -138,7 +128,6 @@ class Auth {
     }
 }
 
-// Utilisation
 try {
     $auth = new Auth();
     $auth->authenticate();
