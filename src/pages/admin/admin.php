@@ -18,7 +18,7 @@ if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) ||
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration - Concours de Dessin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
     <div class="admin-container">
@@ -101,6 +101,6 @@ if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) ||
             </form>
         </div>
     </div>
-    <script src="assets/js/admin.js"></script>
+    <script src="../../assets/js/admin.js"></script>
 </body>
 </html>

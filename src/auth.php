@@ -63,17 +63,28 @@ class Auth {
     }
 
     private function validateCSRFToken(): bool {
-        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
-            !isset($_SESSION['csrf_token_time'])) {
+        if (!isset($_POST['csrf_token']) || empty($_SESSION['csrf_token'])) {
+            error_log("CSRF tokens manquants");
             return false;
         }
-        
-        // Vérifie si le token n'a pas expiré (1 heure)
+
+        if (!isset($_SESSION['csrf_token_time'])) {
+            error_log("Temps CSRF manquant");
+            return false;
+        }
+
         if ((time() - $_SESSION['csrf_token_time']) > 3600) {
+            error_log("Token CSRF expiré");
+            unset($_SESSION['csrf_token']);
+            unset($_SESSION['csrf_token_time']);
             return false;
         }
-        
-        return hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+
+        $valid = hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+        if (!$valid) {
+            error_log("Tokens CSRF ne correspondent pas");
+        }
+        return $valid;
     }
 
     private function isAccountLocked(string $login): bool {
@@ -127,18 +138,11 @@ class Auth {
 
         $userRole = $this->getUserRole($user['numUtilisateur']);
 
-        if ($userRole=== 'admin') 
-        {
-            $this->redirectToadmin();
-        }
-
-        else if ($userRole === 'user') 
-        {
-            #TODO : Rediriger vers la page de l'utilisateur
-        }
-
-        else 
-        {
+        if ($userRole === 'admin') {
+            $this->redirectToAdmin();
+        } elseif ($userRole === 'user') {
+            // TODO: Redirection utilisateur
+        } else {
             $this->redirectToHome();
         }
     }
@@ -164,17 +168,13 @@ class Auth {
     }
 
     private function generateCSRFToken(): string {
-        if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || 
-            (time() - $_SESSION['csrf_token_time']) > 3600) {
-            // Génère un nouveau token toutes les heures
-            $token = bin2hex(random_bytes(32));
-            $_SESSION['csrf_token'] = $token;
-            $_SESSION['csrf_token_time'] = time();
-        }
-        return $_SESSION['csrf_token'];
+        $token = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = $token;
+        $_SESSION['csrf_token_time'] = time();
+        return $token;
     }
 
-    private function redirectToadmin(): void {
+    private function redirectToAdmin(): void {
         header('Location: pages/admin/admin.php');
         exit;
     }
