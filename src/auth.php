@@ -81,6 +81,30 @@ class Auth {
         return false;
     }
 
+    private function getUserRole(int $userId): string {
+        $query = "SELECT 
+                CASE 
+                WHEN a.numAdmin IS NOT NULL THEN 'admin'
+                WHEN c.numCompetiteur IS NOT NULL THEN 'competiteur'
+                WHEN e.numEvaluateur IS NOT NULL THEN 'evaluateur'
+                ELSE 'user'
+            END AS role
+        FROM Utilisateur u
+        LEFT JOIN Admin a ON u.numUtilisateur = a.numAdmin
+        LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
+        LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+        WHERE u.numUtilisateur = :userId";
+    
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute(['userId' => $userId]);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération du rôle : " . $e->getMessage());
+            return 'user';
+        }
+    }
+
     private function handleSuccessfulLogin(array $user): void {
         session_regenerate_id(true);
         $this->resetLoginAttempts($user['login']);
@@ -88,17 +112,19 @@ class Auth {
         $_SESSION['user_id'] = $user['numUtilisateur'];
         $_SESSION['login'] = $user['login'];
         $_SESSION['last_activity'] = time();
-        
+
         $this->generateCSRFToken();
         
         $this->logLogin($user['numUtilisateur'], true);
 
-        if ($user['type'] === 'admin') 
+        $userRole = $this->getUserRole($user['numUtilisateur']);
+
+        if ($userRole=== 'admin') 
         {
             $this->redirectToadmin();
         }
 
-        else if ($user['type'] === 'user') 
+        else if ($userRole === 'user') 
         {
             #TODO : Rediriger vers la page de l'utilisateur
         }
