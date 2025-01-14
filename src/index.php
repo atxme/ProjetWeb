@@ -20,7 +20,7 @@ if (empty($_SESSION['csrf_token'])) {
         <div class="login-box">
             <div class="login-header">
                 <h2>Connexion</h2>
-                <p>Concours de Dessin - kaku kaku</p>
+                <p>Concours de Dessin</p>
             </div>
             
             <?php if (isset($_SESSION['error'])): ?>

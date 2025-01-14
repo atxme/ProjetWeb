@@ -162,7 +162,7 @@ class Auth {
     }
 
     private function redirectToadmin(): void {
-        header('Location: admin/admin.php');
+        header('Location: pages/admin/admin.php');
         exit;
     }
 
