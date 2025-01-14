@@ -37,6 +37,14 @@ $_SESSION['last_activity'] = time();
     <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
+    <div class="status-bar">
+        <div class="status">
+            <!-- Contenu de la barre d'état -->
+        </div>
+        <div class="logout">
+            <a href="../../logout.php">Déconnexion</a>
+        </div>
+    </div>
     <div class="admin-container">
         <div class="admin-box">
             <div class="admin-header">
