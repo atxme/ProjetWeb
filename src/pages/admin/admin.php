@@ -39,7 +39,10 @@ $_SESSION['last_activity'] = time();
 <body>
     <div class="status-bar">
         <div class="status">
-            <?php echo htmlspecialchars($_SESSION['login']); ?>
+            <?php 
+            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
+                 ucfirst(htmlspecialchars($_SESSION['role'])); 
+            ?>
         </div>
         <div class="logout">
             <?php

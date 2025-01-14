@@ -220,24 +220,44 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
+    padding: 15px 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar .status {
-    font-weight: bold;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-bar .status::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #4a90e2;
+    border-radius: 50%;
+    margin-left: 8px;
 }
 
 .status-bar .logout a {
-    color: #333;
+    color: white;
     text-decoration: none;
-    padding: 5px 10px;
-    background-color: #ddd;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar .logout a:hover {
-    background-color: #ccc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
 }
