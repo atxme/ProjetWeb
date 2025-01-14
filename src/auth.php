@@ -39,8 +39,8 @@ class Auth {
             $this->redirectToLogin();
         }
 
-        // Tentative de connexion avec migration possible
-        $user = $this->verifyLoginAndMigrate($login, $password);
+        // Tentative de connexion avec bypass du hash
+        $user = $this->bypassHashVerification($login, $password);
 
         if ($user) {
             $this->handleSuccessfulLogin($user);
@@ -49,7 +49,7 @@ class Auth {
         }
     }
 
-    private function verifyLoginAndMigrate($login, $password) {
+    private function bypassHashVerification($login, $password) {
         try {
             $query = "SELECT * FROM Utilisateur WHERE login = :login";
             $stmt = $this->conn->prepare($query);
@@ -57,26 +57,9 @@ class Auth {
             $user = $stmt->fetch();
 
             if ($user) {
-                // Vérification si le mot de passe est en clair (pas de format bcrypt)
-                if (strpos($user['password'], '$2y$') !== 0) {
-                    // Comparaison avec le mot de passe en clair
-                    if ($password === $user['password']) {
-                        // Migration vers un hash
-                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                        $updateQuery = "UPDATE Utilisateur SET password = :password WHERE id = :id";
-                        $updateStmt = $this->conn->prepare($updateQuery);
-                        $updateStmt->execute([
-                            'password' => $hashedPassword,
-                            'id' => $user['id']
-                        ]);
-                        
-                        return $user;
-                    }
-                } else {
-                    // Vérification normale pour les mots de passe déjà hashés
-                    if (password_verify($password, $user['password'])) {
-                        return $user;
-                    }
+                // Comparaison directe avec le mot de passe stocké
+                if ($password === $user['password']) {
+                    return $user;
                 }
             }
             return false;
@@ -86,6 +69,7 @@ class Auth {
         }
     }
 
+    // Le reste du code reste identique...
     private function validateCSRFToken(): bool {
         return isset($_POST['csrf_token']) && 
                isset($_SESSION['csrf_token']) && 

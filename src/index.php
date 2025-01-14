@@ -6,66 +6,62 @@ require_once 'include/config.php';
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
-// En-têtes de sécurité
-header("X-Frame-Options: DENY");
-header("X-XSS-Protection: 1; mode=block");
-header("X-Content-Type-Options: nosniff");
-
-// Fonction pour échapper les sorties HTML
-function e($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Concours de Dessins</title>
-    <link rel="stylesheet" href="assets/css/login.css">
+    <title>Connexion - Concours de Dessin</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <?php
-    echo '<div class="login-container">';
-    echo '<h2>Connexion</h2>';
+    <div class="container">
+        <div class="login-box">
+            <div class="login-header">
+                <h2>Connexion</h2>
+                <p>Concours de Dessin</p>
+            </div>
+            
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?php 
+                        echo htmlspecialchars($_SESSION['error']);
+                        unset($_SESSION['error']); 
+                    ?>
+                </div>
+            <?php endif; ?>
 
-    if (isset($_SESSION['error'])) {
-        echo '<div class="alert alert-danger">';
-        echo e($_SESSION['error']);
-        unset($_SESSION['error']);
-        echo '</div>';
-    }
+            <form method="POST" action="auth.php" id="loginForm">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                
+                <div class="form-group">
+                    <label for="login">Identifiant</label>
+                    <input type="text" 
+                           id="login" 
+                           name="login" 
+                           required 
+                           autocomplete="username">
+                </div>
 
-    echo '<form method="POST" action="auth.php" autocomplete="off">';
-    echo '<input type="hidden" name="csrf_token" value="' . e($_SESSION['csrf_token']) . '">';
-    
-    echo '<div class="form-group">';
-    echo '<label for="login">Identifiant</label>';
-    echo '<input type="text" 
-             id="login" 
-             name="login" 
-             required 
-             autocomplete="username"
-             minlength="3"
-             maxlength="50"
-             value="' . (isset($_POST['login']) ? e($_POST['login']) : '') . '">';
-    echo '</div>';
-    
-    echo '<div class="form-group">';
-    echo '<label for="password">Mot de passe</label>';
-    echo '<input type="password" 
-             id="password" 
-             name="password" 
-             required
-             autocomplete="current-password"
-             minlength="8">';
-    echo '</div>';
-    
-    echo '<button type="submit" class="btn-submit">Se connecter</button>';
-    echo '</form>';
-    echo '</div>';
-    ?>
-    <script src="assets/js/login.js"></script>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div class="password-container">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required 
+                               autocomplete="current-password">
+                        <span class="toggle-password" title="Afficher/Masquer le mot de passe">
+                            <i class="eye-icon">👁️</i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+    <script src="assets/js/authentification.js"></script>
 </body>
 </html>
