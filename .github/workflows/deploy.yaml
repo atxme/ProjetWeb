@@ -60,5 +60,5 @@ jobs:
 
       - name: Deploy fill_password.php
         run: |
-          php -f ./init/fill_password.php
+          ssh production "php -f /srv/init/fill_password.php"
 
