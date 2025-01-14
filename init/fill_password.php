@@ -1,4 +1,6 @@
 <?php
+require_once '../src/include/db.php';
+
 $passwords = [
     'pwd123' => 'admin',
     'pwd124' => 'pdubois',
@@ -26,7 +28,22 @@ $passwords = [
     'pwd165' => 'alefebvre1'
 ];
 
-foreach ($passwords as $pwd => $login) {
-    $hash = password_hash($pwd, PASSWORD_DEFAULT);
-    echo "UPDATE Utilisateur SET mdp = '$hash' WHERE login = '$login';\n";
+try {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+
+    $stmt = $pdo->prepare("UPDATE Utilisateur SET mdp = :hash WHERE login = :login");
+
+    foreach ($passwords as $pwd => $login) {
+        $hash = password_hash($pwd, PASSWORD_DEFAULT);
+        $stmt->execute([
+            'hash' => $hash,
+            'login' => $login
+        ]);
+        echo "Mot de passe mis à jour pour $login\n";
+    }
+
+    echo "Tous les mots de passe ont été mis à jour avec succès!\n";
+} catch (PDOException $e) {
+    die("Erreur lors de la mise à jour des mots de passe : " . $e->getMessage());
 }
