@@ -117,33 +117,48 @@ class Auth {
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute(['userId' => $userId]);
-            return $stmt->fetchColumn();
+            $role = $stmt->fetchColumn();
+            $this->debugLog("Rôle récupéré de la base", ['user_id' => $userId, 'role' => $role]);
+            return $role ?: 'user';
         } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération du rôle : " . $e->getMessage());
+            $this->debugLog("Erreur lors de la récupération du rôle", ['error' => $e->getMessage()]);
             return 'user';
         }
     }
 
     private function handleSuccessfulLogin(array $user): void {
+        $this->debugLog("Début handleSuccessfulLogin", ['user_id' => $user['numUtilisateur']]);
+        
         session_regenerate_id(true);
         $this->resetLoginAttempts($user['login']);
         
         $_SESSION['user_id'] = $user['numUtilisateur'];
         $_SESSION['login'] = $user['login'];
         $_SESSION['last_activity'] = time();
-
-        $this->generateCSRFToken();
         
-        $this->logLogin($user['numUtilisateur'], true);
-
         $userRole = $this->getUserRole($user['numUtilisateur']);
-
+        $_SESSION['role'] = $userRole;
+        
+        $this->debugLog("Rôle utilisateur récupéré", ['role' => $userRole]);
+        
+        $this->generateCSRFToken();
+        $this->logLogin($user['numUtilisateur'], true);
+        
+        $this->debugLog("Redirection en cours", ['role' => $userRole]);
+        
         if ($userRole === 'admin') {
-            $this->redirectToAdmin();
-        } elseif ($userRole === 'user') {
-            // TODO: Redirection utilisateur
+            $this->debugLog("Redirection vers admin");
+            header('Location: pages/admin/admin.php');
+            exit;
+        } elseif ($userRole === 'competiteur') {
+            header('Location: pages/competiteur/dashboard.php');
+            exit;
+        } elseif ($userRole === 'evaluateur') {
+            header('Location: pages/evaluateur/dashboard.php');
+            exit;
         } else {
-            $this->redirectToHome();
+            header('Location: dashboard.php');
+            exit;
         }
     }
 
@@ -174,16 +189,6 @@ class Auth {
         return $token;
     }
 
-    private function redirectToAdmin(): void {
-        header('Location: pages/admin/admin.php');
-        exit;
-    }
-
-    private function redirectToHome(): void {
-        header('Location: dashboard.php');
-        exit;
-    }
-
     private function redirectToLogin(): void {
         header('Location: index.php');
         exit;
@@ -191,6 +196,14 @@ class Auth {
 
     private function setError(string $message): void {
         $_SESSION['error'] = $message;
+    }
+
+    private function debugLog($message, $data = null): void {
+        $logMessage = date('Y-m-d H:i:s') . " - " . $message;
+        if ($data !== null) {
+            $logMessage .= " - Data: " . print_r($data, true);
+        }
+        error_log($logMessage);
     }
 }
 
