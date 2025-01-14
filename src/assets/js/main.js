@@ -16,3 +16,21 @@ function updateContestStatus() {
         });
 }
 
+// Animation torch-button
+const button = document.querySelector('.torch-button');
+
+button.addEventListener('mousemove', (e) => {
+  const rect = button.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const spotlight = button.querySelector('::after');
+  button.style.setProperty('--mouse-x', `${x}px`);
+  button.style.setProperty('--mouse-y', `${y}px`);
+});
+
+button.addEventListener('mouseleave', () => {
+  button.style.setProperty('--mouse-x', `-50%`);
+  button.style.setProperty('--mouse-y', `-50%`);
+});
+
