@@ -90,7 +90,21 @@ class Auth {
         $_SESSION['last_activity'] = time();
         
         $this->logLogin($user['numUtilisateur'], true);
-        $this->redirectToHome();
+
+        if ($user['type'] === 'admin') 
+        {
+            $this->redirectToadmin();
+        }
+
+        else if ($user['type'] === 'user') 
+        {
+            #TODO : Rediriger vers la page de l'utilisateur
+        }
+
+        else 
+        {
+            $this->redirectToHome();
+        }
     }
 
     private function handleFailedLogin(string $login): void {
@@ -111,6 +125,17 @@ class Auth {
         $ip = $_SERVER['REMOTE_ADDR'];
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         // Implémentation de la journalisation
+    }
+
+    private function generateCSRFToken(): string {
+        $token = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = $token;
+        return $token;
+    }
+
+    private function redirectToadmin(): void {
+        header('Location: admin/admin.php');
+        exit;
     }
 
     private function redirectToHome(): void {
