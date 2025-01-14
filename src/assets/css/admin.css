@@ -17,9 +17,9 @@ body {
 
 .admin-box {
     background: white;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 40px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
@@ -47,7 +47,9 @@ body {
     font-weight: 500;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 12px;
     border: 2px solid #e1e1e1;
@@ -56,14 +58,15 @@ body {
     transition: border-color 0.3s ease;
 }
 
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: #4a90e2;
     outline: none;
 }
 
 .btn-submit {
-    width: 100%;
-    padding: 14px;
+    padding: 14px 28px;
     background: #4a90e2;
     color: white;
     border: none;
@@ -89,4 +92,27 @@ body {
     background-color: #fee;
     border: 1px solid #fcc;
     color: #c33;
+}
+
+/* Ajouts spécifiques pour le dashboard */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.dashboard-nav {
+    background: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }

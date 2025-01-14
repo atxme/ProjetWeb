@@ -1,8 +1,3 @@
-<?php
-session_start();
-require_once '../../include/db.php';
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -17,9 +12,8 @@ require_once '../../include/db.php';
             <div class="admin-header">
                 <h2>Gestion des Concours</h2>
             </div>
-
-            <!-- Formulaire de création de concours -->
-            <form id="concoursForm" method="POST" action="process/create_concours.php">
+            
+            <form id="concoursForm" class="form-group">
                 <div class="form-group">
                     <label for="theme">Thème du concours</label>
                     <input type="text" id="theme" name="theme" required>
@@ -27,7 +21,7 @@ require_once '../../include/db.php';
 
                 <div class="form-group">
                     <label for="descriptif">Descriptif</label>
-                    <textarea id="descriptif" name="descriptif" required></textarea>
+                    <textarea id="descriptif" name="descriptif" rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -42,9 +36,9 @@ require_once '../../include/db.php';
 
                 <div class="form-group">
                     <label for="etat">État du concours</label>
-                    <select id="etat" name="etat" required>
-                        <option value="pas commence">Non commencé</option>
-                        <option value="en cours">En cours</option>
+                    <select id="etat" name="etat">
+                        <option value="pas_commence">Non commencé</option>
+                        <option value="en_cours">En cours</option>
                         <option value="attente">En attente</option>
                         <option value="resultat">Résultat</option>
                         <option value="evalue">Évalué</option>
@@ -54,15 +48,14 @@ require_once '../../include/db.php';
                 <button type="submit" class="btn-submit">Créer le concours</button>
             </form>
 
-            <!-- Formulaire d'ajout d'utilisateur -->
             <div class="admin-header">
                 <h2>Gestion des Utilisateurs</h2>
             </div>
 
-            <form id="userForm" method="POST" action="process/create_user.php">
+            <form id="userForm" class="form-group">
                 <div class="form-group">
-                    <label for="type">Type d'utilisateur</label>
-                    <select id="type" name="type" required>
+                    <label for="userType">Type d'utilisateur</label>
+                    <select id="userType" name="userType">
                         <option value="competiteur">Compétiteur</option>
                         <option value="evaluateur">Évaluateur</option>
                     </select>
@@ -92,7 +85,6 @@ require_once '../../include/db.php';
             </form>
         </div>
     </div>
-
     <script src="assets/js/admin.js"></script>
 </body>
 </html>
