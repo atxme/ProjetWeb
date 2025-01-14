@@ -63,9 +63,17 @@ class Auth {
     }
 
     private function validateCSRFToken(): bool {
-        return isset($_POST['csrf_token']) && 
-               isset($_SESSION['csrf_token']) && 
-               hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+            !isset($_SESSION['csrf_token_time'])) {
+            return false;
+        }
+        
+        // Vérifie si le token n'a pas expiré (1 heure)
+        if ((time() - $_SESSION['csrf_token_time']) > 3600) {
+            return false;
+        }
+        
+        return hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
     }
 
     private function isAccountLocked(string $login): bool {
@@ -156,9 +164,14 @@ class Auth {
     }
 
     private function generateCSRFToken(): string {
-        $token = bin2hex(random_bytes(32));
-        $_SESSION['csrf_token'] = $token;
-        return $token;
+        if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || 
+            (time() - $_SESSION['csrf_token_time']) > 3600) {
+            // Génère un nouveau token toutes les heures
+            $token = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token'] = $token;
+            $_SESSION['csrf_token_time'] = time();
+        }
+        return $_SESSION['csrf_token'];
     }
 
     private function redirectToadmin(): void {

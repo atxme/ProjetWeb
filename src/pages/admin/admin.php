@@ -1,8 +1,15 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: index.php');
+    header('Location: ../../index.php');
     exit;
+}
+
+// Régénérer le token CSRF si nécessaire
+if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || 
+    (time() - $_SESSION['csrf_token_time']) > 3600) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token_time'] = time();
 }
 ?>
 <!DOCTYPE html>
@@ -20,6 +27,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
                 <h2>Gestion des Concours</h2>
             </div>
             <form id="concoursForm" method="post" action="process_concours.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
                     <label for="theme">Thème du concours</label>
                     <input type="text" id="theme" name="theme" required>
@@ -60,6 +68,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
                 <h2>Gestion des Utilisateurs</h2>
             </div>
             <form id="userForm" method="post" action="process_user.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
                     <label for="userType">Type d'utilisateur</label>
                     <select id="userType" name="userType">

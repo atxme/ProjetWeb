@@ -1,40 +1,68 @@
 .admin-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 40px auto;
     padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 30px;
 }
 
 .admin-box {
     background: white;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.admin-header {
     margin-bottom: 30px;
 }
 
-/* Augmenter l'espacement */
-.form-group {
-    margin-bottom: 30px;
-}
-
-/* Améliorer la typographie */
 .admin-header h2 {
-    font-size: 24px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 40px;
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    position: relative;
     padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
 }
 
-/* Inputs plus élégants */
+.admin-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    border-radius: 2px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #34495e;
+    font-size: 15px;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 14px;
-    border: 1px solid #e1e1e1;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 15px;
     transition: all 0.3s ease;
@@ -46,13 +74,41 @@
 .form-group textarea:focus {
     border-color: #4a90e2;
     background: white;
-    box-shadow: 0 2px 4px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+    outline: none;
 }
 
-/* Bouton plus moderne */
 .btn-submit {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    width: 100%;
     padding: 14px 28px;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    color: white;
+    border: none;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
 }
