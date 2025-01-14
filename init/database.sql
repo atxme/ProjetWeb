@@ -68,7 +68,7 @@ CREATE TABLE Evaluateur (
 );
 
 CREATE TABLE Concours (
-    numConcours INT PRIMARY KEY CHECK (numConcours <= 4),
+    numConcours INT PRIMARY KEY,
     numPresident INT NOT NULL,
     theme VARCHAR(100),
     dateDeb DATE,
@@ -77,6 +77,10 @@ CREATE TABLE Concours (
     nbClub INT,
     nbParticipant INT,
     descriptif TEXT,
+    CONSTRAINT chk_max_concours_per_year 
+    CHECK ((SELECT COUNT(*) 
+            FROM Concours c2 
+            WHERE YEAR(c2.dateDeb) = YEAR(dateDeb)) < 5),
     FOREIGN KEY (numPresident) REFERENCES President(numPresident)
 );
 
