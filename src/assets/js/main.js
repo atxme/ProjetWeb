@@ -15,3 +15,4 @@ function updateContestStatus() {
             // Mise à jour de l'interface
         });
 }
+
