@@ -1,11 +1,16 @@
 <?php
 session_start();
+require_once '../../include/db.php';
 
 // Check if the user is logged in and has the 'competiteur' role
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     header('Location: ../../index.php');
     exit;
 }
+
+// Fetch concours from the database
+$db = Database::getInstance();
+$concours = $db->getConcours();
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +19,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soumettre un Dessin</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/administrateur.css">
 </head>
 <body>
     <div class="container">
@@ -23,9 +28,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
             <div class="form-group">
                 <label for="contest">Concours</label>
                 <select name="contest" id="contest" required>
-                    <!-- Dynamically populate contests here -->
-                    <option value="1">Concours 1</option>
-                    <option value="2">Concours 2</option>
+                    <?php foreach ($concours as $concour): ?>
+                        <option value="<?php echo htmlspecialchars($concour['numConcours']); ?>">
+                            <?php echo htmlspecialchars($concour['theme']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">

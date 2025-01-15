@@ -25,11 +25,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Process the drawing file and store it in the database
-    $drawingContent = file_get_contents($drawing['tmp_name']);
-    $stmt = $conn->prepare("INSERT INTO Dessin (numCompetiteur, numConcours, commentaire, leDessin) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$userId, $contestId, $comment, $drawingContent]);
+    // Process the drawing file
+    $uploadDir = '../../src/uploads/';
+    $extension = pathinfo($drawing['name'], PATHINFO_EXTENSION);
+    $drawingPath = '';
 
-    echo "Dessin soumis avec succès.";
+    try {
+        $conn->beginTransaction();
+
+        // Insert the drawing record to get the primary key
+        $stmt = $conn->prepare("INSERT INTO Dessin (numCompetiteur, numConcours, commentaire, leDessin) VALUES (?, ?, ?, '')");
+        $stmt->execute([$userId, $contestId, $comment]);
+
+        $drawingId = $conn->lastInsertId();
+        $drawingPath = $uploadDir . $drawingId . '.' . $extension;
+
+        // Update the record with the actual file path
+        $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");
+        $stmt->execute([$drawingPath, $drawingId]);
+
+        // Move the uploaded file to the correct directory
+        move_uploaded_file($drawing['tmp_name'], $drawingPath);
+
+        $conn->commit();
+        echo "Dessin soumis avec succès.";
+    } catch (Exception $e) {
+        $conn->rollBack();
+        echo "Erreur lors de la soumission du dessin : " . $e->getMessage();
+    }
 }
 ?>
