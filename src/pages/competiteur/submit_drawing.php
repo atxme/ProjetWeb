@@ -19,7 +19,7 @@ $concours = $db->getConcours();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soumettre un Dessin</title>
-    <link rel="stylesheet" href="../../assets/css/administrateur.css">
+    <link rel="stylesheet" href="../../assets/css/competiteur.css">
 </head>
 <body>
     <div class="container">
