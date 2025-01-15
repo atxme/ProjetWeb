@@ -1,5 +1,5 @@
 <?php
-require_once '../../includes/db_connect.php';
+require_once '../../include/db.php';
 
 /**
  * Vérifie le nombre de concours pour une année donnée
@@ -9,7 +9,8 @@ require_once '../../includes/db_connect.php';
  */
 function verifierNombreConcours($annee) {
     try {
-        $pdo = getDBConnection();
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
         
         // Requête pour compter le nombre de concours pour l'année spécifiée
         $sql = "SELECT COUNT(*) as nombre 
@@ -34,7 +35,9 @@ function verifierNombreConcours($annee) {
  */
 function verifierEligibilitePresident($numUtilisateur) {
     try {
-        $pdo = getDBConnection();
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+        
         $sql = "SELECT numPresident FROM President WHERE numPresident = :numUtilisateur";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':numUtilisateur' => $numUtilisateur]);
@@ -56,7 +59,7 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
         $dateDebObj = new DateTime($dateDeb);
         $dateFinObj = new DateTime($dateFin);
         $aujourd_hui = new DateTime();
-        $annee = $dateDebObj->format('Y');
+        $annee = (int)$dateDebObj->format('Y');  // Cast en int pour la vérification
 
         // Vérifications de base
         if ($dateDebObj < $aujourd_hui) {
@@ -77,7 +80,8 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             return ['success' => false, 'message' => 'La personne sélectionnée n\'est pas président'];
         }
 
-        $pdo = getDBConnection();
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
         $pdo->beginTransaction();
 
         try {
