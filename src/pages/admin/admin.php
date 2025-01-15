@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../../include/db.php';
 
 // Vérification plus stricte de l'authentification et du rôle
 if (!isset($_SESSION['user_id']) || 
@@ -90,15 +91,13 @@ $_SESSION['last_activity'] = time();
                         <?php
                         $db = Database::getInstance();
                         $pdo = $db->getConnection();
-                        // On sélectionne tous les utilisateurs qui sont présidents potentiels
                         $sql = "SELECT DISTINCT u.numUtilisateur, u.nom, u.prenom 
                                 FROM Utilisateur u 
-                                WHERE u.numUtilisateur NOT IN (
-                                    SELECT DISTINCT p.numPresident 
-                                    FROM President p 
-                                    INNER JOIN Concours c ON p.numPresident = c.numPresident 
-                                    WHERE c.etat IN ('pas commence', 'en cours')
-                                )";
+                                INNER JOIN President p ON u.numUtilisateur = p.numPresident 
+                                LEFT JOIN Concours c ON p.numPresident = c.numPresident 
+                                WHERE c.numConcours IS NULL 
+                                   OR c.etat NOT IN ('pas commence', 'en cours')
+                                GROUP BY u.numUtilisateur";
                         $stmt = $pdo->prepare($sql);
                         $stmt->execute();
                         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
