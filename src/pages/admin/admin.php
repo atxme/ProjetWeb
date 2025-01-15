@@ -28,6 +28,256 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     exit;
 }
 $_SESSION['last_activity'] = time();
+
+// Ajouter ces fonctions au début du fichier admin.php après les vérifications de session
+
+function verifierEligibiliteCompetiteur($numUtilisateur, $numConcours) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
+    // Vérifier que l'utilisateur n'est pas déjà compétiteur, évaluateur ou président dans ce concours
+    $sql = "SELECT 1 FROM CompetiteurParticipe WHERE numCompetiteur = :numUtilisateur AND numConcours = :numConcours
+            UNION
+            SELECT 1 FROM Jury WHERE numEvaluateur = :numUtilisateur AND numConcours = :numConcours
+            UNION
+            SELECT 1 FROM Concours WHERE numPresident = :numUtilisateur AND numConcours = :numConcours";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':numUtilisateur' => $numUtilisateur,
+        ':numConcours' => $numConcours
+    ]);
+    
+    return $stmt->rowCount() === 0;
+}
+
+function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
+    // Vérifier le nombre total d'évaluations
+    $sql = "SELECT COUNT(*) FROM Evaluation WHERE numEvaluateur = :numUtilisateur";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+    if ($stmt->fetchColumn() >= 8) {
+        return false;
+    }
+    
+    // Vérifier les autres conditions (pas compétiteur/président dans ce concours)
+    return verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
+}
+
+function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
+    try {
+        $pdo->beginTransaction();
+
+        // Vérifier l'éligibilité selon le type
+        $eligible = ($userType === 'evaluateur') ? 
+            verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) : 
+            verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
+
+        if (!$eligible) {
+            throw new Exception("L'utilisateur n'est pas éligible pour ce rôle");
+        }
+
+        // Ajouter le participant selon son type
+        if ($userType === 'evaluateur') {
+            // Vérifier si l'utilisateur est déjà évaluateur
+            $sql = "INSERT IGNORE INTO Evaluateur (numEvaluateur, specialite) VALUES (:numUtilisateur, 'générale')";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+
+            // Ajouter au jury
+            $sql = "INSERT INTO Jury (numEvaluateur, numConcours) VALUES (:numUtilisateur, :numConcours)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':numUtilisateur' => $numUtilisateur,
+                ':numConcours' => $numConcours
+            ]);
+        } else {
+            // D'abord ajouter l'utilisateur comme compétiteur s'il ne l'est pas déjà
+            $sql = "INSERT IGNORE INTO Competiteur (numCompetiteur, datePremiereParticipation) 
+                    VALUES (:numUtilisateur, CURRENT_DATE)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+
+            // Ensuite l'ajouter à la participation au concours
+            $sql = "INSERT INTO CompetiteurParticipe (numCompetiteur, numConcours) 
+                    VALUES (:numUtilisateur, :numConcours)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':numUtilisateur' => $numUtilisateur,
+                ':numConcours' => $numConcours
+            ]);
+        }
+
+        // Ajouter le club au concours s'il n'y est pas déjà
+        $sql = "INSERT IGNORE INTO ClubParticipe (numClub, numConcours) VALUES (:numClub, :numConcours)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':numClub' => $numClub,
+            ':numConcours' => $numConcours
+        ]);
+
+        $pdo->commit();
+        return ['success' => true, 'message' => 'Participant ajouté avec succès au concours'];
+
+    } catch (Exception $e) {
+        if (isset($pdo)) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
+// Modifier le traitement du formulaire POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
+    header('Content-Type: application/json');
+    
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Token CSRF invalide"
+        ]);
+        exit;
+    }
+
+    $userType = $_POST['userType'];
+    $numUtilisateur = (int)$_POST['utilisateur'];
+    $numConcours = (int)$_POST['concours'];
+    $numClub = (int)$_POST['club'];
+
+    // Validation des données
+    if (!$numUtilisateur || !$numConcours || !$numClub) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Tous les champs sont obligatoires"
+        ]);
+        exit;
+    }
+
+    $result = ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub);
+    echo json_encode($result);
+    exit;
+}
+
+// Ajouter après les vérifications de session
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getUsers') {
+    header('Content-Type: application/json');
+    
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        http_response_code(403);
+        exit;
+    }
+
+    $club = (int)$_GET['club'];
+    $type = $_GET['type'];
+    $concours = (int)$_GET['concours'];
+
+    try {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+
+        if ($type === 'competiteur') {
+            // Sélectionner les utilisateurs éligibles comme compétiteurs
+            $sql = "SELECT u.numUtilisateur, u.nom, u.prenom 
+                    FROM Utilisateur u
+                    WHERE u.numClub = :club
+                    AND NOT EXISTS (
+                        SELECT 1 FROM CompetiteurParticipe cp 
+                        WHERE cp.numCompetiteur = u.numUtilisateur 
+                        AND cp.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Jury j 
+                        WHERE j.numEvaluateur = u.numUtilisateur 
+                        AND j.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Concours c 
+                        WHERE c.numPresident = u.numUtilisateur 
+                        AND c.numConcours = :concours
+                    )";
+        } else {
+            // Sélectionner les utilisateurs éligibles comme évaluateurs
+            $sql = "SELECT u.numUtilisateur, u.nom, u.prenom 
+                    FROM Utilisateur u
+                    LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+                    WHERE u.numClub = :club
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Jury j 
+                        WHERE j.numEvaluateur = u.numUtilisateur 
+                        AND j.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM CompetiteurParticipe cp 
+                        WHERE cp.numCompetiteur = u.numUtilisateur 
+                        AND cp.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Concours c 
+                        WHERE c.numPresident = u.numUtilisateur 
+                        AND c.numConcours = :concours
+                    )
+                    AND (
+                        SELECT COUNT(*) FROM Evaluation ev 
+                        WHERE ev.numEvaluateur = u.numUtilisateur
+                    ) < 8";
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':club' => $club, ':concours' => $concours]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+}
+
+// Ajouter après la route getUsers
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getClubs') {
+    header('Content-Type: application/json');
+    
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        http_response_code(403);
+        exit;
+    }
+
+    $concours = (int)$_GET['concours'];
+
+    try {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+
+        // Sélectionner les clubs qui ont des utilisateurs et qui ne participent pas déjà au concours
+        $sql = "SELECT DISTINCT c.numClub, c.nomClub 
+                FROM Club c 
+                INNER JOIN Utilisateur u ON c.numClub = u.numClub
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM ClubParticipe cp 
+                    WHERE cp.numClub = c.numClub 
+                    AND cp.numConcours = :concours
+                )";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':concours' => $concours]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -150,42 +400,15 @@ $_SESSION['last_activity'] = time();
 
         <div class="admin-box">
             <div class="admin-header">
-                <h2>Gestion des Utilisateurs</h2>
+                <h2>Ajout de Participants au Concours</h2>
             </div>
-            <form id="userForm" method="post" action="process_user.php">
+            <form id="userForm" method="post" action="admin.php">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                
                 <div class="form-group">
-                    <label for="userType">Type d'utilisateur</label>
-                    <select id="userType" name="userType">
-                        <option value="evaluateur">Évaluateur</option>
-                        <option value="competiteur">Compétiteur</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="age">Âge</label>
-                    <input type="number" id="age" name="age" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="adresse">Adresse</label>
-                    <input type="text" id="adresse" name="adresse" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="concours">Concours*</label>
+                    <label for="concours">Sélectionner un concours*</label>
                     <select id="concours" name="concours" required>
-                        <option value="">Sélectionner un concours</option>
+                        <option value="">Choisir un concours</option>
                         <?php
                         $db = Database::getInstance();
                         $pdo = $db->getConnection();
@@ -203,7 +426,31 @@ $_SESSION['last_activity'] = time();
                     </select>
                 </div>
 
-                <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
+                <div class="form-group">
+                    <label for="club">Sélectionner un club*</label>
+                    <select id="club" name="club" required disabled>
+                        <option value="">Choisir d'abord un concours</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userType">Type de participation*</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Choisir un rôle</option>
+                        <option value="competiteur">Compétiteur</option>
+                        <option value="evaluateur">Évaluateur</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="utilisateur">Sélectionner un utilisateur*</label>
+                    <select id="utilisateur" name="utilisateur" required disabled>
+                        <option value="">Choisir d'abord un club et un type</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Ajouter au concours</button>
+                <p class="form-info">* Champs obligatoires</p>
             </form>
         </div>
     </div>
