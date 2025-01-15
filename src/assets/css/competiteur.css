@@ -201,3 +201,44 @@ h1 {
 .btn:hover {
     background-color: #45a049;
 }
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+.drawing {
+    margin-bottom: 20px;
+}
+
+.drawing img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+#drawings-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.drawing {
+    margin: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    width: calc(33.333% - 20px);
+    box-sizing: border-box;
+}
