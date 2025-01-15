@@ -90,31 +90,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Désactiver les sélections qui dépendent d'autres choix
         function updateSelectStates() {
-            clubSelect.disabled = !concoursSelect.value;
-            userTypeSelect.disabled = !clubSelect.value;
-            utilisateurSelect.disabled = !userTypeSelect.value;
+            // Activer/désactiver les sélections en cascade
+            if (concoursSelect.value) {
+                clubSelect.disabled = false;
+                if (clubSelect.value) {
+                    userTypeSelect.disabled = false;
+                    if (userTypeSelect.value) {
+                        utilisateurSelect.disabled = false;
+                    }
+                }
+            }
 
-            // Réinitialiser les sélections en cascade
+            // Réinitialiser les sélections en cascade si nécessaire
             if (!concoursSelect.value) {
                 clubSelect.value = '';
+                clubSelect.disabled = true;
                 userTypeSelect.value = '';
+                userTypeSelect.disabled = true;
                 utilisateurSelect.value = '';
-            }
-            if (!clubSelect.value) {
-                userTypeSelect.value = '';
-                utilisateurSelect.value = '';
-            }
-            if (!userTypeSelect.value) {
-                utilisateurSelect.value = '';
+                utilisateurSelect.disabled = true;
             }
         }
 
         async function loadClubs() {
-            if (!concoursSelect.value) {
-                clubSelect.innerHTML = '<option value="">Choisir d'abord un concours</option>';
-                clubSelect.disabled = true;
-                return;
-            }
+            if (!concoursSelect.value) return;
 
             try {
                 const response = await fetch(`admin.php?action=getClubs&concours=${concoursSelect.value}`);
@@ -135,11 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         async function loadUtilisateurs() {
-            if (!clubSelect.value || !userTypeSelect.value || !concoursSelect.value) {
-                utilisateurSelect.innerHTML = '<option value="">Choisir d'abord un club et un type</option>';
-                utilisateurSelect.disabled = true;
-                return;
-            }
+            if (!clubSelect.value || !userTypeSelect.value || !concoursSelect.value) return;
 
             try {
                 const response = await fetch(`admin.php?action=getUsers&club=${clubSelect.value}&type=${userTypeSelect.value}&concours=${concoursSelect.value}`);
@@ -150,41 +145,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 utilisateurSelect.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
                 if (users.length === 0) {
                     utilisateurSelect.innerHTML = '<option value="">Aucun utilisateur disponible</option>';
-                    utilisateurSelect.disabled = true;
                     showPopup('Aucun utilisateur disponible pour ce rôle', 'error');
-                    return;
+                } else {
+                    users.forEach(user => {
+                        const option = new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur);
+                        utilisateurSelect.add(option);
+                    });
+                    utilisateurSelect.disabled = false;
                 }
-                
-                users.forEach(user => {
-                    const option = new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur);
-                    utilisateurSelect.add(option);
-                });
-                utilisateurSelect.disabled = false;
             } catch (error) {
                 console.error('Erreur:', error);
                 showPopup('Erreur lors du chargement des utilisateurs', 'error');
             }
         }
 
-        // Initialiser l'état des sélections
-        updateSelectStates();
-
         // Gérer les changements de sélection
         concoursSelect.addEventListener('change', () => {
-            updateSelectStates();
             loadClubs();
+            updateSelectStates();
         });
 
         clubSelect.addEventListener('change', () => {
+            userTypeSelect.disabled = false;
             updateSelectStates();
-            if (clubSelect.value) {
-                userTypeSelect.disabled = false;
-            }
         });
 
         userTypeSelect.addEventListener('change', () => {
-            updateSelectStates();
             loadUtilisateurs();
+            updateSelectStates();
         });
 
         userForm.addEventListener('submit', async function(e) {
@@ -202,20 +190,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: formData
                 });
                 
-                if (!response.ok) throw new Error('Erreur réseau');
-                
                 const result = await response.json();
                 showPopup(result.message, result.success ? 'success' : 'error');
                 
                 if (result.success) {
-                    // Réinitialiser le formulaire
                     this.reset();
                     updateSelectStates();
+                    // Recharger les clubs pour le concours sélectionné
+                    loadClubs();
                 }
             } catch (error) {
                 console.error('Erreur:', error);
-                showPopup('Erreur lors de l'ajout du participant', 'error');
+                showPopup('Erreur lors de l\'ajout du participant', 'error');
             }
         });
+
+        // Initialiser l'état des sélections au chargement
+        updateSelectStates();
     }
 });

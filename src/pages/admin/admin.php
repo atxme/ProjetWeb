@@ -29,115 +29,130 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 }
 $_SESSION['last_activity'] = time();
 
-// Ajouter cette fonction pour gérer l'ajout d'utilisateur
-function ajouterUtilisateur($userType, $nom, $prenom, $age, $adresse, $numConcours) {
+// Ajouter ces fonctions au début du fichier admin.php après les vérifications de session
+
+function verifierEligibiliteCompetiteur($numUtilisateur, $numConcours) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
+    // Vérifier que l'utilisateur n'est pas déjà compétiteur, évaluateur ou président dans ce concours
+    $sql = "SELECT 1 FROM CompetiteurParticipe WHERE numCompetiteur = :numUtilisateur AND numConcours = :numConcours
+            UNION
+            SELECT 1 FROM Jury WHERE numEvaluateur = :numUtilisateur AND numConcours = :numConcours
+            UNION
+            SELECT 1 FROM Concours WHERE numPresident = :numUtilisateur AND numConcours = :numConcours";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':numUtilisateur' => $numUtilisateur,
+        ':numConcours' => $numConcours
+    ]);
+    
+    return $stmt->rowCount() === 0;
+}
+
+function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
+    // Vérifier le nombre total d'évaluations
+    $sql = "SELECT COUNT(*) FROM Evaluation WHERE numEvaluateur = :numUtilisateur";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+    if ($stmt->fetchColumn() >= 8) {
+        return false;
+    }
+    
+    // Vérifier les autres conditions (pas compétiteur/président dans ce concours)
+    return verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
+}
+
+function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) {
     try {
         $db = Database::getInstance();
         $pdo = $db->getConnection();
         $pdo->beginTransaction();
 
-        // Générer un nouveau numUtilisateur
-        $sql = "SELECT COALESCE(MAX(numUtilisateur), 0) + 1 as nextNum FROM Utilisateur";
-        $stmt = $pdo->query($sql);
-        $numUtilisateur = $stmt->fetch(PDO::FETCH_ASSOC)['nextNum'];
+        // Vérifier l'éligibilité selon le type
+        $eligible = ($userType === 'evaluateur') ? 
+            verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) : 
+            verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
 
-        // Générer un login unique (première lettre du prénom + nom + numéro)
-        $login = strtolower(substr($prenom, 0, 1) . $nom . $numUtilisateur);
-        // Générer un mot de passe temporaire
-        $password = bin2hex(random_bytes(4)); // 8 caractères aléatoires
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        if (!$eligible) {
+            throw new Exception("L'utilisateur n'est pas éligible pour ce rôle");
+        }
 
-        // Insérer l'utilisateur
-        $sql = "INSERT INTO Utilisateur (numUtilisateur, nom, prenom, age, adresse, login, mdp) 
-                VALUES (:numUtilisateur, :nom, :prenom, :age, :adresse, :login, :mdp)";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':numUtilisateur' => $numUtilisateur,
-            ':nom' => $nom,
-            ':prenom' => $prenom,
-            ':age' => $age,
-            ':adresse' => $adresse,
-            ':login' => $login,
-            ':mdp' => $hashedPassword
-        ]);
-
-        // Insérer dans la table spécifique selon le type
+        // Ajouter le participant selon son type
         if ($userType === 'evaluateur') {
-            $sql = "INSERT INTO Evaluateur (numEvaluateur, specialite) VALUES (:numUtilisateur, 'générale')";
+            // Vérifier si l'utilisateur est déjà évaluateur
+            $sql = "INSERT IGNORE INTO Evaluateur (numEvaluateur, specialite) VALUES (:numUtilisateur, 'générale')";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':numUtilisateur' => $numUtilisateur]);
 
-            // Ajouter au jury du concours
-            $sql = "INSERT INTO Jury (numEvaluateur, numConcours) VALUES (:numEvaluateur, :numConcours)";
+            // Ajouter au jury
+            $sql = "INSERT INTO Jury (numEvaluateur, numConcours) VALUES (:numUtilisateur, :numConcours)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                ':numEvaluateur' => $numUtilisateur,
+                ':numUtilisateur' => $numUtilisateur,
                 ':numConcours' => $numConcours
             ]);
         } else {
-            $sql = "INSERT INTO Competiteur (numCompetiteur, datePremiereParticipation) 
-                    VALUES (:numUtilisateur, CURRENT_DATE)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
-
-            // Ajouter à la table CompetiteurParticipe
+            // Ajouter comme compétiteur
             $sql = "INSERT INTO CompetiteurParticipe (numCompetiteur, numConcours) 
-                    VALUES (:numCompetiteur, :numConcours)";
+                    VALUES (:numUtilisateur, :numConcours)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                ':numCompetiteur' => $numUtilisateur,
+                ':numUtilisateur' => $numUtilisateur,
                 ':numConcours' => $numConcours
             ]);
         }
 
+        // Ajouter le club au concours s'il n'y est pas déjà
+        $sql = "INSERT IGNORE INTO ClubParticipe (numClub, numConcours) VALUES (:numClub, :numConcours)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':numClub' => $numClub,
+            ':numConcours' => $numConcours
+        ]);
+
         $pdo->commit();
-        return [
-            'success' => true,
-            'message' => "Utilisateur créé avec succès. Login: $login, Mot de passe temporaire: $password"
-        ];
+        return ['success' => true, 'message' => 'Participant ajouté avec succès au concours'];
 
     } catch (Exception $e) {
         $pdo->rollBack();
-        return [
-            'success' => false,
-            'message' => "Erreur lors de la création de l'utilisateur: " . $e->getMessage()
-        ];
+        return ['success' => false, 'message' => $e->getMessage()];
     }
 }
 
-// Traitement du formulaire d'ajout d'utilisateur
+// Modifier le traitement du formulaire POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
+    header('Content-Type: application/json');
+    
     if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
         $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['error'] = "Token CSRF invalide";
-        header('Location: admin.php');
+        echo json_encode([
+            'success' => false,
+            'message' => "Token CSRF invalide"
+        ]);
         exit;
     }
 
     $userType = $_POST['userType'];
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
-    $age = (int)$_POST['age'];
-    $adresse = trim($_POST['adresse']);
+    $numUtilisateur = (int)$_POST['utilisateur'];
     $numConcours = (int)$_POST['concours'];
+    $numClub = (int)$_POST['club'];
 
     // Validation des données
-    if (empty($nom) || empty($prenom) || empty($adresse) || $age <= 0 || $numConcours <= 0) {
-        $_SESSION['error'] = "Tous les champs sont obligatoires";
-        header('Location: admin.php');
+    if (!$numUtilisateur || !$numConcours || !$numClub) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Tous les champs sont obligatoires"
+        ]);
         exit;
     }
 
-    $result = ajouterUtilisateur($userType, $nom, $prenom, $age, $adresse, $numConcours);
-    
-    if ($result['success']) {
-        $_SESSION['success'] = $result['message'];
-    } else {
-        $_SESSION['error'] = $result['message'];
-    }
-    
-    header('Location: admin.php');
+    $result = ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub);
+    echo json_encode($result);
     exit;
 }
 
