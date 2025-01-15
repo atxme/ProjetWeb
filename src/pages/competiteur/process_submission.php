@@ -25,8 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Process the drawing file
-    $uploadDir = '../../src/uploads/';
+    // Process the drawing file creat the upload directory if it doesn't exist
+    $uploadDir = '../../uploads/';
+
+    // Check if directory exists and create it if it doesn't
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
     $extension = pathinfo($drawing['name'], PATHINFO_EXTENSION);
     $drawingPath = '';
 
@@ -38,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$userId, $contestId, $comment]);
 
         $drawingId = $conn->lastInsertId();
-        $drawingPath = $uploadDir . $drawingId . '.' . $extension;
-
+        $drawingPath = $drawingPath . $drawingId . '.' . $extension;
+        $publicPath = "uploads/" . $drawingId . '.' . $extension;
         // Update the record with the actual file path
         $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");
-        $stmt->execute([$drawingPath, $drawingId]);
+        $stmt->execute([$publicPath, $drawingId]);
 
         // Move the uploaded file to the correct directory
         move_uploaded_file($drawing['tmp_name'], $drawingPath);

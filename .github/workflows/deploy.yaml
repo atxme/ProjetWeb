@@ -16,7 +16,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: phpcs, phpstan, php-cs-fixer
+          tools: phpstan
           
       - name: Validate PHP Syntax
         run: |
@@ -42,11 +42,13 @@ jobs:
 
       - name: Deploy to production
         run: |
+          ssh production "sudo rm -rf /srv/siteweb/dessin"
           rsync -avz --delete \
             --exclude '.git*' \
             --exclude 'tests' \
             --exclude 'phpunit.xml' \
             ./src/ production:/srv/siteweb/dessin
+          ssh production "sudo chown -R www-data:www-data /srv/siteweb/dessin"
 
       - name: Deploy database
         run: |
