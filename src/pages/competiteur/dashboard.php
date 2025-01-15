@@ -20,6 +20,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     <div class="container">
         <h1>Bienvenue, Competiteur!</h1>
         <p>Voici votre tableau de bord.</p>
+        <a href="submit_drawing.php" class="btn">Soumettre un Dessin</a>
         <!-- Add more content specific to competiteur here -->
     </div>
 </body>
