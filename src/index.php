@@ -58,7 +58,7 @@ if (empty($_SESSION['csrf_token'])) {
                     </div>
                 </div>
 
-                <button class = "torch-button" type="submit">Se connecter</button>
+                <button type="submit" class = "torch-button">Se connecter</button>
             </form>
         </div>
     </div>
