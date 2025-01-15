@@ -13,7 +13,7 @@ $conn = $db->getConnection();
 $userId = $_SESSION['user_id'];
 
 // Fetch drawings from the database
-$stmt = $conn->prepare("SELECT d.numDessin, d.leDessin, c.theme FROM Dessin d LEFT JOIN Concours c ON d.numConcours = c.numConcours WHERE d.numCompetiteur = ?");
+$stmt = $conn->prepare("SELECT d.numDessin, d.leDessin, d.numConcours, c.theme FROM Dessin d LEFT JOIN Concours c ON d.numConcours = c.numConcours WHERE d.numCompetiteur = ?");
 $stmt->execute([$userId]);
 $drawings = $stmt->fetchAll();
 ?>
@@ -24,7 +24,7 @@ $drawings = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Dessins</title>
-    <link rel="stylesheet" href="../../assets/css/competitieur.css">
+    <link rel="stylesheet" href="../../assets/css/competiteur.css">
 </head>
 <body>
     <div class="container">
@@ -47,7 +47,7 @@ $drawings = $stmt->fetchAll();
         <div id="drawings-list">
             <?php foreach ($drawings as $drawing): ?>
                 <div class="drawing" data-contest="<?php echo htmlspecialchars($drawing['numConcours']); ?>">
-                    <img src="<?php echo htmlspecialchars($drawing['leDessin']); ?>" alt="Drawing">
+                    <img src="<?php echo '/dessin/' . htmlspecialchars($drawing['leDessin']); ?>" alt="Drawing">
                     <p><?php echo htmlspecialchars($drawing['theme']); ?></p>
                 </div>
             <?php endforeach; ?>
