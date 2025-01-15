@@ -42,12 +42,14 @@ jobs:
 
       - name: Deploy to production
         run: |
+          ssh production "rm -rf /srv/siteweb/dessin"
           rsync -avz --delete \
             --exclude '.git*' \
             --exclude 'tests' \
             --exclude 'phpunit.xml' \
             ./src/ production:/srv/siteweb/dessin
-
+          ssh production "sudo chown -R www-data:www-data /srv/siteweb/dessin"
+          
       - name: Deploy database
         run: |
           rsync -avz --delete \
