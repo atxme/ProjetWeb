@@ -98,7 +98,13 @@ function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) 
                 ':numConcours' => $numConcours
             ]);
         } else {
-            // Ajouter comme compétiteur
+            // D'abord ajouter l'utilisateur comme compétiteur s'il ne l'est pas déjà
+            $sql = "INSERT IGNORE INTO Competiteur (numCompetiteur, datePremiereParticipation) 
+                    VALUES (:numUtilisateur, CURRENT_DATE)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+
+            // Ensuite l'ajouter à la participation au concours
             $sql = "INSERT INTO CompetiteurParticipe (numCompetiteur, numConcours) 
                     VALUES (:numUtilisateur, :numConcours)";
             $stmt = $pdo->prepare($sql);
