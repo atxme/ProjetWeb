@@ -68,9 +68,10 @@ function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) {
 }
 
 function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    
     try {
-        $db = Database::getInstance();
-        $pdo = $db->getConnection();
         $pdo->beginTransaction();
 
         // Vérifier l'éligibilité selon le type
@@ -119,7 +120,9 @@ function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) 
         return ['success' => true, 'message' => 'Participant ajouté avec succès au concours'];
 
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if (isset($pdo)) {
+            $pdo->rollBack();
+        }
         return ['success' => false, 'message' => $e->getMessage()];
     }
 }
