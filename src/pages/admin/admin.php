@@ -88,7 +88,8 @@ $_SESSION['last_activity'] = time();
                     <select id="president_id" name="president_id" required>
                         <option value="">Sélectionner un président</option>
                         <?php
-                        $pdo = getDBConnection();
+                        $db = Database::getInstance();
+                        $pdo = $db->getConnection();
                         // On sélectionne tous les utilisateurs qui sont présidents potentiels
                         $sql = "SELECT DISTINCT u.numUtilisateur, u.nom, u.prenom 
                                 FROM Utilisateur u 
