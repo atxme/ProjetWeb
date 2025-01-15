@@ -141,6 +141,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
     exit;
 }
 
+// Ajouter après les vérifications de session
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getUsers') {
+    header('Content-Type: application/json');
+    
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        http_response_code(403);
+        exit;
+    }
+
+    $club = (int)$_GET['club'];
+    $type = $_GET['type'];
+    $concours = (int)$_GET['concours'];
+
+    try {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+
+        if ($type === 'competiteur') {
+            // Sélectionner les utilisateurs éligibles comme compétiteurs
+            $sql = "SELECT u.numUtilisateur, u.nom, u.prenom 
+                    FROM Utilisateur u
+                    WHERE u.numClub = :club
+                    AND NOT EXISTS (
+                        SELECT 1 FROM CompetiteurParticipe cp 
+                        WHERE cp.numCompetiteur = u.numUtilisateur 
+                        AND cp.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Jury j 
+                        WHERE j.numEvaluateur = u.numUtilisateur 
+                        AND j.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Concours c 
+                        WHERE c.numPresident = u.numUtilisateur 
+                        AND c.numConcours = :concours
+                    )";
+        } else {
+            // Sélectionner les utilisateurs éligibles comme évaluateurs
+            $sql = "SELECT u.numUtilisateur, u.nom, u.prenom 
+                    FROM Utilisateur u
+                    LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+                    WHERE u.numClub = :club
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Jury j 
+                        WHERE j.numEvaluateur = u.numUtilisateur 
+                        AND j.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM CompetiteurParticipe cp 
+                        WHERE cp.numCompetiteur = u.numUtilisateur 
+                        AND cp.numConcours = :concours
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1 FROM Concours c 
+                        WHERE c.numPresident = u.numUtilisateur 
+                        AND c.numConcours = :concours
+                    )
+                    AND (
+                        SELECT COUNT(*) FROM Evaluation ev 
+                        WHERE ev.numEvaluateur = u.numUtilisateur
+                    ) < 8";
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':club' => $club, ':concours' => $concours]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -263,42 +339,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
 
         <div class="admin-box">
             <div class="admin-header">
-                <h2>Gestion des Utilisateurs</h2>
+                <h2>Ajout de Participants au Concours</h2>
             </div>
-            <form id="userForm" method="post" action="process_user.php">
+            <form id="userForm" method="post" action="admin.php">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                
                 <div class="form-group">
-                    <label for="userType">Type d'utilisateur</label>
-                    <select id="userType" name="userType">
-                        <option value="evaluateur">Évaluateur</option>
-                        <option value="competiteur">Compétiteur</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="age">Âge</label>
-                    <input type="number" id="age" name="age" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="adresse">Adresse</label>
-                    <input type="text" id="adresse" name="adresse" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="concours">Concours*</label>
+                    <label for="concours">Sélectionner un concours*</label>
                     <select id="concours" name="concours" required>
-                        <option value="">Sélectionner un concours</option>
+                        <option value="">Choisir un concours</option>
                         <?php
                         $db = Database::getInstance();
                         $pdo = $db->getConnection();
@@ -316,7 +365,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
                     </select>
                 </div>
 
-                <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
+                <div class="form-group">
+                    <label for="club">Sélectionner un club*</label>
+                    <select id="club" name="club" required>
+                        <option value="">Choisir un club</option>
+                        <?php
+                        $sql = "SELECT DISTINCT c.numClub, c.nomClub 
+                                FROM Club c 
+                                INNER JOIN Utilisateur u ON c.numClub = u.numClub";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute();
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<option value="' . htmlspecialchars($row['numClub']) . '">' . 
+                                 htmlspecialchars($row['nomClub']) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userType">Type de participation*</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Choisir un rôle</option>
+                        <option value="competiteur">Compétiteur</option>
+                        <option value="evaluateur">Évaluateur</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="utilisateur">Sélectionner un utilisateur*</label>
+                    <select id="utilisateur" name="utilisateur" required disabled>
+                        <option value="">Choisir d'abord un club et un type</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Ajouter au concours</button>
+                <p class="form-info">* Champs obligatoires</p>
             </form>
         </div>
     </div>

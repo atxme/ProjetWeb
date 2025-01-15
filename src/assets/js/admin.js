@@ -8,10 +8,29 @@ document.addEventListener('DOMContentLoaded', function() {
         popup.textContent = message;
         document.body.appendChild(popup);
 
-        // Suppression automatique après l'animation
         setTimeout(() => {
             popup.remove();
         }, 3500);
+    }
+
+    async function submitForm(formData, url) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            showPopup(data.message, data.success ? 'success' : 'error');
+            
+            if (data.success) {
+                // Réinitialiser le formulaire si succès
+                document.querySelector('form').reset();
+            }
+        } catch (error) {
+            showPopup('Une erreur est survenue', 'error');
+            console.error('Erreur:', error);
+        }
     }
 
     // Récupérer les messages de session s'ils existent
@@ -58,35 +77,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            this.submit();
+            const formData = new FormData(this);
+            submitForm(formData, 'admin.php');
         });
     }
 
     if (userForm) {
+        const clubSelect = document.getElementById('club');
+        const userTypeSelect = document.getElementById('userType');
+        const utilisateurSelect = document.getElementById('utilisateur');
+        const concoursSelect = document.getElementById('concours');
+
+        async function loadUtilisateurs() {
+            if (!clubSelect.value || !userTypeSelect.value || !concoursSelect.value) {
+                utilisateurSelect.disabled = true;
+                utilisateurSelect.innerHTML = '<option value="">Choisir d'abord un club et un type</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`admin.php?action=getUsers&club=${clubSelect.value}&type=${userTypeSelect.value}&concours=${concoursSelect.value}`);
+                const users = await response.json();
+                
+                utilisateurSelect.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
+                users.forEach(user => {
+                    utilisateurSelect.add(new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur));
+                });
+                utilisateurSelect.disabled = false;
+            } catch (error) {
+                showPopup('Erreur lors du chargement des utilisateurs', 'error');
+            }
+        }
+
+        clubSelect.addEventListener('change', loadUtilisateurs);
+        userTypeSelect.addEventListener('change', loadUtilisateurs);
+        concoursSelect.addEventListener('change', loadUtilisateurs);
+
         userForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const nom = document.getElementById('nom').value.trim();
-            const prenom = document.getElementById('prenom').value.trim();
-            const age = parseInt(document.getElementById('age').value);
-            const concours = document.getElementById('concours').value;
-
-            if (nom.length < 2 || prenom.length < 2) {
-                showPopup('Le nom et le prénom doivent contenir au moins 2 caractères', 'error');
+            if (!utilisateurSelect.value) {
+                showPopup('Veuillez sélectionner un utilisateur', 'error');
                 return;
             }
 
-            if (age < 0 || age > 120) {
-                showPopup('Veuillez entrer un âge valide', 'error');
-                return;
-            }
-
-            if (!concours) {
-                showPopup('Veuillez sélectionner un concours', 'error');
-                return;
-            }
-
-            this.submit();
+            const formData = new FormData(this);
+            submitForm(formData, 'admin.php');
         });
     }
 });
