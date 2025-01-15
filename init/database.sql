@@ -126,7 +126,7 @@ CREATE TABLE
 
 CREATE TABLE
     Dessin (
-        numDessin INT PRIMARY KEY,
+        numDessin INT PRIMARY KEY AUTO_INCREMENT,
         numCompetiteur INT NOT NULL,
         numConcours INT NOT NULL,
         classement INT,
