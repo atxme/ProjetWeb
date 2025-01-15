@@ -88,6 +88,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const utilisateurSelect = document.getElementById('utilisateur');
         const concoursSelect = document.getElementById('concours');
 
+        // Désactiver les sélections qui dépendent d'autres choix
+        function updateSelectStates() {
+            clubSelect.disabled = !concoursSelect.value;
+            userTypeSelect.disabled = !clubSelect.value;
+            utilisateurSelect.disabled = !userTypeSelect.value;
+
+            // Réinitialiser les sélections en cascade
+            if (!concoursSelect.value) {
+                clubSelect.value = '';
+                userTypeSelect.value = '';
+                utilisateurSelect.value = '';
+            }
+            if (!clubSelect.value) {
+                userTypeSelect.value = '';
+                utilisateurSelect.value = '';
+            }
+            if (!userTypeSelect.value) {
+                utilisateurSelect.value = '';
+            }
+        }
+
         async function loadUtilisateurs() {
             if (!clubSelect.value || !userTypeSelect.value || !concoursSelect.value) {
                 utilisateurSelect.disabled = true;
@@ -97,21 +118,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const response = await fetch(`admin.php?action=getUsers&club=${clubSelect.value}&type=${userTypeSelect.value}&concours=${concoursSelect.value}`);
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
                 const users = await response.json();
                 
                 utilisateurSelect.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
                 users.forEach(user => {
-                    utilisateurSelect.add(new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur));
+                    const option = new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur);
+                    utilisateurSelect.add(option);
                 });
                 utilisateurSelect.disabled = false;
             } catch (error) {
+                console.error('Erreur:', error);
                 showPopup('Erreur lors du chargement des utilisateurs', 'error');
             }
         }
 
-        clubSelect.addEventListener('change', loadUtilisateurs);
-        userTypeSelect.addEventListener('change', loadUtilisateurs);
-        concoursSelect.addEventListener('change', loadUtilisateurs);
+        // Initialiser l'état des sélections
+        updateSelectStates();
+
+        // Gérer les changements de sélection
+        concoursSelect.addEventListener('change', () => {
+            updateSelectStates();
+            if (concoursSelect.value) {
+                clubSelect.disabled = false;
+            }
+        });
+
+        clubSelect.addEventListener('change', () => {
+            updateSelectStates();
+            if (clubSelect.value) {
+                userTypeSelect.disabled = false;
+            }
+            loadUtilisateurs();
+        });
+
+        userTypeSelect.addEventListener('change', () => {
+            updateSelectStates();
+            loadUtilisateurs();
+        });
 
         userForm.addEventListener('submit', function(e) {
             e.preventDefault();
