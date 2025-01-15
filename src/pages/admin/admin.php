@@ -38,6 +38,15 @@ $_SESSION['last_activity'] = time();
     <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
+    <?php if (isset($_SESSION['success'])): ?>
+        <div id="success-message" data-message="<?php echo htmlspecialchars($_SESSION['success']); ?>" style="display: none;"></div>
+        <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div id="error-message" data-message="<?php echo htmlspecialchars($_SESSION['error']); ?>" style="display: none;"></div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
     <div class="status-bar">
         <div class="status">
             <?php 
@@ -171,6 +180,27 @@ $_SESSION['last_activity'] = time();
                 <div class="form-group">
                     <label for="adresse">Adresse</label>
                     <input type="text" id="adresse" name="adresse" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="concours">Concours*</label>
+                    <select id="concours" name="concours" required>
+                        <option value="">Sélectionner un concours</option>
+                        <?php
+                        $db = Database::getInstance();
+                        $pdo = $db->getConnection();
+                        $sql = "SELECT numConcours, theme 
+                                FROM Concours 
+                                WHERE etat IN ('pas commence', 'en cours')
+                                ORDER BY dateDeb DESC";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute();
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<option value="' . htmlspecialchars($row['numConcours']) . '">' . 
+                                 htmlspecialchars($row['theme']) . '</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
