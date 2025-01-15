@@ -25,8 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Process the drawing file
-    $uploadDir = '../../src/uploads/';
+    // Process the drawing file creat the upload directory if it doesn't exist
+    $uploadDir = '../../uploads/';
+
+    // Check if directory exists and create it if it doesn't
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
     $extension = pathinfo($drawing['name'], PATHINFO_EXTENSION);
     $drawingPath = '';
 
