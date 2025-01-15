@@ -28,6 +28,119 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     exit;
 }
 $_SESSION['last_activity'] = time();
+
+// Ajouter cette fonction pour gérer l'ajout d'utilisateur
+function ajouterUtilisateur($userType, $nom, $prenom, $age, $adresse, $numConcours) {
+    try {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+        $pdo->beginTransaction();
+
+        // Générer un nouveau numUtilisateur
+        $sql = "SELECT COALESCE(MAX(numUtilisateur), 0) + 1 as nextNum FROM Utilisateur";
+        $stmt = $pdo->query($sql);
+        $numUtilisateur = $stmt->fetch(PDO::FETCH_ASSOC)['nextNum'];
+
+        // Générer un login unique (première lettre du prénom + nom + numéro)
+        $login = strtolower(substr($prenom, 0, 1) . $nom . $numUtilisateur);
+        // Générer un mot de passe temporaire
+        $password = bin2hex(random_bytes(4)); // 8 caractères aléatoires
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Insérer l'utilisateur
+        $sql = "INSERT INTO Utilisateur (numUtilisateur, nom, prenom, age, adresse, login, mdp) 
+                VALUES (:numUtilisateur, :nom, :prenom, :age, :adresse, :login, :mdp)";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':numUtilisateur' => $numUtilisateur,
+            ':nom' => $nom,
+            ':prenom' => $prenom,
+            ':age' => $age,
+            ':adresse' => $adresse,
+            ':login' => $login,
+            ':mdp' => $hashedPassword
+        ]);
+
+        // Insérer dans la table spécifique selon le type
+        if ($userType === 'evaluateur') {
+            $sql = "INSERT INTO Evaluateur (numEvaluateur, specialite) VALUES (:numUtilisateur, 'générale')";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+
+            // Ajouter au jury du concours
+            $sql = "INSERT INTO Jury (numEvaluateur, numConcours) VALUES (:numEvaluateur, :numConcours)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':numEvaluateur' => $numUtilisateur,
+                ':numConcours' => $numConcours
+            ]);
+        } else {
+            $sql = "INSERT INTO Competiteur (numCompetiteur, datePremiereParticipation) 
+                    VALUES (:numUtilisateur, CURRENT_DATE)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+
+            // Ajouter à la table CompetiteurParticipe
+            $sql = "INSERT INTO CompetiteurParticipe (numCompetiteur, numConcours) 
+                    VALUES (:numCompetiteur, :numConcours)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':numCompetiteur' => $numUtilisateur,
+                ':numConcours' => $numConcours
+            ]);
+        }
+
+        $pdo->commit();
+        return [
+            'success' => true,
+            'message' => "Utilisateur créé avec succès. Login: $login, Mot de passe temporaire: $password"
+        ];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => "Erreur lors de la création de l'utilisateur: " . $e->getMessage()
+        ];
+    }
+}
+
+// Traitement du formulaire d'ajout d'utilisateur
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['error'] = "Token CSRF invalide";
+        header('Location: admin.php');
+        exit;
+    }
+
+    $userType = $_POST['userType'];
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $age = (int)$_POST['age'];
+    $adresse = trim($_POST['adresse']);
+    $numConcours = (int)$_POST['concours'];
+
+    // Validation des données
+    if (empty($nom) || empty($prenom) || empty($adresse) || $age <= 0 || $numConcours <= 0) {
+        $_SESSION['error'] = "Tous les champs sont obligatoires";
+        header('Location: admin.php');
+        exit;
+    }
+
+    $result = ajouterUtilisateur($userType, $nom, $prenom, $age, $adresse, $numConcours);
+    
+    if ($result['success']) {
+        $_SESSION['success'] = $result['message'];
+    } else {
+        $_SESSION['error'] = $result['message'];
+    }
+    
+    header('Location: admin.php');
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
