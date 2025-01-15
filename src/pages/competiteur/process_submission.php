@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $drawingId = $conn->lastInsertId();
         $drawingPath = $uploadDir . $drawingId . '.' . $extension;
-        $publicPath = "uploads/" . $drawingId . '.' . $extension;
+        $publicPath = "/uploads/" . $drawingId . '.' . $extension;
 
         // Update the record with the actual file path
         $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");

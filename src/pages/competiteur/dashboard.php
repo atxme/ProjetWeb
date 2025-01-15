@@ -14,14 +14,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Competiteur Dashboard</title>
-    <link rel="stylesheet" href="../../assets/css/competiteur.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Bienvenue, Competiteur!</h1>
         <p>Voici votre tableau de bord.</p>
         <a href="submit_drawing.php" class="btn">Soumettre un Dessin</a>
-        <!-- Add more content specific to competiteur here -->
+        <a href="view_drawings.php" class="btn">Voir mes Dessins</a>
     </div>
 </body>
 </html>

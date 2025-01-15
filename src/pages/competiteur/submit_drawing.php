@@ -19,7 +19,7 @@ $concours = $db->getConcours();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soumettre un Dessin</title>
-    <link rel="stylesheet" href="../../assets/css/competiteur.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <div class="container">
@@ -45,6 +45,7 @@ $concours = $db->getConcours();
             </div>
             <button type="submit" class="btn">Soumettre</button>
         </form>
+        <a href="dashboard.php" class="btn">Retour au tableau de bord</a>
     </div>
 </body>
 </html>
