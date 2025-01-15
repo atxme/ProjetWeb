@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$userId, $contestId, $comment]);
 
         $drawingId = $conn->lastInsertId();
-        $drawingPath = $uploadDir . $drawingId . '.' . $extension;
+        $drawingPath = '/uploads/' . $drawingId . '.' . $extension;
 
         // Update the record with the actual file path
         $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");
