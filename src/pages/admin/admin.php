@@ -217,6 +217,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     }
 }
 
+// Ajouter après la route getUsers
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getClubs') {
+    header('Content-Type: application/json');
+    
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        http_response_code(403);
+        exit;
+    }
+
+    $concours = (int)$_GET['concours'];
+
+    try {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+
+        // Sélectionner les clubs qui ont des utilisateurs et qui ne participent pas déjà au concours
+        $sql = "SELECT DISTINCT c.numClub, c.nomClub 
+                FROM Club c 
+                INNER JOIN Utilisateur u ON c.numClub = u.numClub
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM ClubParticipe cp 
+                    WHERE cp.numClub = c.numClub 
+                    AND cp.numConcours = :concours
+                )";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':concours' => $concours]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -367,19 +404,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 
                 <div class="form-group">
                     <label for="club">Sélectionner un club*</label>
-                    <select id="club" name="club" required>
-                        <option value="">Choisir un club</option>
-                        <?php
-                        $sql = "SELECT DISTINCT c.numClub, c.nomClub 
-                                FROM Club c 
-                                INNER JOIN Utilisateur u ON c.numClub = u.numClub";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute();
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo '<option value="' . htmlspecialchars($row['numClub']) . '">' . 
-                                 htmlspecialchars($row['nomClub']) . '</option>';
-                        }
-                        ?>
+                    <select id="club" name="club" required disabled>
+                        <option value="">Choisir d'abord un concours</option>
                     </select>
                 </div>
 

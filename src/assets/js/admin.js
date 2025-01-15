@@ -109,21 +109,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        async function loadClubs() {
+            if (!concoursSelect.value) {
+                clubSelect.innerHTML = '<option value="">Choisir d'abord un concours</option>';
+                clubSelect.disabled = true;
+                return;
+            }
+
+            try {
+                const response = await fetch(`admin.php?action=getClubs&concours=${concoursSelect.value}`);
+                if (!response.ok) throw new Error('Erreur réseau');
+                
+                const clubs = await response.json();
+                
+                clubSelect.innerHTML = '<option value="">Sélectionner un club</option>';
+                clubs.forEach(club => {
+                    const option = new Option(club.nomClub, club.numClub);
+                    clubSelect.add(option);
+                });
+                clubSelect.disabled = false;
+            } catch (error) {
+                console.error('Erreur:', error);
+                showPopup('Erreur lors du chargement des clubs', 'error');
+            }
+        }
+
         async function loadUtilisateurs() {
             if (!clubSelect.value || !userTypeSelect.value || !concoursSelect.value) {
-                utilisateurSelect.disabled = true;
                 utilisateurSelect.innerHTML = '<option value="">Choisir d'abord un club et un type</option>';
+                utilisateurSelect.disabled = true;
                 return;
             }
 
             try {
                 const response = await fetch(`admin.php?action=getUsers&club=${clubSelect.value}&type=${userTypeSelect.value}&concours=${concoursSelect.value}`);
-                if (!response.ok) {
-                    throw new Error('Erreur réseau');
-                }
+                if (!response.ok) throw new Error('Erreur réseau');
+                
                 const users = await response.json();
                 
                 utilisateurSelect.innerHTML = '<option value="">Sélectionner un utilisateur</option>';
+                if (users.length === 0) {
+                    utilisateurSelect.innerHTML = '<option value="">Aucun utilisateur disponible</option>';
+                    utilisateurSelect.disabled = true;
+                    showPopup('Aucun utilisateur disponible pour ce rôle', 'error');
+                    return;
+                }
+                
                 users.forEach(user => {
                     const option = new Option(`${user.prenom} ${user.nom}`, user.numUtilisateur);
                     utilisateurSelect.add(option);
@@ -141,9 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Gérer les changements de sélection
         concoursSelect.addEventListener('change', () => {
             updateSelectStates();
-            if (concoursSelect.value) {
-                clubSelect.disabled = false;
-            }
+            loadClubs();
         });
 
         clubSelect.addEventListener('change', () => {
@@ -151,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (clubSelect.value) {
                 userTypeSelect.disabled = false;
             }
-            loadUtilisateurs();
         });
 
         userTypeSelect.addEventListener('change', () => {
@@ -159,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadUtilisateurs();
         });
 
-        userForm.addEventListener('submit', function(e) {
+        userForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             if (!utilisateurSelect.value) {
@@ -167,8 +195,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const formData = new FormData(this);
-            submitForm(formData, 'admin.php');
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('admin.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Erreur réseau');
+                
+                const result = await response.json();
+                showPopup(result.message, result.success ? 'success' : 'error');
+                
+                if (result.success) {
+                    // Réinitialiser le formulaire
+                    this.reset();
+                    updateSelectStates();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showPopup('Erreur lors de l'ajout du participant', 'error');
+            }
         });
     }
 });
