@@ -36,7 +36,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
                 <label for="comment">Commentaire</label>
                 <textarea id="comment" name="comment"></textarea>
             </div>
-            <button type="submit">Soumettre</button>
+            <button type="submit" class="btn">Soumettre</button>
         </form>
     </div>
 </body>
