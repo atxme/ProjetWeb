@@ -154,7 +154,7 @@ class Auth {
             header('Location: pages/competiteur/dashboard.php');
             exit;
         } elseif ($userRole === 'evaluateur') {
-            header('Location: pages/evaluateur/dashboard.php');
+            header('Location: pages/evaluateur/evaluateur.php');
             exit;
         } else {
             header('Location: dashboard.php');

@@ -37,6 +37,24 @@ $_SESSION['last_activity'] = time();
     <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
+    <div class="status-bar">
+        <div class="status">
+            <?php 
+            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
+                 ucfirst(htmlspecialchars($_SESSION['role'])); 
+            ?>
+        </div>
+        <div class="logout">
+            <?php
+            if(isset($_GET['logout'])) {
+                session_destroy();
+                header('Location: ../../index.php');
+                exit;
+            }
+            ?>
+            <a href="?logout=true">Déconnexion</a>
+        </div>
+    </div>
     <div class="admin-container">
         <div class="admin-box">
             <div class="admin-header">
