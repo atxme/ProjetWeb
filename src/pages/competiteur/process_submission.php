@@ -25,16 +25,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Process the drawing file creat the upload directory if it doesn't exist
-    $uploadDir = '../../uploads/';
+    // Validate file type
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!in_array($drawing['type'], $allowedTypes)) {
+        echo "Type de fichier non autorisé. Veuillez télécharger une image au format JPEG, PNG ou GIF.";
+        exit;
+    }
 
-    // Check if directory exists and create it if it doesn't
+    // Sanitize file name
+    $extension = pathinfo($drawing['name'], PATHINFO_EXTENSION);
+    $extension = strtolower($extension);
+    $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($drawing['name'], PATHINFO_FILENAME));
+    $drawingPath = '';
+
+    // Ensure upload directory exists
+    $uploadDir = '../../uploads/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
-    
-    $extension = pathinfo($drawing['name'], PATHINFO_EXTENSION);
-    $drawingPath = '';
 
     try {
         $conn->beginTransaction();
@@ -44,14 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$userId, $contestId, $comment]);
 
         $drawingId = $conn->lastInsertId();
-        $drawingPath = $drawingPath . $drawingId . '.' . $extension;
+        $drawingPath = $uploadDir . $drawingId . '.' . $extension;
         $publicPath = "uploads/" . $drawingId . '.' . $extension;
+
         // Update the record with the actual file path
         $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");
         $stmt->execute([$publicPath, $drawingId]);
 
         // Move the uploaded file to the correct directory
-        move_uploaded_file($drawing['tmp_name'], $drawingPath);
+        if (!move_uploaded_file($drawing['tmp_name'], $drawingPath)) {
+            throw new Exception("Échec du téléchargement du fichier.");
+        }
 
         $conn->commit();
         echo "Dessin soumis avec succès.";
