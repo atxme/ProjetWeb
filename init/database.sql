@@ -132,7 +132,7 @@ CREATE TABLE
         classement INT,
         commentaire TEXT,
         dateRemise DATE,
-        leDessin BLOB,
+        leDessin VARCHAR(255),
         FOREIGN KEY (numCompetiteur) REFERENCES Competiteur (numCompetiteur),
         FOREIGN KEY (numConcours) REFERENCES Concours (numConcours)
     );
