@@ -2,9 +2,11 @@
 session_start();
 require_once 'include/config.php';
 
-// Génération du token CSRF
-if (empty($_SESSION['csrf_token'])) {
+// Génération du token CSRF avec temps d'expiration
+if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || 
+    (time() - $_SESSION['csrf_token_time']) > 3600) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token_time'] = time();
 }
 ?>
 <!DOCTYPE html>
@@ -20,7 +22,7 @@ if (empty($_SESSION['csrf_token'])) {
         <div class="login-box">
             <div class="login-header">
                 <h2>Connexion</h2>
-                <p>Concours de Dessin - kaku kaku</p>
+                <p>Concours de Dessin</p>
             </div>
             
             <?php if (isset($_SESSION['error'])): ?>

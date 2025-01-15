@@ -15,17 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
-            const login = document.getElementById('login').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (login.length < 3) {
+            const csrfToken = document.querySelector('input[name="csrf_token"]');
+            
+            if (!csrfToken || !csrfToken.value) {
                 e.preventDefault();
-                showError('L\'identifiant doit contenir au moins 3 caractères');
-            }
-
-            if (password.length < 6) {
-                e.preventDefault();
-                showError('Le mot de passe doit contenir au moins 6 caractères');
+                alert('Erreur de sécurité : token manquant. Veuillez rafraîchir la page.');
+                return false;
             }
         });
     }

@@ -1,25 +1,67 @@
 <?php
 session_start();
-require_once '../../include/db.php';
-?>
 
+// Vérification plus stricte de l'authentification et du rôle
+if (!isset($_SESSION['user_id']) || 
+    !isset($_SESSION['role']) || 
+    $_SESSION['role'] !== 'admin' || 
+    !isset($_SESSION['login'])) {
+    // Détruire la session si l'accès est non autorisé
+    session_destroy();
+    header('Location: ../../index.php');
+    exit;
+}
+
+// Régénérer le token CSRF si nécessaire
+if (empty($_SESSION['csrf_token']) || 
+    !isset($_SESSION['csrf_token_time']) || 
+    (time() - $_SESSION['csrf_token_time']) > 3600) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token_time'] = time();
+}
+
+// Vérifier l'expiration de la session (30 minutes d'inactivité)
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
+    session_destroy();
+    header('Location: ../../index.php');
+    exit;
+}
+$_SESSION['last_activity'] = time();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration - Concours de Dessin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
+    <div class="status-bar">
+        <div class="status">
+            <?php 
+            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
+                 ucfirst(htmlspecialchars($_SESSION['role'])); 
+            ?>
+        </div>
+        <div class="logout">
+            <?php
+            if(isset($_GET['logout'])) {
+                session_destroy();
+                header('Location: ../../index.php');
+                exit;
+            }
+            ?>
+            <a href="?logout=true">Déconnexion</a>
+        </div>
+    </div>
     <div class="admin-container">
         <div class="admin-box">
             <div class="admin-header">
                 <h2>Gestion des Concours</h2>
             </div>
-
-            <!-- Formulaire de création de concours -->
-            <form id="concoursForm" method="POST" action="process/create_concours.php">
+            <form id="concoursForm" method="post" action="process_concours.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
                     <label for="theme">Thème du concours</label>
                     <input type="text" id="theme" name="theme" required>
@@ -27,7 +69,7 @@ require_once '../../include/db.php';
 
                 <div class="form-group">
                     <label for="descriptif">Descriptif</label>
-                    <textarea id="descriptif" name="descriptif" required></textarea>
+                    <textarea id="descriptif" name="descriptif" rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -42,9 +84,9 @@ require_once '../../include/db.php';
 
                 <div class="form-group">
                     <label for="etat">État du concours</label>
-                    <select id="etat" name="etat" required>
-                        <option value="pas commence">Non commencé</option>
-                        <option value="en cours">En cours</option>
+                    <select id="etat" name="etat">
+                        <option value="pas_commence">Non commencé</option>
+                        <option value="en_cours">En cours</option>
                         <option value="attente">En attente</option>
                         <option value="resultat">Résultat</option>
                         <option value="evalue">Évalué</option>
@@ -53,18 +95,19 @@ require_once '../../include/db.php';
 
                 <button type="submit" class="btn-submit">Créer le concours</button>
             </form>
+        </div>
 
-            <!-- Formulaire d'ajout d'utilisateur -->
+        <div class="admin-box">
             <div class="admin-header">
                 <h2>Gestion des Utilisateurs</h2>
             </div>
-
-            <form id="userForm" method="POST" action="process/create_user.php">
+            <form id="userForm" method="post" action="process_user.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
-                    <label for="type">Type d'utilisateur</label>
-                    <select id="type" name="type" required>
-                        <option value="competiteur">Compétiteur</option>
+                    <label for="userType">Type d'utilisateur</label>
+                    <select id="userType" name="userType">
                         <option value="evaluateur">Évaluateur</option>
+                        <option value="competiteur">Compétiteur</option>
                     </select>
                 </div>
 
@@ -92,7 +135,6 @@ require_once '../../include/db.php';
             </form>
         </div>
     </div>
-
-    <script src="assets/js/admin.js"></script>
+    <script src="../../assets/js/admin.js"></script>
 </body>
 </html>
