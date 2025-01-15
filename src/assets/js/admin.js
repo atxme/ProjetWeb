@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const theme = document.getElementById('theme').value.trim();
             const dateDeb = new Date(document.getElementById('dateDeb').value);
             const dateFin = new Date(document.getElementById('dateFin').value);
+            const nbClubMin = parseInt(document.getElementById('nbClubMin').value);
+            const nbParticipantMin = parseInt(document.getElementById('nbParticipantMin').value);
 
             if (theme.length < 3) {
                 showError(this, 'Le thème doit contenir au moins 3 caractères');
@@ -31,6 +33,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (dateFin <= dateDeb) {
                 showError(this, 'La date de fin doit être postérieure à la date de début');
+                return;
+            }
+
+            if (nbClubMin < 1 || nbClubMin > 12) {
+                showError(this, 'Le nombre de clubs doit être compris entre 1 et 12');
+                return;
+            }
+
+            if (nbParticipantMin < 1 || nbParticipantMin > 12) {
+                showError(this, 'Le nombre de participants par club doit être compris entre 1 et 12');
                 return;
             }
 

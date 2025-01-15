@@ -116,3 +116,36 @@ body {
     border: 1px solid #fcc;
     color: #c33;
 }
+
+.torch-button {
+    width: 100%;
+    padding: 14px;
+    background: #4a90e2;
+    color: white;
+    outline: none;
+    overflow: hidden;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.torch-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent 60%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.torch-button:hover::after {
+    opacity: 1;
+}

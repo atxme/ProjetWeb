@@ -109,15 +109,17 @@ $_SESSION['last_activity'] = time();
                 </div>
 
                 <div class="form-group">
-                    <label for="nbClubMin">Nombre minimum de clubs requis</label>
-                    <input type="number" id="nbClubMin" name="nbClubMin" value="6" readonly>
-                    <small>Un minimum de 6 clubs est requis pour le concours</small>
+                    <label for="nbClubMin">Nombre minimum de clubs requis*</label>
+                    <input type="number" id="nbClubMin" name="nbClubMin" 
+                           min="1" max="12" value="1" required>
+                    <small>Le nombre de clubs doit être compris entre 1 et 12</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="nbParticipantMin">Nombre minimum de participants par club</label>
-                    <input type="number" id="nbParticipantMin" name="nbParticipantMin" value="6" readonly>
-                    <small>Chaque club doit avoir au minimum 6 compétiteurs et 3 évaluateurs</small>
+                    <label for="nbParticipantMin">Nombre minimum de participants par club*</label>
+                    <input type="number" id="nbParticipantMin" name="nbParticipantMin" 
+                           min="1" max="12" value="1" required>
+                    <small>Le nombre de participants par club doit être compris entre 1 et 12</small>
                 </div>
 
                 <div class="form-group">

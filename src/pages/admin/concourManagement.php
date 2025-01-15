@@ -53,13 +53,13 @@ function verifierEligibilitePresident($numUtilisateur) {
 /**
  * Crée un nouveau concours après vérification
  */
-function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $etat = 'pas commence') {
+function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat = 'pas commence') {
     try {
         // Validation des dates
         $dateDebObj = new DateTime($dateDeb);
         $dateFinObj = new DateTime($dateFin);
         $aujourd_hui = new DateTime();
-        $annee = (int)$dateDebObj->format('Y');  // Cast en int pour la vérification
+        $annee = (int)$dateDebObj->format('Y');
 
         // Vérifications de base
         if ($dateDebObj < $aujourd_hui) {
@@ -80,6 +80,15 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             return ['success' => false, 'message' => 'La personne sélectionnée n\'est pas président'];
         }
 
+        // Validation des nombres minimums
+        if ($nbClubMin < 1 || $nbClubMin > 12) {
+            return ['success' => false, 'message' => 'Le nombre minimum de clubs doit être entre 1 et 12'];
+        }
+
+        if ($nbParticipantMin < 1 || $nbParticipantMin > 12) {
+            return ['success' => false, 'message' => 'Le nombre minimum de participants doit être entre 1 et 12'];
+        }
+
         $db = Database::getInstance();
         $pdo = $db->getConnection();
         $pdo->beginTransaction();
@@ -90,9 +99,28 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             $stmt = $pdo->query($sql);
             $numConcours = $stmt->fetch(PDO::FETCH_ASSOC)['nextNum'];
 
-            // Insertion du concours
-            $sql = "INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, descriptif, nbClub, nbParticipant) 
-                    VALUES (:numConcours, :numPresident, :theme, :dateDeb, :dateFin, :etat, :descriptif, 0, 0)";
+            // Insertion du concours avec les nouveaux paramètres
+            $sql = "INSERT INTO Concours (
+                        numConcours, 
+                        numPresident, 
+                        theme, 
+                        dateDeb, 
+                        dateFin, 
+                        etat, 
+                        descriptif, 
+                        nbClub, 
+                        nbParticipant
+                    ) VALUES (
+                        :numConcours, 
+                        :numPresident, 
+                        :theme, 
+                        :dateDeb, 
+                        :dateFin, 
+                        :etat, 
+                        :descriptif, 
+                        :nbClubMin, 
+                        :nbParticipantMin
+                    )";
             
             $stmt = $pdo->prepare($sql);
             $success = $stmt->execute([
@@ -102,7 +130,9 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
                 ':dateDeb' => $dateDeb,
                 ':dateFin' => $dateFin,
                 ':etat' => $etat,
-                ':descriptif' => $descriptif
+                ':descriptif' => $descriptif,
+                ':nbClubMin' => $nbClubMin,
+                ':nbParticipantMin' => $nbParticipantMin
             ]);
 
             if (!$success) {
@@ -139,12 +169,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Invalid CSRF token');
     }
 
-    // Validation des données
+    // Validation et nettoyage des données
     $theme = isset($_POST['theme']) ? trim($_POST['theme']) : '';
     $descriptif = isset($_POST['descriptif']) ? trim($_POST['descriptif']) : '';
     $dateDeb = isset($_POST['dateDeb']) ? trim($_POST['dateDeb']) : '';
     $dateFin = isset($_POST['dateFin']) ? trim($_POST['dateFin']) : '';
     $numPresident = isset($_POST['president_id']) ? (int)$_POST['president_id'] : 0;
+    $nbClubMin = isset($_POST['nbClubMin']) ? (int)$_POST['nbClubMin'] : 1;
+    $nbParticipantMin = isset($_POST['nbParticipantMin']) ? (int)$_POST['nbParticipantMin'] : 1;
     $etat = 'pas commence';
 
     // Validations
@@ -154,8 +186,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Création du concours
-    $result = creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $etat);
+    // Création du concours avec les nouveaux paramètres
+    $result = creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat);
 
     if ($result['success']) {
         $_SESSION['success'] = $result['message'];
