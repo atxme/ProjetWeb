@@ -332,13 +332,11 @@ textarea {
 
 .left-column {
     width: 40%; /* Colonne gauche à 40% */
-    opacity: 0.5;
     padding: 20px; /* Ajoute un peu d'espace autour du contenu */
 }
 
 .right-column {
     width: 60%; /* Colonne droite à 60% */
-    opacity: 0;
     padding: 20px; /* Ajoute un peu d'espace autour du contenu */
 }
 
