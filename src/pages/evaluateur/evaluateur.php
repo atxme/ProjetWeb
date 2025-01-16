@@ -59,7 +59,7 @@ $_SESSION['last_activity'] = time();
     <div class="container">
         <div class="left-column">
             <!-- Contenu de la colonne gauche -->
-            <p>Contenu de la colonne gauche</p>
+            <p>Contenu de la colonne Gauche</p>
         </div>
         <div class="right-column">
             <!-- Contenu de la colonne droite -->
