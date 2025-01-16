@@ -56,9 +56,29 @@ $_SESSION['last_activity'] = time();
             <a href="?logout=true">Déconnexion</a>
         </div>
     </div>
-    <div class = "box">
-        <div class="header">
-            <h2>Profil</h2>
-        </div>     
+    <div class="container">
+        <div class="left-column">
+            <!-- Contenu de la colonne gauche -->
+            <p>Contenu de la colonne gauche</p>
+            <div class = "box">
+                <div class="header">
+                    <h2>Profil</h2>
+                </div>     
+            </div>
+            <div class = "box">
+                <div class="header">
+                    <h2>Statistique</h2>
+                </div>     
+            </div>
+        </div>
+        <div class="right-column">
+            <!-- Contenu de la colonne droite -->
+            <p>Contenu de la colonne droite</p>
+            <div class = "box">
+                <div class="header">
+                    <h2>Liste des concours</h2>
+                </div>     
+            </div>
+        </div>
     </div>
 </body>

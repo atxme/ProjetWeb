@@ -324,6 +324,24 @@ textarea {
     box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
 }
 
+.container {
+    display: flex; /* Utilise Flexbox pour aligner les colonnes */
+    width: 100%; /* S'assure que le conteneur prend toute la largeur */
+    height: 100vh; /* S'étend sur toute la hauteur de la fenêtre */
+}
+
+.left-column {
+    width: 40%; /* Colonne gauche à 40% */
+    opacity: 0;
+    padding: 20px; /* Ajoute un peu d'espace autour du contenu */
+}
+
+.right-column {
+    width: 60%; /* Colonne droite à 60% */
+    opacity: 0;
+    padding: 20px; /* Ajoute un peu d'espace autour du contenu */
+}
+
 @keyframes slideIn {
     to {
         transform: translateX(0);
