@@ -325,19 +325,20 @@ textarea {
 }
 
 .container {
-    display: flex; /* Utilise Flexbox pour aligner les colonnes */
-    width: 100%; /* S'assure que le conteneur prend toute la largeur */
-    height: 100vh; /* S'étend sur toute la hauteur de la fenêtre */
+    display: grid; /* Active Grid Layout */
+    grid-template-columns: 40% 60%; /* Colonne gauche à 40% et droite à 60% */
+    width: 100%; /* Utilise toute la largeur */
+    height: 100vh; /* Hauteur de la fenêtre */
 }
 
 .left-column {
-    width: 40%; /* Colonne gauche à 40% */
-    padding: 20px; /* Ajoute un peu d'espace autour du contenu */
+    background-color: lightblue; /* Exemple de couleur */
+    padding: 20px;
 }
 
 .right-column {
-    width: 60%; /* Colonne droite à 60% */
-    padding: 20px; /* Ajoute un peu d'espace autour du contenu */
+    background-color: lightgreen; /* Exemple de couleur */
+    padding: 20px;
 }
 
 @keyframes slideIn {
