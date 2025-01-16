@@ -35,7 +35,7 @@ $_SESSION['last_activity'] = time();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluateur - Concours de Dessin</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/evaluateur.css">
 </head>
 <body>
     <div class="status-bar">
@@ -55,5 +55,10 @@ $_SESSION['last_activity'] = time();
             ?>
             <a href="?logout=true">Déconnexion</a>
         </div>
+    </div>
+    <div class = "box">
+        <div class="header">
+            <h2>Profil</h2>
+        </div>     
     </div>
 </body>
