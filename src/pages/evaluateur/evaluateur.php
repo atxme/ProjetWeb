@@ -1,5 +1,9 @@
 <?php
 session_start();
+require_once '../../include/db.php';
+
+
+
 
 // Vérification plus stricte de l'authentification et du rôle
 if (!isset($_SESSION['user_id']) || 
@@ -12,12 +16,21 @@ if (!isset($_SESSION['user_id']) ||
     exit;
 }
 
-$numUtilisateur = $_SESSION['numUtilisateur'];
+try {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
 
-// Récupération des données de l'utilisateur
-$query = $pdo->prepare('SELECT nom, prenom, age, adresse, numClub FROM Utilisateur WHERE numUtilisateur = :numUtilisateur');
-$query->execute(['numUtilisateur' => $numUtilisateur]);
-$user = $query->fetch(PDO::FETCH_ASSOC);
+    $numUtilisateur = $_SESSION['numUtilisateur'];
+
+    // Récupération des données de l'utilisateur
+    $query = $pdo->prepare('SELECT nom, prenom, age, adresse, numClub FROM Utilisateur WHERE numUtilisateur = :numUtilisateur');
+    $query->execute(['numUtilisateur' => $numUtilisateur]);
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    error_log("Erreur lors de la vérification du nombre de concours: " . $e->getMessage());
+    return false;
+}
 
 // Régénérer le token CSRF si nécessaire
 if (empty($_SESSION['csrf_token']) || 
