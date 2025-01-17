@@ -14,9 +14,7 @@ TRUNCATE TABLE Utilisateur;
 TRUNCATE TABLE Club;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- 1. Insertion des Clubs
-INSERT INTO Club VALUES
--- Insertion des Clubs
+-- 1 Insertion des Clubs
 INSERT INTO Club (numClub, nomClub, adresse, numTel, nbAdherents, ville, departement, region) VALUES
 (1, 'Club Arts Paris', '10 Rue des Arts, Paris', '0123456789', 50, 'Paris', '75', 'Ile-de-France'),
 (2, 'Atelier Lyon', '20 Rue du Dessin', '0234567890', 45, 'Lyon', '69', 'Rhône-Alpes'),
