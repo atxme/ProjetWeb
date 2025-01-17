@@ -30,6 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Compétiteur supprimé avec succès.";
     }
 }
+
+// Récupérer les membres du club
+$numClubDirecteur = $_SESSION['numClub']; // Assurez-vous que le numéro du club est stocké dans la session
+$sql = "SELECT numUtilisateur, nom, prenom FROM Utilisateur WHERE numClub = :numClub";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':numClub' => $numClubDirecteur]);
+$membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="form-group">
                     <label for="numClub">Numéro du Club</label>
-                    <input type="number" id="numClub" name="numClub" required>
+                    <input type="number" id="numClub" name="numClub" value="<?php echo htmlspecialchars($numClubDirecteur); ?>" readonly>
                 </div>
                 <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
             </form>
@@ -85,6 +92,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" class="btn-submit">Supprimer Compétiteur</button>
             </form>
+        </div>
+
+        <div class="admin-box">
+            <div class="admin-header">
+                <h2>Membres Actuels du Club</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numéro d'Utilisateur</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($membres as $membre): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($membre['numUtilisateur']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['nom']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
