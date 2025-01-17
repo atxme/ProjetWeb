@@ -19,6 +19,7 @@ $selectedYear = null;
 $concoursDetails = null; // Initialize the variable to avoid undefined variable error
 $participants = [];
 $evaluatedDrawings = [];
+$allEvaluatedDrawings = [];
 $order = 'ASC';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
@@ -55,6 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
     $stmt->execute([$selectedYear]);
     $evaluatedDrawings = $stmt->fetchAll();
 }
+
+// Fetch all evaluated drawings
+$stmt = $conn->prepare("
+    SELECT d.numDessin, YEAR(co.dateDeb) as year, co.descriptif, u.nom as competiteur, d.commentaire as dessin_comment, e.note, e.commentaire as evaluation_comment, eval.nom as evaluateur
+    FROM Evaluation e
+    JOIN Dessin d ON e.numDessin = d.numDessin
+    JOIN Utilisateur u ON d.numCompetiteur = u.numUtilisateur
+    JOIN Concours co ON d.numConcours = co.numConcours
+    JOIN Utilisateur eval ON e.numEvaluateur = eval.numUtilisateur
+");
+$stmt->execute();
+$allEvaluatedDrawings = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -152,6 +165,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
                 </tbody>
             </table>
         <?php endif; ?>
+    </div>
+
+    <div class="container">
+        <h2>Tous les Dessins Évalués</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Numéro du Dessin</th>
+                    <th>Année</th>
+                    <th>Description du Concours</th>
+                    <th>Nom du Compétiteur</th>
+                    <th>Commentaire du Dessin</th>
+                    <th>Note</th>
+                    <th>Commentaire de l'Évaluation</th>
+                    <th>Nom de l'Évaluateur</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($allEvaluatedDrawings as $drawing): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($drawing['numDessin']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['year']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['descriptif']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['competiteur']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['dessin_comment']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['note']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['evaluation_comment']); ?></td>
+                        <td><?php echo htmlspecialchars($drawing['evaluateur']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
