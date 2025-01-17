@@ -113,12 +113,14 @@ class Auth
                 WHEN a.numAdmin IS NOT NULL THEN 'admin'
                 WHEN c.numCompetiteur IS NOT NULL THEN 'competiteur'
                 WHEN e.numEvaluateur IS NOT NULL THEN 'evaluateur'
+                WHEN d.numDirecteur IS NOT NULL THEN 'directeur'
                 ELSE 'user'
             END AS role
         FROM Utilisateur u
         LEFT JOIN Admin a ON u.numUtilisateur = a.numAdmin
         LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
         LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+        LEFT JOIN Directeur d ON u.numUtilisateur = d.numDirecteur
         WHERE u.numUtilisateur = :userId";
 
         try {
