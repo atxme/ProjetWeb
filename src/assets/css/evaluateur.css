@@ -306,13 +306,37 @@ select[disabled] {
     cursor: not-allowed;
 }
 
+/* Style des labels */
+label {
+    font-size: 16px;
+    color: #34495e;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+/* Style des textareas */
 textarea {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 25px;
+    background-color: #f9f9f9; /* Couleur de fond */
+    color: #2c3e50; /* Couleur du texte */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Ombre */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     resize: vertical;
 }
+
+textarea:focus {
+    border-color: #4a90e2;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+    outline: none;
+}
+
 
 .form-group label {
     display: block;
@@ -357,26 +381,6 @@ textarea {
 .right-column {
     /*opacity: 0;*/
     padding: 20px;
-}
-
-.label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 500;
-    color: #34495e;
-    font-size: 15px;
-}
-
-.textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-bottom: 25px;
-    display: block;
-    transition: border-color 0.3s ease;
-    resize: none;
 }
 
 @keyframes slideIn {
