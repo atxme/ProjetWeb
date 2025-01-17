@@ -8,33 +8,34 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Fetch concours from the database
+// Fetch years from the database
 $db = Database::getInstance();
 $conn = $db->getConnection();
-$stmt = $conn->prepare("SELECT numConcours, theme FROM Concours");
+$stmt = $conn->prepare("SELECT DISTINCT YEAR(dateDeb) as year FROM Concours ORDER BY year");
 $stmt->execute();
-$concours = $stmt->fetchAll();
+$years = $stmt->fetchAll();
 
-$selectedConcours = null;
+$selectedYear = null;
 $concoursDetails = null; // Initialize the variable to avoid undefined variable error
 $participants = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['concours'])) {
-    $selectedConcours = $_POST['concours'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
+    $selectedYear = $_POST['year'];
 
-    // Fetch concours details
-    $stmt = $conn->prepare("SELECT theme, descriptif, dateDeb, dateFin FROM Concours WHERE numConcours = ?");
-    $stmt->execute([$selectedConcours]);
-    $concoursDetails = $stmt->fetch();
+    // Fetch concours details for the selected year
+    $stmt = $conn->prepare("SELECT theme, descriptif, dateDeb, dateFin FROM Concours WHERE YEAR(dateDeb) = ?");
+    $stmt->execute([$selectedYear]);
+    $concoursDetails = $stmt->fetchAll();
 
-    // Fetch participants
+    // Fetch participants for the selected year
     $stmt = $conn->prepare("
         SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub, c.departement, c.region
         FROM CompetiteurParticipe cp
         JOIN Utilisateur u ON cp.numCompetiteur = u.numUtilisateur
         JOIN Club c ON u.numClub = c.numClub
-        WHERE cp.numConcours = ?
+        JOIN Concours co ON cp.numConcours = co.numConcours
+        WHERE YEAR(co.dateDeb) = ?
     ");
-    $stmt->execute([$selectedConcours]);
+    $stmt->execute([$selectedYear]);
     $participants = $stmt->fetchAll();
 }
 ?>
@@ -52,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['concours'])) {
         <h1>Statistiques des Concours</h1>
         <form method="POST">
             <div class="form-group">
-                <label for="concours">Sélectionnez un concours</label>
-                <select name="concours" id="concours" required>
-                    <?php foreach ($concours as $concour): ?>
-                        <option value="<?php echo htmlspecialchars($concour['numConcours']); ?>" <?php echo ($selectedConcours == $concour['numConcours']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($concour['theme']); ?>
+                <label for="year">Sélectionnez une année</label>
+                <select name="year" id="year" required>
+                    <?php foreach ($years as $year): ?>
+                        <option value="<?php echo htmlspecialchars($year['year']); ?>" <?php echo ($selectedYear == $year['year']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($year['year']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -64,12 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['concours'])) {
             <button type="submit" class="btn">Afficher les statistiques</button>
         </form>
 
-        <?php if ($selectedConcours && $concoursDetails): ?>
-            <h2>Détails du Concours</h2>
-            <p><strong>Thème:</strong> <?php echo htmlspecialchars($concoursDetails['theme']); ?></p>
-            <p><strong>Description:</strong> <?php echo htmlspecialchars($concoursDetails['descriptif']); ?></p>
-            <p><strong>Date de début:</strong> <?php echo htmlspecialchars($concoursDetails['dateDeb']); ?></p>
-            <p><strong>Date de fin:</strong> <?php echo htmlspecialchars($concoursDetails['dateFin']); ?></p>
+        <?php if ($selectedYear && $concoursDetails): ?>
+            <h2>Détails des Concours de l'année <?php echo htmlspecialchars($selectedYear); ?></h2>
+            <?php foreach ($concoursDetails as $concoursDetail): ?>
+                <div class="concours-detail">
+                    <p><strong>Thème:</strong> <?php echo htmlspecialchars($concoursDetail['theme']); ?></p>
+                    <p><strong>Description:</strong> <?php echo htmlspecialchars($concoursDetail['descriptif']); ?></p>
+                    <p><strong>Date de début:</strong> <?php echo htmlspecialchars($concoursDetail['dateDeb']); ?></p>
+                    <p><strong>Date de fin:</strong> <?php echo htmlspecialchars($concoursDetail['dateFin']); ?></p>
+                </div>
+            <?php endforeach; ?>
 
             <h2>Participants</h2>
             <table>
