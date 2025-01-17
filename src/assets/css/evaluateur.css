@@ -334,13 +334,9 @@ textarea {
 }
 
 .left-column {
-    position: absolute; /* La colonne s'étend sur la largeur de la page */
-    top: 0; 
-    left: 0;
-    width: 100%;
-    height: auto; /* Ajustez selon le contenu */
-    background-color: transparent; /* Couleur de fond transparente si besoin */
+    padding: 20px;
 }
+
 .right-column {
     background-color: #28a745;
     /*opacity: 0;*/
