@@ -43,10 +43,7 @@ try {
 
     // Préparer la requête pour récupérer les données utilisateur et du club associé
     $query = $pdo->prepare('
-        SELECT u.nom, u.prenom, u.age, u.adresse, u.login, c.nomClub
-        FROM Utilisateur u
-        LEFT JOIN Club c ON u.numClub = c.numClub
-        WHERE u.numUtilisateur = :user_id
+        DESCRIBE Utilisateur;
     ');
 
     // Exécuter la requête avec le paramètre id_user
