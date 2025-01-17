@@ -2,9 +2,6 @@
 session_start();
 require_once '../../include/db.php';
 
-
-
-
 // Vérification plus stricte de l'authentification et du rôle
 if (!isset($_SESSION['user_id']) || 
     !isset($_SESSION['role']) || 
@@ -14,22 +11,6 @@ if (!isset($_SESSION['user_id']) ||
     session_destroy();
     header('Location: ../../index.php');
     exit;
-}
-
-try {
-    $db = Database::getInstance();
-    $pdo = $db->getConnection();
-
-    $numUtilisateur = $_SESSION['numUtilisateur'];
-
-    // Récupération des données de l'utilisateur
-    $query = $pdo->prepare('SELECT nom, prenom, age, adresse, numClub FROM Utilisateur WHERE numUtilisateur = :numUtilisateur');
-    $query->execute(['numUtilisateur' => $numUtilisateur]);
-    $user = $query->fetch(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    error_log("Erreur lors de la vérification du nombre de concours: " . $e->getMessage());
-    return false;
 }
 
 // Régénérer le token CSRF si nécessaire
@@ -47,6 +28,34 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     exit;
 }
 $_SESSION['last_activity'] = time();
+
+if (!isset($_SESSION['numUtilisateur'])) {
+    die('Erreur : numUtilisateur non défini dans la session.');
+}
+
+try {
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+
+    $numUtilisateur = $_SESSION['numUtilisateur'];
+
+    // Récupération des données utilisateur
+    $query = $pdo->prepare('
+        SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub
+        FROM Utilisateur u
+        LEFT JOIN Club c ON u.numClub = c.numClub
+        WHERE u.numUtilisateur = :numUtilisateur
+    ');
+    $query->execute(['numUtilisateur' => $numUtilisateur]);
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        die('Erreur : Aucun utilisateur trouvé.');
+    }
+} catch (PDOException $e) {
+    die('Erreur de base de données : ' . $e->getMessage());
+}
+
 ?>
 
 <!DOCTYPE html>
