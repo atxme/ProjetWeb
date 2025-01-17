@@ -69,11 +69,6 @@ $_SESSION['last_activity'] = time();
         <div class="right-column">
             <!-- Contenu de la colonne droite -->
             <p>Contenu de la colonne droite</p>
-            <div class="box">
-                <div class="header">
-                    <h2>Gestion des Concours</h2>
-                </div>
-            </div>
         </div>
     </div>
 </body>

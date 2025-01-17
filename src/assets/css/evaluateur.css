@@ -27,6 +27,7 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-bottom: 25px;
     width: 100%;
+    float: left; /* Colle la div à gauche */
 }
 
 .box:hover {
@@ -336,6 +337,8 @@ textarea {
 }
 
 .right-column {
+    background-color: #28a745;
+    /*opacity: 0;*/
     padding: 20px;
 }
 
