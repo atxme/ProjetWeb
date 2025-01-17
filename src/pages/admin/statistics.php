@@ -18,8 +18,12 @@ $years = $stmt->fetchAll();
 $selectedYear = null;
 $concoursDetails = null; // Initialize the variable to avoid undefined variable error
 $participants = [];
+$evaluatedDrawings = [];
+$order = 'ASC';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
     $selectedYear = $_POST['year'];
+    $order = $_POST['order'] ?? 'ASC';
 
     // Fetch concours details for the selected year
     $stmt = $conn->prepare("SELECT theme, descriptif, dateDeb, dateFin FROM Concours WHERE YEAR(dateDeb) = ?");
@@ -37,6 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
     ");
     $stmt->execute([$selectedYear]);
     $participants = $stmt->fetchAll();
+
+    // Fetch evaluated drawings for the selected year
+    $stmt = $conn->prepare("
+        SELECT d.numDessin, e.note, u.nom, co.descriptif, co.theme
+        FROM Evaluation e
+        JOIN Dessin d ON e.numDessin = d.numDessin
+        JOIN Utilisateur u ON d.numCompetiteur = u.numUtilisateur
+        JOIN Concours co ON d.numConcours = co.numConcours
+        WHERE YEAR(co.dateDeb) = ?
+        ORDER BY e.note $order
+    ");
+    $stmt->execute([$selectedYear]);
+    $evaluatedDrawings = $stmt->fetchAll();
 }
 ?>
 
@@ -46,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/statistics.css">
 </head>
 <body>
     <div class="container">
@@ -60,6 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
                             <?php echo htmlspecialchars($year['year']); ?>
                         </option>
                     <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="order">Ordre de tri</label>
+                <select name="order" id="order" required>
+                    <option value="ASC" <?php echo ($order == 'ASC') ? 'selected' : ''; ?>>Croissant</option>
+                    <option value="DESC" <?php echo ($order == 'DESC') ? 'selected' : ''; ?>>Décroissant</option>
                 </select>
             </div>
             <button type="submit" class="btn">Afficher les statistiques</button>
@@ -99,6 +123,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
                             <td><?php echo htmlspecialchars($participant['nomClub']); ?></td>
                             <td><?php echo htmlspecialchars($participant['departement']); ?></td>
                             <td><?php echo htmlspecialchars($participant['region']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <h2>Dessins Évalués</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numéro du Dessin</th>
+                        <th>Note Attribuée</th>
+                        <th>Nom du Compétiteur</th>
+                        <th>Description du Concours</th>
+                        <th>Thème du Concours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($evaluatedDrawings as $drawing): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($drawing['numDessin']); ?></td>
+                            <td><?php echo htmlspecialchars($drawing['note']); ?></td>
+                            <td><?php echo htmlspecialchars($drawing['nom']); ?></td>
+                            <td><?php echo htmlspecialchars($drawing['descriptif']); ?></td>
+                            <td><?php echo htmlspecialchars($drawing['theme']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
