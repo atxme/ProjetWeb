@@ -133,14 +133,7 @@ INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, 
 INSERT INTO Evaluateur (numEvaluateur, specialite) VALUES
 (20, 'Peinture à l''huile'),
 (21, 'Aquarelle'),
-(22, 'Dessin au crayon'),
-(23, 'Art numérique'),
-(24, 'Pastel'),
-(25, 'Acrylique'),
-(26, 'Encre de Chine'),
-(27, 'Fusain'),
-(28, 'Techniques mixtes'),
-(29, 'Art abstrait');
+
 
 -- Insertion des Compétiteurs
 INSERT INTO Competiteur (numCompetiteur, datePremiereParticipation) VALUES
