@@ -1,4 +1,3 @@
--- Nettoyage des tables
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE Evaluation;
 TRUNCATE TABLE Jury;
@@ -25,20 +24,20 @@ INSERT INTO Club (numClub, nomClub, adresse, numTel, nbAdherents, ville, departe
 (6, 'Club Nantes', '60 Rue Création', '0678901234', 45, 'Nantes', '44', 'Pays de la Loire');
 
 -- Insertion des Utilisateurs
-INSERT INTO Utilisateur (numUtilisateur, numClub, nom, prenom, adresse, login, mdp) VALUES
-(1, 1, 'Admin', 'System', '123 Rue Admin', 'admin', 'pwd1231'),
-(2, 2, 'Dubois', 'Pierre', '1 Rue Paris', 'pdubois', 'pwd124'),
-(3, 3, 'Martin', 'Marie', '2 Rue Lyon', 'mmartin', 'pwd125'),
-(10, 1, 'Dupont', 'Jean', '10 Rue Paris', 'jdupont', 'pwd126'),
-(11, 2, 'Durand', 'Michel', '11 Rue Lyon', 'mdurand', 'pwd127'),
-(12, 3, 'Lefevre', 'Paul', '12 Rue Marseille', 'plefevre', 'pwd128'),
-(13, 4, 'Moreau', 'Anne', '13 Rue Nice', 'amoreau', 'pwd129'),
-(14, 5, 'Roux', 'Catherine', '14 Rue Bordeaux', 'croux', 'pwd130'),
-(15, 6, 'Simon', 'Claude', '15 Rue Nantes', 'csimon', 'pwd131'),
-(20, 1, 'Leroy', 'Paul', '15 Rue Nice', 'pleroy1', 'pwd140'),
-(21, 1, 'Moreau', 'Claire', '16 Rue Bordeaux', 'cmoreau1', 'pwd141'),
-(100, 1, 'Bernard', 'Lucas', '30 Rue Paris', 'lbernard1', 'pwd160'),
-(101, 1, 'Thomas', 'Emma', '31 Rue Lyon', 'ethomas1', 'pwd161');
+INSERT INTO Utilisateur (numUtilisateur, numClub, nom, prenom, age, adresse, login, mdp) VALUES
+(1, 1, 'Admin', 'System', 35, '123 Rue Admin', 'admin', 'pwd1231'),
+(2, 2, 'Dubois', 'Pierre', 42, '1 Rue Paris', 'pdubois', 'pwd124'),
+(3, 3, 'Martin', 'Marie', 38, '2 Rue Lyon', 'mmartin', 'pwd125'),
+(10, 1, 'Dupont', 'Jean', 45, '10 Rue Paris', 'jdupont', 'pwd126'),
+(11, 2, 'Durand', 'Michel', 50, '11 Rue Lyon', 'mdurand', 'pwd127'),
+(12, 3, 'Lefevre', 'Paul', 39, '12 Rue Marseille', 'plefevre', 'pwd128'),
+(13, 4, 'Moreau', 'Anne', 41, '13 Rue Nice', 'amoreau', 'pwd129'),
+(14, 5, 'Roux', 'Catherine', 36, '14 Rue Bordeaux', 'croux', 'pwd130'),
+(15, 6, 'Simon', 'Claude', 48, '15 Rue Nantes', 'csimon', 'pwd131'),
+(20, 1, 'Leroy', 'Paul', 33, '15 Rue Nice', 'pleroy1', 'pwd140'),
+(21, 1, 'Moreau', 'Claire', 29, '16 Rue Bordeaux', 'cmoreau1', 'pwd141'),
+(100, 1, 'Bernard', 'Lucas', 25, '30 Rue Paris', 'lbernard1', 'pwd160'),
+(101, 1, 'Thomas', 'Emma', 27, '31 Rue Lyon', 'ethomas1', 'pwd161');
 
 -- Insertion Admin
 INSERT INTO Admin (numAdmin, dateDebut) VALUES

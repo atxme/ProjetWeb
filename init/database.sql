@@ -30,9 +30,10 @@ CREATE TABLE Club (
 
 CREATE TABLE Utilisateur (
     numUtilisateur INT PRIMARY KEY,
-    numClub INT NOT NULL AUTO_INCREMENT,
+    numClub INT NOT NULL,
     nom VARCHAR(50) NOT NULL,
     prenom VARCHAR(50) NOT NULL,
+    age INT NOT NULL,
     adresse VARCHAR(255) NOT NULL,
     login VARCHAR(50) NOT NULL UNIQUE,
     mdp VARCHAR(60) NOT NULL,
@@ -135,6 +136,9 @@ CREATE TABLE Evaluation (
     FOREIGN KEY (numDessin) REFERENCES Dessin (numDessin),
     FOREIGN KEY (numEvaluateur) REFERENCES Evaluateur (numEvaluateur)
 );
+
+-- Les triggers restent inchangés
+
 
 DELIMITER //
 
