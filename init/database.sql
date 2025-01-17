@@ -30,7 +30,7 @@ CREATE TABLE Club (
 
 CREATE TABLE Utilisateur (
     numUtilisateur INT PRIMARY KEY,
-    numClub INT NOT NULL,
+    numClub INT NOT NULL DEFAULT 0,
     nom VARCHAR(50) NOT NULL,
     prenom VARCHAR(50) NOT NULL,
     adresse VARCHAR(255) NOT NULL,
@@ -138,32 +138,29 @@ CREATE TABLE Evaluation (
 
 DELIMITER //
 
--- Vérification du maximum de dessins par compétiteur
 CREATE TRIGGER check_max_dessins
 BEFORE INSERT ON Dessin
 FOR EACH ROW
 BEGIN
     DECLARE nb_dessins INT;
-    SELECT COUNT(*) INTO nb_dessins 
-    FROM Dessin 
-    WHERE numCompetiteur = NEW.numCompetiteur 
-    AND numConcours = NEW.numConcours;
+    SELECT COUNT(*) INTO nb_dessins
+    FROM Dessin
+    WHERE numCompetiteur = NEW.numCompetiteur AND numConcours = NEW.numConcours;
     IF nb_dessins >= 3 THEN
-        SIGNAL SQLSTATE '45000' 
+        SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Maximum 3 dessins par compétiteur par concours';
     END IF;
 END//
 
--- Vérification du maximum d'évaluations par évaluateur
 CREATE TRIGGER check_max_evaluations
 BEFORE INSERT ON Evaluation
 FOR EACH ROW
 BEGIN
     DECLARE nb_evaluations INT;
-    SELECT COUNT(*) INTO nb_evaluations 
+    SELECT COUNT(*) INTO nb_evaluations
     FROM Evaluation e
     JOIN Dessin d ON e.numDessin = d.numDessin
-    WHERE e.numEvaluateur = NEW.numEvaluateur 
+    WHERE e.numEvaluateur = NEW.numEvaluateur
     AND d.numConcours = (SELECT numConcours FROM Dessin WHERE numDessin = NEW.numDessin);
     IF nb_evaluations >= 8 THEN
         SIGNAL SQLSTATE '45000'
@@ -171,14 +168,13 @@ BEGIN
     END IF;
 END//
 
--- Vérification du nombre exact d'évaluations par dessin
 CREATE TRIGGER check_double_evaluation
 AFTER INSERT ON Evaluation
 FOR EACH ROW
 BEGIN
     DECLARE nb_evaluations INT;
-    SELECT COUNT(*) INTO nb_evaluations 
-    FROM Evaluation 
+    SELECT COUNT(*) INTO nb_evaluations
+    FROM Evaluation
     WHERE numDessin = NEW.numDessin;
     IF nb_evaluations > 2 THEN
         SIGNAL SQLSTATE '45000'
@@ -186,14 +182,13 @@ BEGIN
     END IF;
 END//
 
--- Vérification que le président ne peut pas être compétiteur
 CREATE TRIGGER check_president_role
 BEFORE INSERT ON CompetiteurParticipe
 FOR EACH ROW
 BEGIN
     IF EXISTS (
-        SELECT 1 FROM Concours 
-        WHERE numConcours = NEW.numConcours 
+        SELECT 1 FROM Concours
+        WHERE numConcours = NEW.numConcours
         AND numPresident = NEW.numCompetiteur
     ) THEN
         SIGNAL SQLSTATE '45000'
@@ -201,18 +196,15 @@ BEGIN
     END IF;
 END//
 
--- Vérification de la date de remise des dessins
 CREATE TRIGGER check_date_remise
 BEFORE INSERT ON Dessin
 FOR EACH ROW
 BEGIN
     DECLARE date_debut DATE;
     DECLARE date_fin DATE;
-    
     SELECT dateDeb, dateFin INTO date_debut, date_fin
     FROM Concours
     WHERE numConcours = NEW.numConcours;
-    
     IF NEW.dateRemise < date_debut OR NEW.dateRemise > date_fin THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'La date de remise doit être comprise entre la date de début et de fin du concours';
