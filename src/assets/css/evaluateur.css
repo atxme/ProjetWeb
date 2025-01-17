@@ -66,6 +66,7 @@ body {
     position: relative;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
+    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 .header h2::after {
