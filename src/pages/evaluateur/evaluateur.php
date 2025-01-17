@@ -70,8 +70,11 @@ $_SESSION['last_activity'] = time();
             </div>
         </div>
         <div class="right-column">
-            <!-- Contenu de la colonne droite -->
-            <p>Contenu de la colonne droite</p>
+            <div class="box">
+                <div class="header">
+                    <h2>Liste des concours</h2>
+                </div>
+            </div>
         </div>
     </div>
 </body>

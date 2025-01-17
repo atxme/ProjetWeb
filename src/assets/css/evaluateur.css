@@ -31,6 +31,21 @@ body {
 }
 
 
+.box-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
 .box:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
@@ -338,7 +353,6 @@ textarea {
 }
 
 .right-column {
-    background-color: #28a745;
     /*opacity: 0;*/
     padding: 20px;
 }
