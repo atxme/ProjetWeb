@@ -1,9 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'DIRECTEUR') {
-    // header('Location: ../index.php');
-    echo "Vous n'avez pas accès à cette page: " . $_SESSION['user_type'];
-    exit();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'directeur') {
+    header('Location: ../../index.php');
+    exit;
 }
 
 // Connexion à la base de données
