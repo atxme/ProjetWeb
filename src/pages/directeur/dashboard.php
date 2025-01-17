@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'directeur') {
 
 // Connexion à la base de données
 require_once '../../include/db.php';
+$db = Database::getInstance();
+$pdo = $db->getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
