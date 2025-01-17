@@ -22,7 +22,7 @@ body {
 .box {
     position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
     margin: 20px 20px 20px 0; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
-    padding: 20px; /* Ajustez les marges internes si nécessaire */
+    padding: 10px; /* Ajustez les marges internes si nécessaire */
     width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
     background: white; /* Couleur de fond */
     border-radius: 15px; /* Coins arrondis */
