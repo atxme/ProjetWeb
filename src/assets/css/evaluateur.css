@@ -20,6 +20,15 @@ body {
 }
 
 .box {
+    margin: 0; /* Supprime les marges autour de la box */
+    padding: 20px; /* Ajustez si nécessaire */
+    width: auto; /* S'assure que la box ne prend pas toute la largeur */
+    float: left; /* Colle la div à gauche */
+    background: white; /* Fond blanc pour la différencier */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /*
     background: white;
     padding: 40px;
     border-radius: 15px;
@@ -28,6 +37,7 @@ body {
     margin-bottom: 25px;
     width: 100%;
     float: left; /* Colle la div à gauche */
+    
 }
 
 .box:hover {
