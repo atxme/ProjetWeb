@@ -30,7 +30,7 @@ CREATE TABLE Club (
 
 CREATE TABLE Utilisateur (
     numUtilisateur INT PRIMARY KEY,
-    numClub INT NOT NULL DEFAULT 0,
+    numClub INT NOT NULL AUTO_INCREMENT,
     nom VARCHAR(50) NOT NULL,
     prenom VARCHAR(50) NOT NULL,
     adresse VARCHAR(255) NOT NULL,
