@@ -38,20 +38,13 @@ body {
 
 .box {
     position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
-    margin: 20px 20px 20px 0; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
+    margin: 20px 20px 20px 20px; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
     padding: 10px; /* Ajustez les marges internes si nécessaire */
     width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
     background: white; /* Couleur de fond */
     border-radius: 15px; /* Coins arrondis */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Ombre */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Effets d'animation */
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 25px;
-    width: 100%;
 }
 
 
