@@ -15,7 +15,7 @@ TRUNCATE TABLE Utilisateur;
 TRUNCATE TABLE Club;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Insertion des Clubs (12 clubs)
+-- 1. Insertion des Clubs
 INSERT INTO Club VALUES
 (1, 'Club Arts Paris', '10 Rue des Arts, Paris', '0123456789', 50, 'Paris', '75', 'Ile-de-France'),
 (2, 'Atelier Lyon', '20 Rue du Dessin', '0234567890', 45, 'Lyon', '69', 'Rhône-Alpes'),
@@ -30,36 +30,41 @@ INSERT INTO Club VALUES
 (11, 'Studio Rennes', '110 Avenue des Créateurs', '0123456789', 49, 'Rennes', '35', 'Bretagne'),
 (12, 'Galerie Dijon', '120 Boulevard Artistique', '0234567890', 44, 'Dijon', '21', 'Bourgogne');
 
--- Insertion des Utilisateurs de base (Admin et Présidents)
-INSERT INTO Utilisateur VALUES
-(1, 1, 'Admin', 'System', 35, '123 Rue Admin', 'admin', 'pwd123'),
-(2, 2, 'Dubois', 'Pierre', 45, '1 Rue Paris', 'pdubois', 'pwd124'),
-(3, 3, 'Martin', 'Marie', 42, '2 Rue Lyon', 'mmartin', 'pwd125');
-
--- Insertion Admin
+-- 2. Insertion des rôles
+-- Admin
 INSERT INTO Admin VALUES (1, '2023-01-01');
 
--- Insertion Présidents
+-- Présidents
 INSERT INTO President VALUES 
 (2, '2023-01-01'),
 (3, '2023-01-01');
 
--- Insertion Directeurs (un par club)
-INSERT INTO Directeur VALUES
-(4, 1, '2023-01-01'),
-(5, 2, '2023-01-01'),
-(6, 3, '2023-01-01'),
-(7, 4, '2023-01-01'),
-(8, 5, '2023-01-01'),
-(9, 6, '2023-01-01'),
-(10, 7, '2023-01-01'),
-(11, 8, '2023-01-01'),
-(12, 9, '2023-01-01'),
-(13, 10, '2023-01-01'),
-(14, 11, '2023-01-01'),
-(15, 12, '2023-01-01');
+-- Evaluateurs
+INSERT INTO Evaluateur VALUES
+(20, 'Peinture à l''huile'),
+(21, 'Aquarelle'),
+(22, 'Dessin numérique');
 
--- Insertion des utilisateurs pour les directeurs
+-- Compétiteurs
+INSERT INTO Competiteur VALUES
+(100, '2023-03-21', 1, 15.5),
+(101, '2023-03-21', 2, 16.0),
+(102, '2023-03-21', 3, 14.5),
+(103, '2023-03-21', 4, 17.0),
+(104, '2023-03-21', 5, 15.0),
+(105, '2023-03-21', 6, 16.5);
+
+-- 3. Insertion des Utilisateurs
+-- Admin
+INSERT INTO Utilisateur VALUES
+(1, 1, 'Admin', 'System', 35, '123 Rue Admin', 'admin', 'pwd123');
+
+-- Présidents
+INSERT INTO Utilisateur VALUES
+(2, 2, 'Dubois', 'Pierre', 45, '1 Rue Paris', 'pdubois', 'pwd124'),
+(3, 3, 'Martin', 'Marie', 42, '2 Rue Lyon', 'mmartin', 'pwd125');
+
+-- Directeurs
 INSERT INTO Utilisateur VALUES
 (4, 1, 'Dupont', 'Jean', 48, '3 Rue Paris', 'jdupont', 'pwd126'),
 (5, 2, 'Durand', 'Marie', 52, '4 Rue Lyon', 'mdurand', 'pwd127'),
@@ -74,7 +79,37 @@ INSERT INTO Utilisateur VALUES
 (14, 11, 'Girard', 'Thomas', 48, '13 Rue Rennes', 'tgirard', 'pwd136'),
 (15, 12, 'Morel', 'Alice', 50, '14 Rue Dijon', 'amorel', 'pwd137');
 
--- Insertion des Concours
+-- Evaluateurs
+INSERT INTO Utilisateur VALUES
+(20, 1, 'Leroy', 'Paul', 38, '15 Rue Nice', 'pleroy1', 'pwd140'),
+(21, 1, 'Moreau', 'Claire', 42, '16 Rue Bordeaux', 'cmoreau1', 'pwd141'),
+(22, 1, 'Dupont', 'Marc', 45, '17 Rue Lyon', 'mdupont1', 'pwd142');
+
+-- Compétiteurs
+INSERT INTO Utilisateur VALUES
+(100, 1, 'Bernard', 'Lucas', 25, '30 Rue Paris', 'lbernard1', 'pwd160'),
+(101, 1, 'Thomas', 'Emma', 28, '31 Rue Lyon', 'ethomas1', 'pwd161'),
+(102, 1, 'Robert', 'Jules', 30, '32 Rue Marseille', 'jrobert1', 'pwd162'),
+(103, 1, 'Michel', 'Laura', 27, '33 Rue Bordeaux', 'lmichel1', 'pwd163'),
+(104, 1, 'Durand', 'Hugo', 32, '34 Rue Nice', 'hdurand1', 'pwd164'),
+(105, 1, 'Lefebvre', 'Alice', 29, '35 Rue Lille', 'alefebvre1', 'pwd165');
+
+-- 4. Insertion des Directeurs
+INSERT INTO Directeur VALUES
+(4, 1, '2023-01-01'),
+(5, 2, '2023-01-01'),
+(6, 3, '2023-01-01'),
+(7, 4, '2023-01-01'),
+(8, 5, '2023-01-01'),
+(9, 6, '2023-01-01'),
+(10, 7, '2023-01-01'),
+(11, 8, '2023-01-01'),
+(12, 9, '2023-01-01'),
+(13, 10, '2023-01-01'),
+(14, 11, '2023-01-01'),
+(15, 12, '2023-01-01');
+
+-- 5. Insertion des Concours
 INSERT INTO Concours VALUES
 (1, 2, 'Printemps 2023', '2023-03-21', '2023-06-20', 'evalue', 8, 48, 'Concours Printemps 2023'),
 (2, 3, 'Été 2023', '2023-06-21', '2023-09-20', 'evalue', 8, 48, 'Concours Été 2023'),
@@ -85,48 +120,20 @@ INSERT INTO Concours VALUES
 (7, 2, 'Automne 2024', '2024-09-21', '2024-12-20', 'pas commence', 8, 48, 'Concours Automne 2024'),
 (8, 3, 'Hiver 2024', '2024-12-21', '2025-03-19', 'pas commence', 8, 48, 'Concours Hiver 2024');
 
--- Insertion des Evaluateurs (3 par club = 36 évaluateurs)
--- Club 1
-INSERT INTO Utilisateur VALUES
-(20, 1, 'Leroy', 'Paul', 38, '15 Rue Nice', 'pleroy1', 'pwd140'),
-(21, 1, 'Moreau', 'Claire', 42, '16 Rue Bordeaux', 'cmoreau1', 'pwd141'),
-(22, 1, 'Dupont', 'Marc', 45, '17 Rue Lyon', 'mdupont1', 'pwd142');
-
-INSERT INTO Evaluateur VALUES
-(20, 'Peinture à l''huile'),
-(21, 'Aquarelle'),
-(22, 'Dessin numérique');
-
--- Insertion des Compétiteurs (6 par club = 72 compétiteurs)
--- Club 1
-INSERT INTO Utilisateur VALUES
-(100, 1, 'Bernard', 'Lucas', 25, '30 Rue Paris', 'lbernard1', 'pwd160'),
-(101, 1, 'Thomas', 'Emma', 28, '31 Rue Lyon', 'ethomas1', 'pwd161'),
-(102, 1, 'Robert', 'Jules', 30, '32 Rue Marseille', 'jrobert1', 'pwd162'),
-(103, 1, 'Michel', 'Laura', 27, '33 Rue Bordeaux', 'lmichel1', 'pwd163'),
-(104, 1, 'Durand', 'Hugo', 32, '34 Rue Nice', 'hdurand1', 'pwd164'),
-(105, 1, 'Lefebvre', 'Alice', 29, '35 Rue Lille', 'alefebvre1', 'pwd165');
-
-INSERT INTO Competiteur VALUES
-(100, '2023-03-21', 1, 15.5),
-(101, '2023-03-21', 2, 16.0),
-(102, '2023-03-21', 3, 14.5),
-(103, '2023-03-21', 4, 17.0),
-(104, '2023-03-21', 5, 15.0),
-(105, '2023-03-21', 6, 16.5);
-
--- Insertion des participations des clubs aux concours
+-- 6. Insertion des participations
+-- ClubParticipe
 INSERT INTO ClubParticipe VALUES
--- Concours 1
 (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8),
--- Concours 2
 (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9),
--- Concours 3
 (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8), (3, 9), (3, 10),
--- Concours 4
 (4, 4), (4, 5), (4, 6), (4, 7), (4, 8), (4, 9), (4, 10), (4, 11);
 
--- Insertion des Dessins
+-- CompetiteurParticipe
+INSERT INTO CompetiteurParticipe VALUES
+(1, 100), (1, 101), (1, 102), (1, 103), (1, 104), (1, 105),
+(2, 100), (2, 101), (2, 102);
+
+-- 7. Insertion des Dessins
 INSERT INTO Dessin VALUES
 (1, 100, 1, 1, 'Belle composition', '2023-04-15', NULL),
 (2, 100, 1, 2, 'Technique innovante', '2023-04-20', NULL),
@@ -134,16 +141,12 @@ INSERT INTO Dessin VALUES
 (4, 102, 1, 4, 'Bonne utilisation des couleurs', '2023-04-19', NULL),
 (5, 103, 1, 5, 'Expression intéressante', '2023-04-21', NULL);
 
--- Insertion des jurys
+-- 8. Insertion des jurys
 INSERT INTO Jury VALUES
-(20, 1),
-(21, 1),
-(22, 2),
-(20, 2),
-(21, 3),
-(22, 3);
+(20, 1), (21, 1), (22, 2),
+(20, 2), (21, 3), (22, 3);
 
--- Insertion des évaluations
+-- 9. Insertion des évaluations
 INSERT INTO Evaluation VALUES
 (1, 20, '2023-06-25', 18, 'Excellent travail'),
 (1, 21, '2023-06-25', 17, 'Très bonne technique'),
@@ -151,15 +154,3 @@ INSERT INTO Evaluation VALUES
 (2, 21, '2023-06-26', 15, 'Peut être amélioré'),
 (3, 22, '2023-06-27', 19, 'Exceptionnel'),
 (3, 20, '2023-06-27', 18, 'Très créatif');
-
--- Insertion des participations des compétiteurs aux concours
-INSERT INTO CompetiteurParticipe VALUES
-(1, 100),
-(1, 101),
-(1, 102),
-(1, 103),
-(1, 104),
-(1, 105),
-(2, 100),
-(2, 101),
-(2, 102);
