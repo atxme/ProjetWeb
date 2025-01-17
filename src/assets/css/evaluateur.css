@@ -332,13 +332,11 @@ textarea {
 }
 
 .left-column {
-    background-color: lightblue; /* Exemple de couleur */
     opacity: 0;
     padding: 20px;
 }
 
 .right-column {
-    background-color: lightgreen; /* Exemple de couleur */
     opacity: 0;
     padding: 20px;
 }
