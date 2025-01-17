@@ -32,8 +32,8 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 }
 $_SESSION['last_activity'] = time();
 
-if (!isset($_SESSION['id_user'])) {
-    die('Erreur : id_user non défini dans la session.');
+if (!isset($_SESSION['user_id'])) {
+    die('Erreur : user_id non défini dans la session.');
 }
 
 try {
@@ -42,18 +42,18 @@ try {
     $pdo = $db->getConnection();
 
     // Récupérer l'id_user depuis la session
-    $id_user = $_SESSION['id_user'];
+    $id_user = $_SESSION['user_id'];
 
     // Préparer la requête pour récupérer les données utilisateur et du club associé
     $query = $pdo->prepare('
         SELECT u.nom, u.prenom, u.age, u.adresse, u.login, c.nomClub
         FROM Utilisateur u
         LEFT JOIN Club c ON u.numClub = c.numClub
-        WHERE u.numUtilisateur = :id_user
+        WHERE u.numUtilisateur = :user_id
     ');
 
     // Exécuter la requête avec le paramètre id_user
-    $query->execute(['id_user' => $id_user]);
+    $query->execute(['user_id' => $id_user]);
 
     // Récupérer les résultats sous forme associative
     $user = $query->fetch(PDO::FETCH_ASSOC);
