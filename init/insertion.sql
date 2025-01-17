@@ -50,13 +50,14 @@ INSERT INTO President (numPresident, dateDebut, prime) VALUES
 (3, '2023-01-01', 1200.00);
 
 -- Insertion Directeurs
-INSERT INTO Directeur (numDirecteur, dateDebut) VALUES
-(10, '2023-01-01'),
-(11, '2023-01-01'),
-(12, '2023-01-01'),
-(13, '2023-01-01'),
-(14, '2023-01-01'),
-(15, '2023-01-01');
+INSERT INTO Directeur (numDirecteur, numClub, dateDebut) VALUES
+(10, 1, '2023-01-01'),
+(11, 2, '2023-01-01'),
+(12, 3, '2023-01-01'),
+(13, 4, '2023-01-01'),
+(14, 5, '2023-01-01'),
+(15, 6, '2023-01-01');
+
 
 -- Insertion des Concours
 INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, nbClub, nbParticipant, descriptif, saison, annee) VALUES
