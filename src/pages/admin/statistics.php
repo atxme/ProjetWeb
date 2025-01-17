@@ -16,6 +16,7 @@ $stmt->execute();
 $concours = $stmt->fetchAll();
 
 $selectedConcours = null;
+$concoursDetails = null; // Initialize the variable to avoid undefined variable error
 $participants = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['concours'])) {
     $selectedConcours = $_POST['concours'];
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['concours'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques</title>
-    <link rel="stylesheet" href="../../assets/css/statistics.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <div class="container">
