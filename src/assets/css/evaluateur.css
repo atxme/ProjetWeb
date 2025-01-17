@@ -325,19 +325,18 @@ textarea {
 }
 
 .container {
-    display: flex; /* Active Flexbox */
-    width: 100%; /* Utilise toute la largeur de la page */
+    display: grid; /* Active Grid Layout */
+    grid-template-columns: 40% 60%; /* Colonne gauche à 40% et droite à 60% */
+    width: 100%; /* Utilise toute la largeur */
     height: 100vh; /* Hauteur de la fenêtre */
 }
 
 .left-column {
-    flex: 0 0 40%; /* Colonne gauche à 40% */
     background-color: lightblue; /* Exemple de couleur */
     padding: 20px;
 }
 
 .right-column {
-    flex: 0 0 60%; /* Colonne droite à 60% */
     background-color: lightgreen; /* Exemple de couleur */
     padding: 20px;
 }
