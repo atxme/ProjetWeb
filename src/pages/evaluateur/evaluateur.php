@@ -12,6 +12,13 @@ if (!isset($_SESSION['user_id']) ||
     exit;
 }
 
+$numUtilisateur = $_SESSION['numUtilisateur'];
+
+// Récupération des données de l'utilisateur
+$query = $pdo->prepare('SELECT nom, prenom, age, adresse, numClub FROM Utilisateur WHERE numUtilisateur = :numUtilisateur');
+$query->execute(['numUtilisateur' => $numUtilisateur]);
+$user = $query->fetch(PDO::FETCH_ASSOC);
+
 // Régénérer le token CSRF si nécessaire
 if (empty($_SESSION['csrf_token']) || 
     !isset($_SESSION['csrf_token_time']) || 
@@ -61,6 +68,26 @@ $_SESSION['last_activity'] = time();
             <div class="box-info">
                 <div class="header">
                     <h2>Mon profil</h2>
+                    <div>
+                        <label>Nom :</label>
+                        <input type="text" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
+                    </div>
+                    <div>
+                        <label>Prénom :</label>
+                        <input type="text" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
+                    </div>
+                    <div>
+                        <label>Âge :</label>
+                        <input type="text" value="<?= htmlspecialchars($user['age']) ?>" disabled>
+                    </div>
+                    <div>
+                        <label>Adresse :</label>
+                        <input type="text" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
+                    </div>
+                    <div>
+                        <label>Club :</label>
+                        <input type="text" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
+                    </div>
                 </div>
             </div>
             <div class="box-info">
