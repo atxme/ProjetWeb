@@ -99,24 +99,24 @@ try {
                 <div class="header">
                     <h2>Mon profil</h2>
                     <div>
-                        <label>Nom :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
+                        <label type="sous-titre">Nom :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Prénom :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
+                        <label type="sous-titre" >Prénom :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Âge :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['age']) ?>" disabled>
+                        <label type="sous-titre">Âge :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Adresse :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
+                        <label type="sous-titre">Adresse :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Club :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
+                        <label type="sous-titre">Club :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
                     </div>
                 </div>
             </div>

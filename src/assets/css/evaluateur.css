@@ -359,6 +359,26 @@ textarea {
     padding: 20px;
 }
 
+.label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #34495e;
+    font-size: 15px;
+}
+
+.textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 25px;
+    display: block;
+    transition: border-color 0.3s ease;
+    resize: none;
+}
+
 @keyframes slideIn {
     to {
         transform: translateX(0);
