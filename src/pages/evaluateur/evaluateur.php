@@ -29,30 +29,38 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 }
 $_SESSION['last_activity'] = time();
 
-if (!isset($_SESSION['numUtilisateur'])) {
-    die('Erreur : numUtilisateur non défini dans la session.');
+if (!isset($_SESSION['id_user'])) {
+    die('Erreur : id_user non défini dans la session.');
 }
 
 try {
+    // Connexion à la base de données
     $db = Database::getInstance();
     $pdo = $db->getConnection();
 
-    $numUtilisateur = $_SESSION['numUtilisateur'];
+    // Récupérer l'id_user depuis la session
+    $id_user = $_SESSION['id_user'];
 
-    // Récupération des données utilisateur
+    // Préparer la requête pour récupérer les données utilisateur et du club associé
     $query = $pdo->prepare('
-        SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub
+        SELECT u.nom, u.prenom, u.age, u.adresse, u.login, c.nomClub
         FROM Utilisateur u
         LEFT JOIN Club c ON u.numClub = c.numClub
-        WHERE u.numUtilisateur = :numUtilisateur
+        WHERE u.numUtilisateur = :id_user
     ');
-    $query->execute(['numUtilisateur' => $numUtilisateur]);
+
+    // Exécuter la requête avec le paramètre id_user
+    $query->execute(['id_user' => $id_user]);
+
+    // Récupérer les résultats sous forme associative
     $user = $query->fetch(PDO::FETCH_ASSOC);
 
+    // Si l'utilisateur n'est pas trouvé
     if (!$user) {
         die('Erreur : Aucun utilisateur trouvé.');
     }
 } catch (PDOException $e) {
+    // Si une erreur de base de données se produit, l'afficher
     die('Erreur de base de données : ' . $e->getMessage());
 }
 
