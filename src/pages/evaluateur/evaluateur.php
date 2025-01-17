@@ -43,7 +43,7 @@ try {
 
     // Préparer la requête pour récupérer les données utilisateur et du club associé
     $query = $pdo->prepare('
-        SELECT u.nom, u.prenom, u.age, u.adresse, u.login, c.nomClub
+        SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub
         FROM Utilisateur u
         LEFT JOIN Club c ON u.numClub = c.numClub
         WHERE u.numUtilisateur = :user_id
@@ -59,10 +59,38 @@ try {
     if (!$user) {
         die('Erreur : Aucun utilisateur trouvé.');
     }
+
+    // Préparer la requête pour récupérer les statistiques de l'évaluateur
+    $statsQuery = $pdo->prepare('
+        SELECT 
+            AVG(ev.note) AS moyenne_notes,
+            MAX(ev.note) AS note_max,
+            MIN(ev.note) AS note_min,
+            c.theme AS nom_concours,
+            MAX(c.dateFin) AS dernier_concours
+        FROM 
+            Evaluation ev
+        INNER JOIN 
+            Jury j ON ev.numEvaluateur = j.numEvaluateur
+        INNER JOIN 
+            Concours c ON j.numConcours = c.numConcours
+        WHERE 
+            ev.numEvaluateur = :user_id
+        GROUP BY 
+            ev.numEvaluateur
+    ');
+
+    // Exécuter la requête avec le paramètre id_user
+    $statsQuery->execute(['user_id' => $id_user]);
+
+    // Récupérer les résultats sous forme associative
+    $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     // Si une erreur de base de données se produit, l'afficher
     die('Erreur de base de données : ' . $e->getMessage());
 }
+
 
 ?>
 
@@ -100,29 +128,45 @@ try {
                     <h2>Mon profil</h2>
                     <div>
                         <label>Nom :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
+                        <input type="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
                     </div>
                     <div>
                         <label>Prénom :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
+                        <input type="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Âge :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['age']) ?>" disabled>
+                        <label >Âge :</label>
+                        <input type="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
                     </div>
                     <div>
                         <label>Adresse :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
+                        <input type="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
                     </div>
                     <div>
                         <label>Club :</label>
-                        <input type="text" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
+                        <input type="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
                     </div>
                 </div>
             </div>
             <div class="box-info">
                 <div class="header">
                     <h2>Mes statistiques</h2>
+                </div>
+                <div>
+                    <label>Moyenne des notes :</label>
+                    <input type="textarea" value="<?= htmlspecialchars(round($stats['moyenne_notes'], 2)) ?>" disabled>
+                </div>
+                <div>
+                    <label>Note maximale :</label>
+                    <input type="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
+                </div>
+                <div>
+                    <label>Note minimale :</label>
+                    <input type="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
+                </div>
+                <div>
+                    <label>Dernier concours :</label>
+                    <input type="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
                 </div>
             </div>
         </div>
