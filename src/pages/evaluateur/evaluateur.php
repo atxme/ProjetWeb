@@ -2,9 +2,6 @@
 session_start();
 require_once '../../include/db.php';
 
-
-
-
 // Vérification plus stricte de l'authentification et du rôle
 if (!isset($_SESSION['user_id']) || 
     !isset($_SESSION['role']) || 
