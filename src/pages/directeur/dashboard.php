@@ -43,34 +43,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <div class="admin-dashboard">
-        <h2>Gestion des Compétiteurs</h2>
-        <?php if (isset($message)): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
-        <?php endif; ?>
+    <div class="status-bar">
+        <div class="status">
+            <?php
+            echo htmlspecialchars($_SESSION['login']) . ' : ' .
+                ucfirst(htmlspecialchars($_SESSION['user_type']));
+            ?>
+        </div>
+        <div class="logout">
+            <a href="?logout=true">Déconnexion</a>
+        </div>
+    </div>
 
-        <form method="post">
-            <input type="hidden" name="action" value="ajouter">
-            <div class="form-group">
-                <label for="numCompetiteur">Numéro du Compétiteur à Ajouter</label>
-                <input type="number" id="numCompetiteur" name="numCompetiteur" required>
+    <div class="admin-container">
+        <div class="admin-box">
+            <div class="admin-header">
+                <h2>Gestion des Compétiteurs</h2>
             </div>
-            <div class="form-group">
-                <label for="numClub">Numéro du Club</label>
-                <input type="number" id="numClub" name="numClub" required>
-            </div>
-            <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
-        </form>
+            <?php if (isset($message)): ?>
+                <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
+            <?php endif; ?>
 
-        <form method="post">
-            <input type="hidden" name="action" value="supprimer">
-            <div class="form-group">
-                <label for="numCompetiteur">Numéro du Compétiteur à Supprimer</label>
-                <input type="number" id="numCompetiteur" name="numCompetiteur" required>
-            </div>
-            <button type="submit" class="btn-submit">Supprimer Compétiteur</button>
-        </form>
+            <form method="post">
+                <input type="hidden" name="action" value="ajouter">
+                <div class="form-group">
+                    <label for="numCompetiteur">Numéro du Compétiteur à Ajouter</label>
+                    <input type="number" id="numCompetiteur" name="numCompetiteur" required>
+                </div>
+                <div class="form-group">
+                    <label for="numClub">Numéro du Club</label>
+                    <input type="number" id="numClub" name="numClub" required>
+                </div>
+                <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
+            </form>
+
+            <form method="post">
+                <input type="hidden" name="action" value="supprimer">
+                <div class="form-group">
+                    <label for="numCompetiteur">Numéro du Compétiteur à Supprimer</label>
+                    <input type="number" id="numCompetiteur" name="numCompetiteur" required>
+                </div>
+                <button type="submit" class="btn-submit">Supprimer Compétiteur</button>
+            </form>
+        </div>
     </div>
 </body>
 
-</html>
+</html>&
