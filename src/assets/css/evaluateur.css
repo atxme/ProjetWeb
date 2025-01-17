@@ -19,27 +19,46 @@ body {
     font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-.admin-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 25px;
-    width: 100%;
+.box-info {
+    position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+    margin: 20px 20px 20px 0; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
+    padding: 10px; /* Ajustez les marges internes si nécessaire */
+    width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
+    background: white; /* Couleur de fond */
+    border-radius: 15px; /* Coins arrondis */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Ombre */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Effets d'animation */
 }
 
-.admin-box:hover {
+
+.box-info:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
 }
 
-.admin-header {
+.box {
+    position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+    margin: 20px 20px 20px 20px; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
+    padding: 10px; /* Ajustez les marges internes si nécessaire */
+    width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
+    background: white; /* Couleur de fond */
+    border-radius: 15px; /* Coins arrondis */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.header {
     margin-bottom: 30px;
     text-align: center;
 }
 
-.admin-header h2 {
+.header h2 {
     font-size: 28px;
     font-weight: 600;
     color: #2c3e50;
@@ -49,7 +68,7 @@ body {
     border-bottom: 1px solid #eee;
 }
 
-.admin-header h2::after {
+.header h2::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -60,7 +79,7 @@ body {
     border-radius: 2px;
 }
 
-.admin-header p {
+.header p {
     font-size: 16px;
     color: #6c757d;
     margin-bottom: 15px;
@@ -322,6 +341,22 @@ textarea {
 .popup-error {
     background-color: #dc3545;
     box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
+}
+
+.container {
+    display: grid; /* Active Grid Layout */
+    grid-template-columns: 40% 60%; /* Colonne gauche à 40% et droite à 60% */
+    width: 100%; /* Utilise toute la largeur */
+    height: 100vh; /* Hauteur de la fenêtre */
+}
+
+.left-column {
+    padding: 20px;
+}
+
+.right-column {
+    /*opacity: 0;*/
+    padding: 20px;
 }
 
 @keyframes slideIn {
