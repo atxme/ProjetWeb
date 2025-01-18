@@ -154,7 +154,6 @@ try {
                 </div>
                 <div>
                     <label>Moyenne des notes :</label>
-                    <input type="textarea" value="<?= htmlspecialchars(round($stats['moyenne_notes'], 2)) ?>" disabled>
                 </div>
                 <div>
                     <label>Note maximale :</label>
