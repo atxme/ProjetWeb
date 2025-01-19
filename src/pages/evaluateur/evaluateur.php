@@ -127,23 +127,23 @@ try {
                 <div class="header">
                     <h2>Mon profil</h2>
                     <div>
-                        <label>Nom :</label>
+                        <label type ="cat"><label type ="cat">Nom :</label>
                         <input type="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Prénom :</label>
+                        <label type ="cat">Prénom :</label>
                         <input type="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
                     </div>
                     <div>
-                        <label >Âge :</label>
+                        <label type ="cat">Âge :</label>
                         <input type="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Adresse :</label>
+                        <label type ="cat">Adresse :</label>
                         <input type="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
                     </div>
                     <div>
-                        <label>Club :</label>
+                        <label type ="cat">Club :</label>
                         <input type="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
                     </div>
                 </div>
@@ -153,19 +153,19 @@ try {
                     <h2>Mes statistiques</h2>
                 </div>
                 <div>
-                    <label>Moyenne des notes :</label>
+                    <label type ="cat">Moyenne des notes :</label>
                     <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
                 </div>
                 <div>
-                    <label>Note maximale :</label>
+                    <label type ="cat">Note maximale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
                 </div>
                 <div>
-                    <label>Note minimale :</label>
+                    <label type ="cat">Note minimale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
                 </div>
                 <div>
-                    <label>Dernier concours :</label>
+                    <label type ="cat">Dernier concours :</label>
                     <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
                 </div>
             </div>
