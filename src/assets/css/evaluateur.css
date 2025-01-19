@@ -59,6 +59,7 @@ body {
 }
 
 .header h2 {
+    font-family: 'Segoe UI', system-ui, sans-serif;
     font-size: 28px;
     font-weight: 600;
     color: #2c3e50;
@@ -66,7 +67,6 @@ body {
     position: relative;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
-    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 .header h2::after {
@@ -309,6 +309,7 @@ select[disabled] {
 
 /* Style des labels */
 .label {
+    font-family: 'Segoe UI', system-ui, sans-serif;
     font-size: 16px;
     color: #34495e;
     font-weight: bold;
@@ -318,6 +319,7 @@ select[disabled] {
 
 /* Style des textareas */
 .textarea {
+    font-family: 'Segoe UI', system-ui, sans-serif;
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e9ecef;
