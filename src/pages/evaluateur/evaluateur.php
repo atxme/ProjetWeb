@@ -158,15 +158,15 @@ try {
                 </div>
                 <div>
                     <label>Note maximale :</label>
-                    <input type="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
+                    <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
                 </div>
                 <div>
                     <label>Note minimale :</label>
-                    <input type="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
+                    <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
                 </div>
                 <div>
                     <label>Dernier concours :</label>
-                    <input type="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
+                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
                 </div>
             </div>
         </div>
