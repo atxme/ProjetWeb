@@ -310,7 +310,7 @@ select[disabled] {
 /* Style des labels */
 .label {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: 20px;
     color: #34495e;
     font-weight: bold;
     margin-bottom: 8px;
