@@ -59,6 +59,7 @@ body {
 }
 
 .header h2 {
+    font-family: 'Segoe UI', system-ui, sans-serif;
     font-size: 28px;
     font-weight: 600;
     color: #2c3e50;
@@ -307,8 +308,9 @@ select[disabled] {
 }
 
 /* Style des labels */
-label {
-    font-size: 16px;
+.cat {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 20px;
     color: #34495e;
     font-weight: bold;
     margin-bottom: 8px;
@@ -316,7 +318,8 @@ label {
 }
 
 /* Style des textareas */
-textarea {
+.textarea {
+    font-family: 'Segoe UI', system-ui, sans-serif;
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e9ecef;
@@ -330,7 +333,7 @@ textarea {
     resize: vertical;
 }
 
-textarea:focus {
+.textarea:focus {
     border-color: #4a90e2;
     background-color: white;
     box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
