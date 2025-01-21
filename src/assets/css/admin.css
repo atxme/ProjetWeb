@@ -17,6 +17,7 @@ body {
     flex-direction: column;
     gap: 30px;
     font-family: 'Segoe UI', system-ui, sans-serif;
+    margin-top: 80px;
 }
 
 .admin-box {
@@ -220,7 +221,11 @@ body {
 
 .status-bar {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    /*font-size: 14px;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -239,16 +244,6 @@ body {
     gap: 8px;
 }
 
-.status-bar .status::after {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background-color: #4a90e2;
-    border-radius: 50%;
-    margin-left: 8px;
-}
-
 .status-bar .logout a {
     color: white;
     text-decoration: none;
@@ -263,6 +258,49 @@ body {
 .status-bar .logout a:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
+}
+
+.status-bar .nav-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.status-bar .btn-stats,
+.status-bar .btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 16px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar .btn-stats {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.status-bar .btn-logout {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
+
+.status-bar .btn-stats:hover,
+.status-bar .btn-logout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-bar .btn-stats:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b41 100%);
+}
+
+.status-bar .btn-logout:hover {
     background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
 }
 
@@ -335,4 +373,15 @@ textarea {
         opacity: 0;
         visibility: hidden;
     }
+}
+
+/* Ajouter le nouveau style pour le badge de rôle */
+.role-badge {
+    display: inline-block;
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #4a90e2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
 }

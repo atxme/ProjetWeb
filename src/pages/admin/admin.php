@@ -299,20 +299,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     <?php endif; ?>
     <div class="status-bar">
         <div class="status">
-            <?php 
-            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
-                 ucfirst(htmlspecialchars($_SESSION['role'])); 
-            ?>
+            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
+            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
-        <div class="logout">
-            <?php
-            if(isset($_GET['logout'])) {
-                session_destroy();
-                header('Location: ../../index.php');
-                exit;
-            }
-            ?>
-            <a href="?logout=true">Déconnexion</a>
+        <div class="nav-buttons">
+            <a href="../statistics/statistics.php" class="btn-stats">Statistiques</a>
+            <a href="?logout=true" class="btn-logout">Déconnexion</a>
         </div>
     </div>
     <div class="admin-container">

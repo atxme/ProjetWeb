@@ -22,6 +22,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
         <p>Voici votre tableau de bord.</p>
         <a href="submit_drawing.php" class="btn">Soumettre un Dessin</a>
         <a href="view_drawings.php" class="btn">Voir mes Dessins</a>
+        <div class="status-bar">
+            <div class="status">
+                <?php echo htmlspecialchars($_SESSION['login']); ?> : 
+                <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
+            </div>
+            <div class="logout">
+                <a href="?logout=true">Déconnexion</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
