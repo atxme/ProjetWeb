@@ -285,11 +285,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
         $db = Database::getInstance();
         $conn = $db->getConnection();
 
+        // Obtenir la connexion à la base de données
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
         // Validation côté serveur
         if (empty($_POST['theme']) || strlen($_POST['theme']) < 3) {
             throw new Exception("Le thème est invalide");
         }
-        if (empty($_POST['description']) || strlen($_POST['description']) < 10) {
+        if (empty($_POST['descriptif_detaille']) || strlen($_POST['descriptif_detaille']) < 10) {
             throw new Exception("La description est invalide");
         }
         if (empty($_POST['dateDeb']) || empty($_POST['dateFin'])) {
@@ -310,7 +314,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
 
         // Insertion dans la base de données
         $stmt = $conn->prepare("INSERT INTO Concours (theme, descriptif, dateDeb, dateFin, etat) VALUES (?, ?, ?, ?, 'pas commence')");
-        $success = $stmt->execute([$_POST['theme'], $_POST['description'], $_POST['dateDeb'], $_POST['dateFin']]);
+        $success = $stmt->execute([
+            $_POST['theme'], 
+            $_POST['descriptif_detaille'], 
+            $_POST['dateDeb'], 
+            $_POST['dateFin']
+        ]);
 
         if (!$success) {
             throw new Exception("Erreur lors de l'insertion en base de données");

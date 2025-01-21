@@ -38,26 +38,65 @@ $participants = [];
 $evaluatedDrawings = [];
 $allEvaluatedDrawings = [];
 $order = isset($_POST['order']) ? $_POST['order'] : 'ASC';
+$order = isset($_POST['order']) ? $_POST['order'] : 'ASC';
 
-// Récupération des détails du concours spécifique si demandé
-if ($concoursId) {
-    $stmt = $conn->prepare("
-        SELECT c.*, 
-               COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
-               COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
-               COUNT(DISTINCT d.numDessin) as nb_dessins,
-               COUNT(DISTINCT e.numEvaluation) as nb_evaluations,
-               AVG(e.note) as moyenne_notes
-        FROM Concours c
-        LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
-        LEFT JOIN Jury j ON c.numConcours = j.numConcours
-        LEFT JOIN Dessin d ON c.numConcours = d.numConcours
-        LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
-        WHERE c.numConcours = ?
-        GROUP BY c.numConcours
-    ");
-    $stmt->execute([$concoursId]);
-    $concoursDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    // Si un concours spécifique est demandé
+    if ($concoursId) {
+        // Récupérer les détails du concours
+        $stmt = $conn->prepare("
+            SELECT c.*, 
+                COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
+                COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
+                COUNT(DISTINCT d.numDessin) as nb_dessins,
+                COUNT(DISTINCT e.numEvaluation) as nb_evaluations,
+                ROUND(AVG(e.note), 2) as moyenne_notes
+            FROM Concours c
+            LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
+            LEFT JOIN Jury j ON c.numConcours = j.numConcours
+            LEFT JOIN Dessin d ON c.numConcours = d.numConcours
+            LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
+            WHERE c.numConcours = :concoursId
+            GROUP BY c.numConcours
+        ");
+        
+        $stmt->execute(['concoursId' => $concoursId]);
+        $concoursDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$concoursDetails) {
+            throw new Exception("Concours non trouvé");
+        }
+
+        // Récupérer les participants du concours
+        $stmt = $conn->prepare("
+            SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub, c.departement
+            FROM CompetiteurParticipe cp
+            JOIN Utilisateur u ON cp.numCompetiteur = u.numUtilisateur
+            JOIN Club c ON u.numClub = c.numClub
+            WHERE cp.numConcours = :concoursId
+        ");
+        $stmt->execute(['concoursId' => $concoursId]);
+        $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Récupérer les évaluations du concours
+        $stmt = $conn->prepare("
+            SELECT d.numDessin, e.note, e.commentaire, 
+                   u_comp.nom as competiteur_nom, 
+                   u_eval.nom as evaluateur_nom
+            FROM Dessin d
+            LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
+            LEFT JOIN Utilisateur u_comp ON d.numCompetiteur = u_comp.numUtilisateur
+            LEFT JOIN Utilisateur u_eval ON e.numEvaluateur = u_eval.numUtilisateur
+            WHERE d.numConcours = :concoursId
+            ORDER BY e.note " . $order
+        );
+        $stmt->execute(['concoursId' => $concoursId]);
+        $evaluatedDrawings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Exception $e) {
+    // Log l'erreur pour le débogage
+    error_log("Erreur dans statistics.php: " . $e->getMessage());
+    $error = "Une erreur est survenue lors de la récupération des données.";
 }
 
 // Récupération des années pour le filtre
@@ -231,6 +270,12 @@ if ($concoursId) {
         </div>
     </div>
 
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger">
+            <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
+
     <?php if ($concoursDetails): ?>
     <div class="container">
         <h1><?php echo htmlspecialchars($concoursDetails['theme']); ?></h1>
@@ -341,7 +386,7 @@ if ($concoursId) {
                         <tr>
                             <td><?php echo htmlspecialchars($drawing['numDessin']); ?></td>
                             <td><?php echo htmlspecialchars($drawing['note']); ?></td>
-                            <td><?php echo htmlspecialchars($drawing['nom']); ?></td>
+                            <td><?php echo htmlspecialchars($drawing['competiteur_nom']); ?></td>
                             <td><?php echo htmlspecialchars($drawing['descriptif']); ?></td>
                             <td><?php echo htmlspecialchars($drawing['theme']); ?></td>
                         </tr>
