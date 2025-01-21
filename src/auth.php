@@ -160,11 +160,11 @@ class Auth
             $this->debugLog("Redirection vers admin");
             header('Location: pages/admin/admin.php');
             exit;
-        } elseif ($userRole === 'competiteur') {
-            header('Location: pages/competiteur/dashboard.php');
-            exit;
         } elseif ($userRole === 'evaluateur') {
             header('Location: pages/evaluateur/evaluateur.php');
+            exit;
+        } elseif ($userRole === 'competiteur') {
+            header('Location: pages/competiteur/dashboard.php');
             exit;
         } elseif ($userRole === 'directeur') {
             header('Location: pages/directeur/dashboard.php');
