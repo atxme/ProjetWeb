@@ -367,9 +367,14 @@ border-spacing: 0 5em;
 }
 
 .label-cell {
-text-align: left;
-padding: 5px;
-width: 45%;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    text-align: left;
+    padding: 5px;
+    width: 45%;
+}
+
+.td{
+    font-family: "Segoe UI", system-ui, sans-serif;
 }
 
 .input-cell {
