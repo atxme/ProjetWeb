@@ -44,6 +44,7 @@ $concours = $db->getConcours();
                 <textarea id="comment" name="comment"></textarea>
             </div>
             <button type="submit" class="btn">Soumettre</button>
+            <button type="submit" name="pass_submit" class="btn">Passer la validation de la date</button>
         </form>
         <a href="dashboard.php" class="btn">Retour au tableau de bord</a>
     </div>
