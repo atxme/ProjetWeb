@@ -1,39 +1,18 @@
 <?php
-session_start();
 require_once '../../include/db.php';
 
-// Vérification plus stricte de l'authentification et du rôle
-if (!isset($_SESSION['user_id']) || 
-    !isset($_SESSION['role']) || 
-    $_SESSION['role'] !== 'admin' || 
-    !isset($_SESSION['login'])) {
+// Définir le titre de la page et le CSS additionnel
+$pageTitle = 'Statistiques - Administration';
+$additionalCss = ['/assets/css/statistics.css'];
+
+// Inclure le header commun
+require_once '../../components/header.php';
+
+// Vérification spécifique du rôle admin
+if ($_SESSION['role'] !== 'admin') {
     session_destroy();
     header('Location: ../../index.php');
     exit;
-}
-
-// Régénérer le token CSRF si nécessaire
-if (empty($_SESSION['csrf_token']) || 
-    !isset($_SESSION['csrf_token_time']) || 
-    (time() - $_SESSION['csrf_token_time']) > 3600) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    $_SESSION['csrf_token_time'] = time();
-}
-
-// Vérifier l'expiration de la session (30 minutes d'inactivité)
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
-    session_destroy();
-    header('Location: ../../index.php');
-    exit;
-}
-$_SESSION['last_activity'] = time();
-
-// Vérification du token CSRF pour les requêtes POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
-        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die('Invalid CSRF token');
-    }
 }
 
 // Fetch years from the database
@@ -134,10 +113,10 @@ if ($concoursId) {
 
     if ($concoursDetails) {
         // Afficher les statistiques spécifiques au concours
-        ?>
+?>
         <div class="container">
             <h1><?php echo htmlspecialchars($concoursDetails['theme']); ?></h1>
-            
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>Participants</h3>
@@ -156,41 +135,18 @@ if ($concoursId) {
                     <div class="stat-number"><?php echo $concoursDetails['nb_evaluations']; ?></div>
                 </div>
             </div>
-            
+
             <!-- Ajouter d'autres statistiques spécifiques au concours ici -->
         </div>
-        <?php
+<?php
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques - Administration</title>
-    <link rel="stylesheet" href="../../assets/css/statistics.css">
-</head>
-<body>
-    <div class="status-bar">
-        <div class="status">
-            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
-            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
-        </div>
-        <div class="nav-buttons">
-            <a href="admin.php" class="btn-stats">Retour</a>
-            <?php
-            if(isset($_GET['logout'])) {
-                session_destroy();
-                header('Location: ../../index.php');
-                exit;
-            }
-            ?>
-            <a href="?logout=true" class="btn-logout">Déconnexion</a>
-        </div>
-    </div>
 
+<body>
     <div class="container">
         <h1>Statistiques des Concours</h1>
         <form method="POST">
@@ -312,41 +268,42 @@ if ($concoursId) {
         </table>
     </div>
     <div class="container mt-4">
-    <h3>Compétiteurs ayant participé à tous les concours</h3>
-    
-    <form method="POST" class="mb-3">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        <select name="order" class="form-select" onchange="this.form.submit()">
-            <option value="ASC" <?php echo $order === 'ASC' ? 'selected' : ''; ?>>Âge croissant</option>
-            <option value="DESC" <?php echo $order === 'DESC' ? 'selected' : ''; ?>>Âge décroissant</option>
-        </select>
-    </form>
+        <h3>Compétiteurs ayant participé à tous les concours</h3>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Âge</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($allContestParticipants)): ?>
-                <?php foreach ($allContestParticipants as $participant): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($participant['nom']); ?></td>
-                        <td><?php echo htmlspecialchars($participant['prenom']); ?></td>
-                        <td><?php echo htmlspecialchars($participant['age']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+        <form method="POST" class="mb-3">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <select name="order" class="form-select" onchange="this.form.submit()">
+                <option value="ASC" <?php echo $order === 'ASC' ? 'selected' : ''; ?>>Âge croissant</option>
+                <option value="DESC" <?php echo $order === 'DESC' ? 'selected' : ''; ?>>Âge décroissant</option>
+            </select>
+        </form>
+
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td colspan="3" class="text-center">Aucun compétiteur n'a participé à tous les concours</td>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Âge</th>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                <?php if (!empty($allContestParticipants)): ?>
+                    <?php foreach ($allContestParticipants as $participant): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($participant['nom']); ?></td>
+                            <td><?php echo htmlspecialchars($participant['prenom']); ?></td>
+                            <td><?php echo htmlspecialchars($participant['age']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="3" class="text-center">Aucun compétiteur n'a participé à tous les concours</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
 </body>
+
 </html>

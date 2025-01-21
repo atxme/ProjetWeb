@@ -1,22 +1,26 @@
 <?php
-session_start();
 require_once '../../include/db.php';
 
-// Vérification plus stricte de l'authentification et du rôle
-if (!isset($_SESSION['user_id']) || 
-    !isset($_SESSION['role']) || 
-    $_SESSION['role'] !== 'admin' || 
-    !isset($_SESSION['login'])) {
-    // Détruire la session si l'accès est non autorisé
+// Définir le titre de la page et le CSS additionnel
+$pageTitle = 'Administration - Concours de Dessin';
+$additionalCss = ['/assets/css/admin.css'];
+
+// Inclure le header commun
+require_once '../../components/header.php';
+
+// Vérification spécifique du rôle admin
+if ($_SESSION['role'] !== 'admin') {
     session_destroy();
     header('Location: ../../index.php');
     exit;
 }
 
 // Régénérer le token CSRF si nécessaire
-if (empty($_SESSION['csrf_token']) || 
-    !isset($_SESSION['csrf_token_time']) || 
-    (time() - $_SESSION['csrf_token_time']) > 3600) {
+if (
+    empty($_SESSION['csrf_token']) ||
+    !isset($_SESSION['csrf_token_time']) ||
+    (time() - $_SESSION['csrf_token_time']) > 3600
+) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     $_SESSION['csrf_token_time'] = time();
 }
@@ -31,30 +35,32 @@ $_SESSION['last_activity'] = time();
 
 // Ajouter ces fonctions au début du fichier admin.php après les vérifications de session
 
-function verifierEligibiliteCompetiteur($numUtilisateur, $numConcours) {
+function verifierEligibiliteCompetiteur($numUtilisateur, $numConcours)
+{
     $db = Database::getInstance();
     $pdo = $db->getConnection();
-    
+
     // Vérifier que l'utilisateur n'est pas déjà compétiteur, évaluateur ou président dans ce concours
     $sql = "SELECT 1 FROM CompetiteurParticipe WHERE numCompetiteur = :numUtilisateur AND numConcours = :numConcours
             UNION
             SELECT 1 FROM Jury WHERE numEvaluateur = :numUtilisateur AND numConcours = :numConcours
             UNION
             SELECT 1 FROM Concours WHERE numPresident = :numUtilisateur AND numConcours = :numConcours";
-    
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':numUtilisateur' => $numUtilisateur,
         ':numConcours' => $numConcours
     ]);
-    
+
     return $stmt->rowCount() === 0;
 }
 
-function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) {
+function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours)
+{
     $db = Database::getInstance();
     $pdo = $db->getConnection();
-    
+
     // Vérifier le nombre total d'évaluations
     $sql = "SELECT COUNT(*) FROM Evaluation WHERE numEvaluateur = :numUtilisateur";
     $stmt = $pdo->prepare($sql);
@@ -62,21 +68,22 @@ function verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) {
     if ($stmt->fetchColumn() >= 8) {
         return false;
     }
-    
+
     // Vérifier les autres conditions (pas compétiteur/président dans ce concours)
     return verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
 }
 
-function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) {
+function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub)
+{
     $db = Database::getInstance();
     $pdo = $db->getConnection();
-    
+
     try {
         $pdo->beginTransaction();
 
         // Vérifier l'éligibilité selon le type
-        $eligible = ($userType === 'evaluateur') ? 
-            verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) : 
+        $eligible = ($userType === 'evaluateur') ?
+            verifierEligibiliteEvaluateur($numUtilisateur, $numConcours) :
             verifierEligibiliteCompetiteur($numUtilisateur, $numConcours);
 
         if (!$eligible) {
@@ -124,7 +131,6 @@ function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) 
 
         $pdo->commit();
         return ['success' => true, 'message' => 'Participant ajouté avec succès au concours'];
-
     } catch (Exception $e) {
         if (isset($pdo)) {
             $pdo->rollBack();
@@ -136,9 +142,11 @@ function ajouterParticipant($userType, $numUtilisateur, $numConcours, $numClub) 
 // Modifier le traitement du formulaire POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
     header('Content-Type: application/json');
-    
-    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
-        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+
+    if (
+        !isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) ||
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']
+    ) {
         echo json_encode([
             'success' => false,
             'message' => "Token CSRF invalide"
@@ -168,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userType'])) {
 // Ajouter après les vérifications de session
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getUsers') {
     header('Content-Type: application/json');
-    
+
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         http_response_code(403);
         exit;
@@ -233,7 +241,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         $stmt->execute([':club' => $club, ':concours' => $concours]);
         echo json_encode($stmt->fetchAll());
         exit;
-
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['error' => $e->getMessage()]);
@@ -244,7 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 // Ajouter après la route getUsers
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getClubs') {
     header('Content-Type: application/json');
-    
+
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         http_response_code(403);
         exit;
@@ -265,12 +272,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                     WHERE cp.numClub = c.numClub 
                     AND cp.numConcours = :concours
                 )";
-        
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':concours' => $concours]);
         echo json_encode($stmt->fetchAll());
         exit;
-
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['error' => $e->getMessage()]);
@@ -281,12 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration - Concours de Dessin</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
-</head>
+
 <body>
     <?php if (isset($_SESSION['success'])): ?>
         <div id="success-message" data-message="<?php echo htmlspecialchars($_SESSION['success']); ?>" style="display: none;"></div>
@@ -297,23 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         <div id="error-message" data-message="<?php echo htmlspecialchars($_SESSION['error']); ?>" style="display: none;"></div>
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
-    <div class="status-bar">
-        <div class="status">
-            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
-            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
-        </div>
-        <div class="nav-buttons">
-            <a href="statistics.php" class="btn-stats">Statistiques</a>
-            <?php
-            if(isset($_GET['logout'])) {
-                session_destroy();
-                header('Location: ../../index.php');
-                exit;
-            }
-            ?>
-            <a href="?logout=true" class="btn-logout">Déconnexion</a>
-        </div>
-    </div>
+
     <div class="admin-container">
         <!-- Colonne gauche - Formulaires existants -->
         <div class="admin-forms">
@@ -323,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 </div>
                 <form id="concoursForm" method="post" action="concourManagement.php">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                    
+
                     <div class="form-group">
                         <label for="theme">Thème du concours*</label>
                         <input type="text" id="theme" name="theme" maxlength="100" required>
@@ -361,8 +346,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                echo '<option value="' . htmlspecialchars($row['numUtilisateur']) . '">' . 
-                                     htmlspecialchars($row['prenom'] . ' ' . $row['nom']) . '</option>';
+                                echo '<option value="' . htmlspecialchars($row['numUtilisateur']) . '">' .
+                                    htmlspecialchars($row['prenom'] . ' ' . $row['nom']) . '</option>';
                             }
                             ?>
                         </select>
@@ -370,15 +355,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 
                     <div class="form-group">
                         <label for="nbClubMin">Nombre minimum de clubs requis*</label>
-                        <input type="number" id="nbClubMin" name="nbClubMin" 
-                               min="1" max="12" value="1" required>
+                        <input type="number" id="nbClubMin" name="nbClubMin"
+                            min="1" max="12" value="1" required>
                         <small>Le nombre de clubs doit être compris entre 1 et 12</small>
                     </div>
 
                     <div class="form-group">
                         <label for="nbParticipantMin">Nombre minimum de participants par club*</label>
-                        <input type="number" id="nbParticipantMin" name="nbParticipantMin" 
-                               min="1" max="12" value="1" required>
+                        <input type="number" id="nbParticipantMin" name="nbParticipantMin"
+                            min="1" max="12" value="1" required>
                         <small>Le nombre de participants par club doit être compris entre 1 et 12</small>
                     </div>
 
@@ -405,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 </div>
                 <form id="userForm" method="post" action="admin.php">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                    
+
                     <div class="form-group">
                         <label for="concours">Sélectionner un concours*</label>
                         <select id="concours" name="concours" required>
@@ -420,8 +405,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                echo '<option value="' . htmlspecialchars($row['numConcours']) . '">' . 
-                                     htmlspecialchars($row['theme']) . '</option>';
+                                echo '<option value="' . htmlspecialchars($row['numConcours']) . '">' .
+                                    htmlspecialchars($row['theme']) . '</option>';
                             }
                             ?>
                         </select>
@@ -469,18 +454,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                     ORDER BY dateDeb DESC";
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
-            
+
             while ($concours = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $statusClass = match($concours['etat']) {
+                $statusClass = match ($concours['etat']) {
                     'pas commence' => 'status-not-started',
                     'en cours' => 'status-in-progress',
                     'evaluation' => 'status-evaluation',
                     'termine' => 'status-finished',
                     default => 'status-not-started'
                 };
-                ?>
-                <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>" 
-                   class="concours-card">
+            ?>
+                <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>"
+                    class="concours-card">
                     <div class="status-indicator <?php echo $statusClass; ?>"></div>
                     <div class="concours-info">
                         <div class="concours-title"><?php echo htmlspecialchars($concours['theme']); ?></div>
@@ -490,11 +475,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                         </div>
                     </div>
                 </a>
-                <?php
+            <?php
             }
             ?>
         </div>
     </div>
     <script src="../../assets/js/admin.js"></script>
 </body>
+
 </html>

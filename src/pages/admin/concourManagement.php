@@ -7,23 +7,23 @@ require_once '../../include/db.php';
  * @param int $annee L'année à vérifier
  * @return bool True si on peut créer un nouveau concours, False sinon
  */
-function verifierNombreConcours($annee) {
+function verifierNombreConcours($annee)
+{
     try {
         $db = Database::getInstance();
         $pdo = $db->getConnection();
-        
+
         // Requête pour compter le nombre de concours pour l'année spécifiée
         $sql = "SELECT COUNT(*) as nombre 
                 FROM Concours 
                 WHERE YEAR(dateDeb) = :annee";
-        
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':annee' => $annee]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // Retourne true si moins de 4 concours existent pour cette année
         return ($result['nombre'] < 4);
-        
     } catch (PDOException $e) {
         error_log("Erreur lors de la vérification du nombre de concours: " . $e->getMessage());
         return false;
@@ -33,17 +33,17 @@ function verifierNombreConcours($annee) {
 /**
  * Vérifie si un utilisateur est président
  */
-function verifierEligibilitePresident($numUtilisateur) {
+function verifierEligibilitePresident($numUtilisateur)
+{
     try {
         $db = Database::getInstance();
         $pdo = $db->getConnection();
-        
+
         $sql = "SELECT numPresident FROM President WHERE numPresident = :numUtilisateur";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':numUtilisateur' => $numUtilisateur]);
-        
+
         return $stmt->rowCount() > 0;
-        
     } catch (PDOException $e) {
         error_log("Erreur lors de la vérification d'éligibilité: " . $e->getMessage());
         return false;
@@ -53,7 +53,8 @@ function verifierEligibilitePresident($numUtilisateur) {
 /**
  * Crée un nouveau concours après vérification
  */
-function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat = 'pas commence') {
+function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat = 'pas commence')
+{
     try {
         // Validation des dates
         $dateDebObj = new DateTime($dateDeb);
@@ -121,7 +122,7 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
                         :nbClubMin, 
                         :nbParticipantMin
                     )";
-            
+
             $stmt = $pdo->prepare($sql);
             $success = $stmt->execute([
                 ':numConcours' => $numConcours,
@@ -141,12 +142,10 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
 
             $pdo->commit();
             return ['success' => true, 'message' => 'Le concours a été créé avec succès'];
-
         } catch (Exception $e) {
             $pdo->rollBack();
             throw $e;
         }
-
     } catch (PDOException $e) {
         return ['success' => false, 'message' => 'Erreur de base de données: ' . $e->getMessage()];
     } catch (Exception $e) {
@@ -157,15 +156,17 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
 // Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_start();
-    
+
     // Vérifications d'authentification et CSRF...
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         header('Location: ../../index.php');
         exit;
     }
 
-    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
-        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    if (
+        !isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) ||
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']
+    ) {
         die('Invalid CSRF token');
     }
 
@@ -197,4 +198,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     header('Location: admin.php');
     exit;
-} 
+}

@@ -1,12 +1,21 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'directeur') {
+require_once '../../include/db.php';
+
+// Définir le titre de la page et le CSS additionnel
+$pageTitle = 'Gestion des Compétiteurs';
+$additionalCss = ['/assets/css/admin.css'];
+
+// Inclure le header commun
+require_once '../../components/header.php';
+
+// Vérification spécifique du rôle directeur
+if ($_SESSION['role'] !== 'directeur') {
+    session_destroy();
     header('Location: ../../index.php');
     exit;
 }
 
 // Connexion à la base de données
-require_once '../../include/db.php';
 $db = Database::getInstance();
 $pdo = $db->getConnection();
 
@@ -44,26 +53,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="fr">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Compétiteurs</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
-</head>
-
 <body>
-    <div class="status-bar">
-        <div class="status">
-            <?php
-            echo htmlspecialchars($_SESSION['login']) . ' : ' .
-                ucfirst(htmlspecialchars($_SESSION['user_type']));
-            ?>
-        </div>
-        <div class="logout">
-            <a href="?logout=true">Déconnexion</a>
-        </div>
-    </div>
-
     <div class="admin-container">
         <div class="admin-box">
             <div class="admin-header">
