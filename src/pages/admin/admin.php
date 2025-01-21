@@ -241,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     }
 }
 
-// Ajouter après la route getUsers
+// Modifier la route getClubs
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'getClubs') {
     header('Content-Type: application/json');
     
@@ -256,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         $db = Database::getInstance();
         $pdo = $db->getConnection();
 
-        // Sélectionner les clubs qui ont des utilisateurs et qui ne participent pas déjà au concours
+        // Sélectionner les clubs qui ont des utilisateurs éligibles
         $sql = "SELECT DISTINCT c.numClub, c.nomClub 
                 FROM Club c 
                 INNER JOIN Utilisateur u ON c.numClub = u.numClub
@@ -264,7 +264,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                     SELECT 1 FROM ClubParticipe cp 
                     WHERE cp.numClub = c.numClub 
                     AND cp.numConcours = :concours
-                )";
+                )
+                AND (
+                    -- Vérifie s'il y a des utilisateurs potentiellement compétiteurs
+                    EXISTS (
+                        SELECT 1 FROM Utilisateur u2 
+                        WHERE u2.numClub = c.numClub
+                        AND NOT EXISTS (
+                            SELECT 1 FROM CompetiteurParticipe cp 
+                            WHERE cp.numCompetiteur = u2.numUtilisateur 
+                            AND cp.numConcours = :concours
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM Jury j 
+                            WHERE j.numEvaluateur = u2.numUtilisateur 
+                            AND j.numConcours = :concours
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM Concours co 
+                            WHERE co.numPresident = u2.numUtilisateur 
+                            AND co.numConcours = :concours
+                        )
+                    )
+                    OR
+                    -- Vérifie s'il y a des utilisateurs potentiellement évaluateurs
+                    EXISTS (
+                        SELECT 1 FROM Utilisateur u3 
+                        WHERE u3.numClub = c.numClub
+                        AND NOT EXISTS (
+                            SELECT 1 FROM Jury j 
+                            WHERE j.numEvaluateur = u3.numUtilisateur 
+                            AND j.numConcours = :concours
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM CompetiteurParticipe cp 
+                            WHERE cp.numCompetiteur = u3.numUtilisateur 
+                            AND cp.numConcours = :concours
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM Concours co 
+                            WHERE co.numPresident = u3.numUtilisateur 
+                            AND co.numConcours = :concours
+                        )
+                        AND (
+                            SELECT COUNT(*) FROM Evaluation e 
+                            WHERE e.numEvaluateur = u3.numUtilisateur
+                        ) < 8
+                    )
+                )
+                ORDER BY c.nomClub";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':concours' => $concours]);
@@ -354,8 +402,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
                  ucfirst(htmlspecialchars($_SESSION['role'])); 
             ?>
         </div>
-        <div class="logout">
-            <a href="?logout=true">Déconnexion</a>
+        <div class="nav-buttons">
+            <a href="statistics.php" class="btn-stats">Statistiques</a>
+            <a href="?logout=true" class="btn-logout">Déconnexion</a>
         </div>
     </div>
     <div class="admin-container">

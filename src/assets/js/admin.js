@@ -103,8 +103,19 @@ document.addEventListener('DOMContentLoaded', function() {
         dateDebInput.addEventListener('change', function() {
             dateFinInput.min = this.value;
             const error = validateDates(dateDebInput.value, dateFinInput.value);
-            if (error) showFieldError(error.field === 'dateDeb' ? dateDebInput : dateFinInput, error.error);
-            else {
+            if (error) {
+                showFieldError(error.field === 'dateDeb' ? dateDebInput : dateFinInput, error.error);
+            } else {
+                removeFieldError(dateDebInput);
+                removeFieldError(dateFinInput);
+            }
+        });
+
+        dateFinInput.addEventListener('change', function() {
+            const error = validateDates(dateDebInput.value, dateFinInput.value);
+            if (error) {
+                showFieldError(error.field === 'dateDeb' ? dateDebInput : dateFinInput, error.error);
+            } else {
                 removeFieldError(dateDebInput);
                 removeFieldError(dateFinInput);
             }
@@ -146,16 +157,35 @@ document.addEventListener('DOMContentLoaded', function() {
         userTypeSelect.disabled = true;
         utilisateurSelect.disabled = true;
 
-        // Gestion des changements
-        concoursSelect.addEventListener('change', function() {
+        // Gestion des changements de concours
+        concoursSelect.addEventListener('change', async function() {
             clubSelect.disabled = !this.value;
-            clubSelect.value = '';
+            clubSelect.innerHTML = '<option value="">Choisir un club</option>';
             userTypeSelect.disabled = true;
             userTypeSelect.value = '';
             utilisateurSelect.disabled = true;
             utilisateurSelect.value = '';
+
+            if (this.value) {
+                try {
+                    const response = await fetch(`admin.php?action=getClubs&concours=${this.value}`);
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    const clubs = await response.json();
+                    
+                    clubs.forEach(club => {
+                        const option = document.createElement('option');
+                        option.value = club.numClub;
+                        option.textContent = club.nomClub;
+                        clubSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showError('Erreur lors du chargement des clubs');
+                }
+            }
         });
 
+        // Gestion des changements de club
         clubSelect.addEventListener('change', function() {
             userTypeSelect.disabled = !this.value;
             userTypeSelect.value = '';
@@ -163,20 +193,23 @@ document.addEventListener('DOMContentLoaded', function() {
             utilisateurSelect.value = '';
         });
 
+        // Gestion des changements de type d'utilisateur
         userTypeSelect.addEventListener('change', async function() {
-            if (!this.value || !clubSelect.value) {
+            if (!this.value || !clubSelect.value || !concoursSelect.value) {
                 utilisateurSelect.disabled = true;
                 utilisateurSelect.value = '';
                 return;
             }
 
             try {
-                const response = await fetch(`get_users.php?club=${clubSelect.value}&type=${this.value}`);
+                const response = await fetch(`admin.php?action=getUsers&club=${clubSelect.value}&type=${this.value}&concours=${concoursSelect.value}`);
+                if (!response.ok) throw new Error('Erreur réseau');
                 const users = await response.json();
+                
                 utilisateurSelect.innerHTML = '<option value="">Sélectionnez un utilisateur</option>';
                 users.forEach(user => {
                     const option = document.createElement('option');
-                    option.value = user.id;
+                    option.value = user.numUtilisateur;
                     option.textContent = `${user.nom} ${user.prenom}`;
                     utilisateurSelect.appendChild(option);
                 });
