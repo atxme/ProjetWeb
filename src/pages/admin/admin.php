@@ -315,142 +315,184 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         </div>
     </div>
     <div class="admin-container">
-        <div class="admin-box">
-            <div class="admin-header">
-                <h2>Gestion des Concours</h2>
+        <!-- Colonne gauche - Formulaires existants -->
+        <div class="admin-forms">
+            <div class="admin-box">
+                <div class="admin-header">
+                    <h2>Gestion des Concours</h2>
+                </div>
+                <form id="concoursForm" method="post" action="concourManagement.php">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    
+                    <div class="form-group">
+                        <label for="theme">Thème du concours*</label>
+                        <input type="text" id="theme" name="theme" maxlength="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptif">Descriptif détaillé*</label>
+                        <textarea id="descriptif" name="descriptif" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateDeb">Date de début*</label>
+                        <input type="date" id="dateDeb" name="dateDeb" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateFin">Date de fin*</label>
+                        <input type="date" id="dateFin" name="dateFin" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="president_id">Président du concours*</label>
+                        <select id="president_id" name="president_id" required>
+                            <option value="">Sélectionner un président</option>
+                            <?php
+                            $db = Database::getInstance();
+                            $pdo = $db->getConnection();
+                            $sql = "SELECT DISTINCT u.numUtilisateur, u.nom, u.prenom 
+                                    FROM Utilisateur u 
+                                    INNER JOIN President p ON u.numUtilisateur = p.numPresident 
+                                    LEFT JOIN Concours c ON p.numPresident = c.numPresident 
+                                    WHERE c.numConcours IS NULL 
+                                       OR c.etat NOT IN ('pas commence', 'en cours')
+                                    GROUP BY u.numUtilisateur";
+                            $stmt = $pdo->prepare($sql);
+                            $stmt->execute();
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                echo '<option value="' . htmlspecialchars($row['numUtilisateur']) . '">' . 
+                                     htmlspecialchars($row['prenom'] . ' ' . $row['nom']) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nbClubMin">Nombre minimum de clubs requis*</label>
+                        <input type="number" id="nbClubMin" name="nbClubMin" 
+                               min="1" max="12" value="1" required>
+                        <small>Le nombre de clubs doit être compris entre 1 et 12</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nbParticipantMin">Nombre minimum de participants par club*</label>
+                        <input type="number" id="nbParticipantMin" name="nbParticipantMin" 
+                               min="1" max="12" value="1" required>
+                        <small>Le nombre de participants par club doit être compris entre 1 et 12</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="etat">État du concours</label>
+                        <select id="etat" name="etat" disabled>
+                            <option value="pas commence" selected>Pas commencé</option>
+                            <option value="en cours">En cours</option>
+                            <option value="attente">En attente</option>
+                            <option value="resultat">Résultats</option>
+                            <option value="evalue">Évalué</option>
+                        </select>
+                        <input type="hidden" name="etat" value="pas commence">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Créer le concours</button>
+                    <p class="form-info">* Champs obligatoires</p>
+                </form>
             </div>
-            <form id="concoursForm" method="post" action="concourManagement.php">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                
-                <div class="form-group">
-                    <label for="theme">Thème du concours*</label>
-                    <input type="text" id="theme" name="theme" maxlength="100" required>
-                </div>
 
-                <div class="form-group">
-                    <label for="descriptif">Descriptif détaillé*</label>
-                    <textarea id="descriptif" name="descriptif" rows="4" required></textarea>
+            <div class="admin-box">
+                <div class="admin-header">
+                    <h2>Ajout de Participants au Concours</h2>
                 </div>
+                <form id="userForm" method="post" action="admin.php">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    
+                    <div class="form-group">
+                        <label for="concours">Sélectionner un concours*</label>
+                        <select id="concours" name="concours" required>
+                            <option value="">Choisir un concours</option>
+                            <?php
+                            $db = Database::getInstance();
+                            $pdo = $db->getConnection();
+                            $sql = "SELECT numConcours, theme 
+                                    FROM Concours 
+                                    WHERE etat IN ('pas commence', 'en cours')
+                                    ORDER BY dateDeb DESC";
+                            $stmt = $pdo->prepare($sql);
+                            $stmt->execute();
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                echo '<option value="' . htmlspecialchars($row['numConcours']) . '">' . 
+                                     htmlspecialchars($row['theme']) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="dateDeb">Date de début*</label>
-                    <input type="date" id="dateDeb" name="dateDeb" required>
-                </div>
+                    <div class="form-group">
+                        <label for="club">Sélectionner un club*</label>
+                        <select id="club" name="club" required disabled>
+                            <option value="">Choisir d'abord un concours</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="dateFin">Date de fin*</label>
-                    <input type="date" id="dateFin" name="dateFin" required>
-                </div>
+                    <div class="form-group">
+                        <label for="userType">Type de participation*</label>
+                        <select id="userType" name="userType" required>
+                            <option value="">Choisir un rôle</option>
+                            <option value="competiteur">Compétiteur</option>
+                            <option value="evaluateur">Évaluateur</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="president_id">Président du concours*</label>
-                    <select id="president_id" name="president_id" required>
-                        <option value="">Sélectionner un président</option>
-                        <?php
-                        $db = Database::getInstance();
-                        $pdo = $db->getConnection();
-                        $sql = "SELECT DISTINCT u.numUtilisateur, u.nom, u.prenom 
-                                FROM Utilisateur u 
-                                INNER JOIN President p ON u.numUtilisateur = p.numPresident 
-                                LEFT JOIN Concours c ON p.numPresident = c.numPresident 
-                                WHERE c.numConcours IS NULL 
-                                   OR c.etat NOT IN ('pas commence', 'en cours')
-                                GROUP BY u.numUtilisateur";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute();
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo '<option value="' . htmlspecialchars($row['numUtilisateur']) . '">' . 
-                                 htmlspecialchars($row['prenom'] . ' ' . $row['nom']) . '</option>';
-                        }
-                        ?>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="utilisateur">Sélectionner un utilisateur*</label>
+                        <select id="utilisateur" name="utilisateur" required disabled>
+                            <option value="">Choisir d'abord un club et un type</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="nbClubMin">Nombre minimum de clubs requis*</label>
-                    <input type="number" id="nbClubMin" name="nbClubMin" 
-                           min="1" max="12" value="1" required>
-                    <small>Le nombre de clubs doit être compris entre 1 et 12</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="nbParticipantMin">Nombre minimum de participants par club*</label>
-                    <input type="number" id="nbParticipantMin" name="nbParticipantMin" 
-                           min="1" max="12" value="1" required>
-                    <small>Le nombre de participants par club doit être compris entre 1 et 12</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="etat">État du concours</label>
-                    <select id="etat" name="etat" disabled>
-                        <option value="pas commence" selected>Pas commencé</option>
-                        <option value="en cours">En cours</option>
-                        <option value="attente">En attente</option>
-                        <option value="resultat">Résultats</option>
-                        <option value="evalue">Évalué</option>
-                    </select>
-                    <input type="hidden" name="etat" value="pas commence">
-                </div>
-
-                <button type="submit" class="btn-submit">Créer le concours</button>
-                <p class="form-info">* Champs obligatoires</p>
-            </form>
+                    <button type="submit" class="btn-submit">Ajouter au concours</button>
+                    <p class="form-info">* Champs obligatoires</p>
+                </form>
+            </div>
         </div>
 
-        <div class="admin-box">
-            <div class="admin-header">
-                <h2>Ajout de Participants au Concours</h2>
+        <!-- Nouvelle colonne droite - Liste des concours -->
+        <div class="concours-list">
+            <div class="header">
+                <h2>Concours en cours</h2>
             </div>
-            <form id="userForm" method="post" action="admin.php">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                
-                <div class="form-group">
-                    <label for="concours">Sélectionner un concours*</label>
-                    <select id="concours" name="concours" required>
-                        <option value="">Choisir un concours</option>
-                        <?php
-                        $db = Database::getInstance();
-                        $pdo = $db->getConnection();
-                        $sql = "SELECT numConcours, theme 
-                                FROM Concours 
-                                WHERE etat IN ('pas commence', 'en cours')
-                                ORDER BY dateDeb DESC";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute();
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo '<option value="' . htmlspecialchars($row['numConcours']) . '">' . 
-                                 htmlspecialchars($row['theme']) . '</option>';
-                        }
-                        ?>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="club">Sélectionner un club*</label>
-                    <select id="club" name="club" required disabled>
-                        <option value="">Choisir d'abord un concours</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="userType">Type de participation*</label>
-                    <select id="userType" name="userType" required>
-                        <option value="">Choisir un rôle</option>
-                        <option value="competiteur">Compétiteur</option>
-                        <option value="evaluateur">Évaluateur</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="utilisateur">Sélectionner un utilisateur*</label>
-                    <select id="utilisateur" name="utilisateur" required disabled>
-                        <option value="">Choisir d'abord un club et un type</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-submit">Ajouter au concours</button>
-                <p class="form-info">* Champs obligatoires</p>
-            </form>
+            <?php
+            $db = Database::getInstance();
+            $pdo = $db->getConnection();
+            $sql = "SELECT numConcours, theme, dateDeb, dateFin, etat 
+                    FROM Concours 
+                    ORDER BY dateDeb DESC";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+            
+            while ($concours = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $statusClass = match($concours['etat']) {
+                    'pas commence' => 'status-not-started',
+                    'en cours' => 'status-in-progress',
+                    'evaluation' => 'status-evaluation',
+                    'termine' => 'status-finished',
+                    default => 'status-not-started'
+                };
+                ?>
+                <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>" 
+                   class="concours-card">
+                    <div class="status-indicator <?php echo $statusClass; ?>"></div>
+                    <div class="concours-info">
+                        <div class="concours-title"><?php echo htmlspecialchars($concours['theme']); ?></div>
+                        <div class="concours-date">
+                            Du <?php echo date('d/m/Y', strtotime($concours['dateDeb'])); ?>
+                            au <?php echo date('d/m/Y', strtotime($concours['dateFin'])); ?>
+                        </div>
+                    </div>
+                </a>
+                <?php
+            }
+            ?>
         </div>
     </div>
     <script src="../../assets/js/admin.js"></script>

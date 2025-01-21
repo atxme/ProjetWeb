@@ -208,4 +208,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialiser l'état des sélections au chargement
         updateSelectStates();
     }
+
+    // Fonction pour formater la date au format YYYY-MM-DD
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Récupérer les éléments de date
+    const dateDebInput = document.getElementById('dateDeb');
+    const dateFinInput = document.getElementById('dateFin');
+
+    if (dateDebInput && dateFinInput) {
+        // Obtenir la date d'aujourd'hui
+        const today = new Date();
+        const minDate = formatDate(today);
+
+        // Définir la date minimale pour les deux champs
+        dateDebInput.min = minDate;
+        dateFinInput.min = minDate;
+
+        // Ajouter un écouteur d'événement pour la date de début
+        dateDebInput.addEventListener('change', function() {
+            // La date de fin ne peut pas être antérieure à la date de début
+            dateFinInput.min = dateDebInput.value;
+            
+            // Si la date de fin est antérieure à la date de début, la réinitialiser
+            if (dateFinInput.value && dateFinInput.value < dateDebInput.value) {
+                dateFinInput.value = dateDebInput.value;
+            }
+        });
+
+        // Ajouter un écouteur d'événement pour la date de fin
+        dateFinInput.addEventListener('change', function() {
+            // Si la date de fin est antérieure à la date de début, afficher une erreur
+            if (this.value < dateDebInput.value) {
+                alert('La date de fin ne peut pas être antérieure à la date de début');
+                this.value = dateDebInput.value;
+            }
+        });
+    }
 });
