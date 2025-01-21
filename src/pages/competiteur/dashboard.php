@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <a href="../../pages/evaluateur/evaluateur.php" class="btn-stats">Go to évaluateur</a>
+            <a href="../evaluateur/evaluateur.php" class="btn-stats">Go to évaluateur</a>
             <a href="../logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
