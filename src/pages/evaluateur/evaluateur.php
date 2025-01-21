@@ -128,23 +128,23 @@ try {
                     <h2>Mon profil</h2>
                     <div>
                         <label class ="cat"><label type ="cat">Nom :</label>
-                        <input type="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
+                        <input class="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
                     </div>
                     <div>
                         <label class ="cat">Prénom :</label>
-                        <input type="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
+                        <input class="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
                     </div>
                     <div>
                         <label class ="cat">Âge :</label>
-                        <input type="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
+                        <input class="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
                     </div>
                     <div>
                         <label class ="cat">Adresse :</label>
-                        <input type="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
+                        <input class="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
                     </div>
                     <div>
                         <label class ="cat">Club :</label>
-                        <input type="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
+                        <input class="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
                     </div>
                 </div>
             </div>
