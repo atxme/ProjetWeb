@@ -43,24 +43,24 @@ $order = isset($_POST['order']) ? $_POST['order'] : 'ASC';
 try {
     // Si un concours spécifique est demandé
     if ($concoursId) {
-        // Récupérer les détails du concours avec une requête préparée
+        // Récupérer les détails du concours avec une requête simplifiée
         $stmt = $conn->prepare("
             SELECT 
-                c.*,
-                COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
-                COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
-                COUNT(DISTINCT d.numDessin) as nb_dessins,
-                COUNT(DISTINCT e.numEvaluation) as nb_evaluations,
-                ROUND(AVG(CASE WHEN e.note IS NOT NULL THEN e.note END), 2) as moyenne_notes
+                c.numConcours,
+                c.theme,
+                c.descriptif,
+                c.dateDeb,
+                c.dateFin,
+                c.etat,
+                (SELECT COUNT(DISTINCT numCompetiteur) FROM CompetiteurParticipe WHERE numConcours = c.numConcours) as nb_participants,
+                (SELECT COUNT(DISTINCT numEvaluateur) FROM Jury WHERE numConcours = c.numConcours) as nb_evaluateurs,
+                (SELECT COUNT(DISTINCT numDessin) FROM Dessin WHERE numConcours = c.numConcours) as nb_dessins,
+                (SELECT COUNT(DISTINCT e.numEvaluation) 
+                 FROM Dessin d 
+                 LEFT JOIN Evaluation e ON d.numDessin = e.numDessin 
+                 WHERE d.numConcours = c.numConcours) as nb_evaluations
             FROM Concours c
-            LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
-            LEFT JOIN Jury j ON c.numConcours = j.numConcours
-            LEFT JOIN Dessin d ON c.numConcours = d.numConcours
-            LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
             WHERE c.numConcours = :concoursId
-            GROUP BY 
-                c.numConcours, c.theme, c.descriptif, 
-                c.dateDeb, c.dateFin, c.etat
         ");
         
         $stmt->execute(['concoursId' => $concoursId]);
@@ -73,8 +73,11 @@ try {
         // Récupérer les participants du concours
         $stmt = $conn->prepare("
             SELECT DISTINCT
-                u.nom, u.prenom, u.age, u.adresse, 
-                c.nomClub, c.departement
+                u.nom, 
+                u.prenom, 
+                u.age, 
+                c.nomClub, 
+                c.departement
             FROM CompetiteurParticipe cp
             JOIN Utilisateur u ON cp.numCompetiteur = u.numUtilisateur
             JOIN Club c ON u.numClub = c.numClub
@@ -88,10 +91,10 @@ try {
         $stmt = $conn->prepare("
             SELECT 
                 d.numDessin,
-                e.note,
-                e.commentaire,
-                u_comp.nom as competiteur_nom,
-                u_eval.nom as evaluateur_nom
+                COALESCE(e.note, 'Non évalué') as note,
+                COALESCE(e.commentaire, 'Aucun commentaire') as commentaire,
+                CONCAT(u_comp.nom, ' ', u_comp.prenom) as competiteur_nom,
+                COALESCE(CONCAT(u_eval.nom, ' ', u_eval.prenom), 'Non assigné') as evaluateur_nom
             FROM Dessin d
             LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
             LEFT JOIN Utilisateur u_comp ON d.numCompetiteur = u_comp.numUtilisateur
@@ -104,8 +107,14 @@ try {
     }
 } catch (Exception $e) {
     // Log l'erreur pour le débogage
-    error_log("Erreur dans statistics.php: " . $e->getMessage());
+    error_log("Erreur dans statistics.php: " . $e->getMessage() . "\n" . $e->getTraceAsString());
     $error = "Une erreur est survenue lors de la récupération des données.";
+}
+
+// Affichage des erreurs si présentes
+if (isset($error)) {
+    echo '<div class="alert alert-danger">' . htmlspecialchars($error) . '</div>';
+    exit;
 }
 
 // Récupération des années pour le filtre
