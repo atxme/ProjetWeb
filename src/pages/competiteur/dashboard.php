@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord - Compétiteur</title>
-    <link rel="stylesheet" href="css/competiteur.css">
+    <link rel="stylesheet" href="../../assets/css/competiteur.css">
 </head>
 <body>
     <!-- Ajout du bandeau de statut -->
