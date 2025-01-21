@@ -145,6 +145,8 @@ body {
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
   margin-bottom: 25px;
+}
+
 /* Style des champs désactivés */
 .form-group select:disabled,
 .form-group input:disabled {
