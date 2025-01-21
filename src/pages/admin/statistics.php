@@ -50,6 +50,9 @@ $evaluatedDrawings = [];
 $allEvaluatedDrawings = [];
 $order = 'ASC';
 
+// Récupérer l'ID du concours si spécifié
+$concoursId = isset($_GET['concours']) ? (int)$_GET['concours'] : null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
     $selectedYear = $_POST['year'];
     $order = $_POST['order'] ?? 'ASC';
@@ -96,6 +99,57 @@ $stmt = $conn->prepare("
 ");
 $stmt->execute();
 $allEvaluatedDrawings = $stmt->fetchAll();
+
+// Si un concours spécifique est demandé
+if ($concoursId) {
+    // Récupérer les détails du concours
+    $stmt = $conn->prepare("
+        SELECT c.*, 
+               COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
+               COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
+               COUNT(DISTINCT d.numDessin) as nb_dessins,
+               COUNT(DISTINCT e.numEvaluation) as nb_evaluations
+        FROM Concours c
+        LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
+        LEFT JOIN Jury j ON c.numConcours = j.numConcours
+        LEFT JOIN Dessin d ON c.numConcours = d.numConcours
+        LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
+        WHERE c.numConcours = ?
+        GROUP BY c.numConcours
+    ");
+    $stmt->execute([$concoursId]);
+    $concoursDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($concoursDetails) {
+        // Afficher les statistiques spécifiques au concours
+        ?>
+        <div class="container">
+            <h1><?php echo htmlspecialchars($concoursDetails['theme']); ?></h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Participants</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_participants']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Évaluateurs</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_evaluateurs']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Dessins soumis</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_dessins']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Évaluations réalisées</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_evaluations']; ?></div>
+                </div>
+            </div>
+            
+            <!-- Ajouter d'autres statistiques spécifiques au concours ici -->
+        </div>
+        <?php
+    }
+}
 ?>
 
 <!DOCTYPE html>
