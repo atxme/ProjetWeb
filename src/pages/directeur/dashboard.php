@@ -156,7 +156,6 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <table>
                 <thead>
                     <tr>
-                        <th>Numéro d'Utilisateur</th>
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Rôle</th>
@@ -166,7 +165,6 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach ($membres as $membre): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($membre['numUtilisateur']); ?></td>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['role']); ?></td>
