@@ -52,6 +52,11 @@ if (
             <div class="admin-header">
                 <h2>Tableau de bord Compétiteur</h2>
                 <p>Gérez vos participations aux concours</p>
+                <ul>
+                    <?php foreach ($_SESSION['roles'] as $role): ?>
+                        <li><?= htmlspecialchars($role) ?></li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
         <div class="actions-grid">
