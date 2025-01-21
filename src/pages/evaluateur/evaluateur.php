@@ -229,7 +229,7 @@ try {
                             <td class="cell"><?= htmlspecialchars($concour['date_fin']) ?></td>
                             <td class="cell"><?= htmlspecialchars($concour['etat_concours']) ?></td>
                         </tr> -->
-                        <div class="concours-card">
+                        <a href="dashboard.php" class="concours-card">
                             <div class="concours-info">
                                 <div class="concours-title"><?php echo htmlspecialchars($concour['nom_concours']); ?></div>
                                 <div class="concours-date">
@@ -238,7 +238,7 @@ try {
                                 </div>
                                 <div class="concours-status"><?php echo htmlspecialchars($concour['etat_concours']); ?></div>
                             </div>
-                        </div>
+                        </a>
                     <?php endforeach; ?>
                 </table>
             </div>
