@@ -285,6 +285,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
         $db = Database::getInstance();
         $conn = $db->getConnection();
 
+        // Obtenir la connexion à la base de données
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
         // Validation côté serveur
         if (empty($_POST['theme']) || strlen($_POST['theme']) < 3) {
             throw new Exception("Le thème est invalide");
