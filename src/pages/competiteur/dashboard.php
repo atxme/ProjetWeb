@@ -32,7 +32,9 @@ if (
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <a href="../evaluateur/evaluateur.php" class="btn-stats">Mon profil évaluateur</a>
+            <?php if ($isEvaluateur && $isCompetiteur): ?>
+                <a href="../evaluateur/evaluateur.php" class="btn-stats">Mon profil évaluateur</a>
+            <?php endif; ?>
             <a href="../logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
