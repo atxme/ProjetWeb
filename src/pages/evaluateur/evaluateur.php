@@ -153,27 +153,18 @@ try {
                 <div>
                     <label class ="cat">Moyenne des notes :</label>
                     <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
-                    <label class ="cat">Moyenne des notes :</label>
-                    <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
                 </div>
                 <div>
-                    <label class ="cat">Note maximale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
                     <label class ="cat">Note maximale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
                 </div>
                 <div>
                     <label class ="cat">Note minimale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
-                    <label class ="cat">Note minimale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
                 </div>
                 <div>
                     <label class ="cat">Dernier concours :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
-                    <label class ="cat">Dernier concours :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
-                </div>
+                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>                </div>
             </div>
         </div>
         <div class="right-column">
