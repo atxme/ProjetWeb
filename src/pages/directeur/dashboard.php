@@ -37,11 +37,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':numCompetiteur' => $numCompetiteur]);
         $message = "Compétiteur ajouté avec succès.";
     } elseif ($action === 'supprimer') {
-        // Supprimer un compétiteur
-        $sql = "DELETE FROM Competiteur WHERE numCompetiteur = :numCompetiteur";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':numCompetiteur' => $numCompetiteur]);
-        $message = "Compétiteur supprimé avec succès.";
+        try {
+            $pdo->beginTransaction();
+
+            // Supprimer les évaluations des dessins du compétiteur
+            $sql = "DELETE FROM Evaluation WHERE numDessin IN (SELECT numDessin FROM Dessin WHERE numCompetiteur = :numCompetiteur)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer les dessins du compétiteur
+            $sql = "DELETE FROM Dessin WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer les participations aux concours
+            $sql = "DELETE FROM CompetiteurParticipe WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer le compétiteur
+            $sql = "DELETE FROM Competiteur WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer l'utilisateur
+            $sql = "DELETE FROM Utilisateur WHERE numUtilisateur = :numUtilisateur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numCompetiteur]);
+
+            $pdo->commit();
+            $message = "Compétiteur supprimé avec succès.";
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            $message = "Erreur lors de la suppression du compétiteur : " . $e->getMessage();
+        }
     }
 }
 
