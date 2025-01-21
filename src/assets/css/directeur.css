@@ -88,59 +88,6 @@ tr:last-child td {
   transform: scale(1.1);
 }
 
-/* Style du formulaire */
-.form-group {
-  margin-bottom: 20px;
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.form-group:hover {
-  background-color: #ffffff;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 0.95em;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  font-size: 0.95em;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #4a69bd;
-  box-shadow: 0 0 0 2px rgba(74, 105, 189, 0.1);
-}
-
-.btn-submit {
-  width: 100%;
-  padding: 12px;
-  background-color: #4a69bd;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-submit:hover {
-  background-color: #3c5aa6;
-}
-
 .admin-container {
   flex-direction: row;
   gap: 20px;
@@ -154,16 +101,4 @@ tr:last-child td {
   padding: 20px;
   margin-bottom: 20px;
   flex: 1;
-}
-
-.admin-header {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.admin-header h2 {
-  color: #2c3e50;
-  margin: 0;
-  font-size: 1.5em;
 }
