@@ -204,10 +204,10 @@ try {
                     <!-- Liste des concours -->
                     <table class="profile-table">
                         <tr>
-                            <th>Nom</th>
-                            <th>Date de début</th>
-                            <th>Date de fin</th>
-                            <th>État</th>
+                            <th class="label-cell">Nom</th>
+                            <th class="label-cell">Date de début</th>
+                            <th class="label-cell">Date de fin</th>
+                            <th class="label-cell">État</th>
                         </tr>
                         <?php foreach ($concours as $concour) : ?>
                             <tr>
