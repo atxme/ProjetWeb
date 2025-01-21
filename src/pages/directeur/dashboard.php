@@ -3,7 +3,7 @@ require_once '../../include/db.php';
 
 // Définir le titre de la page et le CSS additionnel
 $pageTitle = 'Gestion des Compétiteurs';
-$additionalCss = ['/assets/css/admin.css'];
+$additionalCss = ['../../assets/css/admin.css'];
 
 // Inclure le header commun
 require_once '../../components/header.php';

@@ -3,6 +3,7 @@ require_once '../../include/db.php';
 
 // Définir le titre de la page
 $pageTitle = 'Evaluateur - Concours de Dessin';
+$additionalCss = ['/assets/css/evaluateur.css'];
 
 // Inclure le header commun
 require_once '../../components/header.php';

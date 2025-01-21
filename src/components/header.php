@@ -37,7 +37,6 @@ if (isset($_GET['logout'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Concours de Dessin' ?></title>
-    <link rel="stylesheet" href="/assets/css/evaluateur.css">
     <?php if (isset($additionalCss)): ?>
         <?php foreach ($additionalCss as $css): ?>
             <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">

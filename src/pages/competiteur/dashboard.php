@@ -3,7 +3,7 @@ require_once '../../include/db.php';
 
 // Définir le titre de la page et le CSS additionnel
 $pageTitle = 'Tableau de bord - Compétiteur';
-$additionalCss = ['/assets/css/competitieur.css'];
+$additionalCss = ['../../assets/css/competitieur.css'];
 
 // Inclure le header commun
 require_once '../../components/header.php';
