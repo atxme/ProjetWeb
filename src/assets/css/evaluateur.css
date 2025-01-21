@@ -211,23 +211,28 @@ align-items: center;
 gap: 8px;
 }
 
-.status-bar .logout a {
-color: white;
-text-decoration: none;
-padding: 8px 16px;
-background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-border-radius: 6px;
-transition: all 0.3s ease;
-font-weight: 500;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.btn-stats,
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 16px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.status-bar .logout a:hover {
-transform: translateY(-2px);
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
+.btn-stats {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
 }
 
+.btn-logout {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
 input[readonly],
 input[disabled],
 select[disabled] {
@@ -378,6 +383,3 @@ width: 100%;
 box-sizing: border-box;
 }
 
-.btn-stats {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-}

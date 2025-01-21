@@ -39,7 +39,7 @@ if (
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <a href="../evaluateur/evaluateur.php" class="btn-stats">Go to évaluateur</a>
+            <a href="../evaluateur/evaluateur.php" class="btn-stats">Mon profil évaluateur</a>
             <a href="../logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
@@ -48,11 +48,6 @@ if (
             <div class="admin-header">
                 <h2>Tableau de bord Compétiteur</h2>
                 <p>Gérez vos participations aux concours</p>
-                <ul>
-                    <?php foreach ($_SESSION['roles'] as $role): ?>
-                        <li><?= htmlspecialchars($role) ?></li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
         </div>
         <div class="actions-grid">

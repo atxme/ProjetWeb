@@ -154,9 +154,9 @@ try {
         </div>
         <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
         <?php if ($isEvaluateur && $isCompetiteur): ?>
-            <a href="../competiteur/dashboard.php" class="btn-stats">Go to compétiteur</a>
+            <a href="../competiteur/dashboard.php" class="btn-stats">Mon profil compétiteur</a>
         <?php endif; ?>
-        <div class="logout">
+        <div class="btn-logout">
             <?php
             if(isset($_GET['logout'])) {
                 session_destroy();
