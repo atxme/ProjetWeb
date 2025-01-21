@@ -36,6 +36,51 @@
   padding-left: 15px;
 }
 
+/* Style des formulaires */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 0.95em;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #357abd;
+}
+
 /* Style de la table des membres */
 table {
   width: 100%;
