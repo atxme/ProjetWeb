@@ -347,6 +347,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
     <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body>
+    <?php
+    // Initialiser la connexion à la base de données
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
+    ?>
     <div class="status-bar">
         <div class="status">
             <?php 
