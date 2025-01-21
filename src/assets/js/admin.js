@@ -256,6 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateDebObj = new Date(dateDeb);
         const dateFinObj = new Date(dateFin);
         
+        if (!dateDeb || !dateFin) {
+            return {
+                error: "Les dates de début et de fin sont obligatoires",
+                field: !dateDeb ? 'dateDeb' : 'dateFin'
+            };
+        }
+        
         if (dateDebObj < today) {
             return {
                 error: "La date de début ne peut pas être antérieure à aujourd'hui",
@@ -279,6 +286,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction pour valider le thème
     function validateTheme(theme) {
+        if (!theme) {
+            return {
+                error: "Le thème est obligatoire",
+                field: 'theme'
+            };
+        }
         if (theme.length < 3) {
             return {
                 error: "Le thème doit contenir au moins 3 caractères",
@@ -296,6 +309,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction pour valider la description
     function validateDescription(description) {
+        if (!description) {
+            return {
+                error: "La description est obligatoire",
+                field: 'description'
+            };
+        }
         if (description.length < 10) {
             return {
                 error: "La description doit contenir au moins 10 caractères",
@@ -315,21 +334,48 @@ document.addEventListener('DOMContentLoaded', function() {
     function markFieldAsInvalid(fieldName) {
         const field = form.querySelector(`[name="${fieldName}"]`);
         if (field) {
+            // Retirer d'abord toutes les classes
+            field.classList.remove('invalid-field', 'shake');
+            // Forcer un reflow pour assurer que l'animation se déclenche
+            void field.offsetWidth;
+            // Ajouter les classes
             field.classList.add('invalid-field');
-            // Ajouter une animation de secousse
             field.classList.add('shake');
-            setTimeout(() => field.classList.remove('shake'), 500);
+            
+            // Retirer l'animation après qu'elle soit terminée
+            setTimeout(() => {
+                field.classList.remove('shake');
+            }, 500);
+
+            // Focus sur le champ invalide
+            field.focus();
         }
     }
 
     // Fonction pour réinitialiser tous les champs
     function resetFields() {
-        const fields = form.querySelectorAll('input, textarea');
+        const fields = form.querySelectorAll('input, textarea, select');
         fields.forEach(field => {
-            field.classList.remove('invalid-field');
-            field.classList.remove('shake');
+            field.classList.remove('invalid-field', 'shake');
         });
     }
+
+    // Ajouter des écouteurs pour retirer la classe invalid-field lors de la modification
+    form.querySelectorAll('input, textarea, select').forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('invalid-field');
+        });
+        
+        field.addEventListener('focus', function() {
+            if (this.classList.contains('invalid-field')) {
+                this.classList.add('focused-invalid');
+            }
+        });
+        
+        field.addEventListener('blur', function() {
+            this.classList.remove('focused-invalid');
+        });
+    });
 
     // Fonction pour afficher les messages d'erreur
     function showError(message, fieldName = null) {
@@ -362,13 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gestionnaire de soumission du formulaire
     const form = document.getElementById('creation-concours-form');
     if (form) {
-        // Ajouter des écouteurs pour retirer la classe invalid-field lors de la modification
-        form.querySelectorAll('input, textarea').forEach(field => {
-            field.addEventListener('input', function() {
-                this.classList.remove('invalid-field');
-            });
-        });
-
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             resetFields();
@@ -404,24 +443,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formData = new FormData(form);
                 const response = await fetch(form.action, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la création du concours');
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    throw new Error('Réponse invalide du serveur');
                 }
 
-                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.message || 'Erreur lors de la création du concours');
+                }
+
                 if (result.success) {
                     showSuccess('Concours créé avec succès !');
                     form.reset();
-                    location.reload();
+                    setTimeout(() => location.reload(), 1000);
                 } else {
                     showError(result.message || 'Erreur lors de la création du concours');
                 }
             } catch (error) {
                 console.error('Erreur:', error);
-                showError('Une erreur est survenue lors de la création du concours');
+                showError(error.message || 'Une erreur est survenue lors de la création du concours');
             }
         });
     }
