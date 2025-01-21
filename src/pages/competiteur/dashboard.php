@@ -38,7 +38,7 @@ $isCompetiteurAndEvaluateur = in_array('competiteur', $_SESSION['roles']) && in_
             <?php if ($isCompetiteurAndEvaluateur): ?>
                 <a href="../evaluateur/evaluateur.php" class="btn-stats">Mon profil évaluateur</a>
             <?php endif; ?>            
-            <div class="btn-logout">
+            <div>
                 <?php
                 if(isset($_GET['logout'])) {
                     session_destroy();
@@ -46,7 +46,7 @@ $isCompetiteurAndEvaluateur = in_array('competiteur', $_SESSION['roles']) && in_
                     exit;
                 }
                 ?>
-                <a href="?logout=true">Déconnexion</a>
+                <a class="btn-logout" href="?logout=true">Déconnexion</a>
             </div>
         </div>
     </div>
