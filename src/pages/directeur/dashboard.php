@@ -192,6 +192,51 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </div>
+
+        <div class="admin-box">
+            <div class="admin-header">
+                <h2>Ajouter un Nouvel Utilisateur</h2>
+            </div>
+            <form method="post">
+                <input type="hidden" name="action" value="ajouter_utilisateur">
+                <input type="hidden" name="numClub" value="<?php echo htmlspecialchars($numClubDirecteur); ?>">
+
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Âge</label>
+                    <input type="number" id="age" name="age" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="adresse">Adresse</label>
+                    <input type="text" id="adresse" name="adresse" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login">Login</label>
+                    <input type="text" id="login" name="login" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mdp">Mot de passe</label>
+                    <input type="password" id="mdp" name="mdp" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
+            </form>
+        </div>
+
+    </div>
+    <div class="admin-container" style="margin-top: 0;">
         <div class="admin-box">
             <div class="admin-header">
                 <h2>Membres Actuels du Club</h2>
@@ -236,49 +281,6 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        </div>
-    </div>
-    <div class="admin-container" style="margin-top: 0;">
-        <div class="admin-box">
-            <div class="admin-header">
-                <h2>Ajouter un Nouvel Utilisateur</h2>
-            </div>
-            <form method="post">
-                <input type="hidden" name="action" value="ajouter_utilisateur">
-                <input type="hidden" name="numClub" value="<?php echo htmlspecialchars($numClubDirecteur); ?>">
-
-                <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="age">Âge</label>
-                    <input type="number" id="age" name="age" required min="0">
-                </div>
-
-                <div class="form-group">
-                    <label for="adresse">Adresse</label>
-                    <input type="text" id="adresse" name="adresse" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="login">Login</label>
-                    <input type="text" id="login" name="login" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="mdp">Mot de passe</label>
-                    <input type="password" id="mdp" name="mdp" required>
-                </div>
-
-                <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
-            </form>
         </div>
     </div>
 </body>
