@@ -303,7 +303,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
             <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
         <div class="nav-buttons">
-            <a href="../statistics/statistics.php" class="btn-stats">Statistiques</a>
+            <a href="statistics.php" class="btn-stats">Statistiques</a>
+            <?php
+            if(isset($_GET['logout'])) {
+                session_destroy();
+                header('Location: ../../index.php');
+                exit;
+            }
+            ?>
             <a href="?logout=true" class="btn-logout">Déconnexion</a>
         </div>
     </div>
