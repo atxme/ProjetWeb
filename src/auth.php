@@ -125,7 +125,7 @@ class Auth
     
         try {
             $stmt = $this->conn->prepare($query);
-            $stmt->execute(['userId' => $userId]);
+            $stmt->execute([':userId' => $userId]);
     
             // Récupérer tous les rôles valides
             $roles = [];
