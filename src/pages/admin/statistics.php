@@ -2,7 +2,7 @@
 session_start();
 require_once '../../include/db.php';
 
-// Vérification plus stricte de l'authentification et du rôle
+// Vérifications de sécurité
 if (!isset($_SESSION['user_id']) || 
     !isset($_SESSION['role']) || 
     $_SESSION['role'] !== 'admin' || 
@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) ||
     exit;
 }
 
-// Régénérer le token CSRF si nécessaire
+// Gestion du token CSRF
 if (empty($_SESSION['csrf_token']) || 
     !isset($_SESSION['csrf_token_time']) || 
     (time() - $_SESSION['csrf_token_time']) > 3600) {
@@ -20,7 +20,7 @@ if (empty($_SESSION['csrf_token']) ||
     $_SESSION['csrf_token_time'] = time();
 }
 
-// Vérifier l'expiration de la session (30 minutes d'inactivité)
+// Vérification de l'expiration de session
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
     session_destroy();
     header('Location: ../../index.php');
@@ -28,35 +28,51 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 }
 $_SESSION['last_activity'] = time();
 
-// Vérification du token CSRF pour les requêtes POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
-        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die('Invalid CSRF token');
-    }
-}
-
-// Fetch years from the database
+// Initialisation des variables
 $db = Database::getInstance();
 $conn = $db->getConnection();
-$stmt = $conn->prepare("SELECT DISTINCT YEAR(dateDeb) as year FROM Concours ORDER BY year");
-$stmt->execute();
-$years = $stmt->fetchAll();
-
+$concoursId = isset($_GET['concours']) ? (int)$_GET['concours'] : null;
+$concoursDetails = null;
 $selectedYear = null;
-$concoursDetails = null; // Initialize the variable to avoid undefined variable error
 $participants = [];
 $evaluatedDrawings = [];
 $allEvaluatedDrawings = [];
-$order = 'ASC';
 
-// Récupérer l'ID du concours si spécifié
-$concoursId = isset($_GET['concours']) ? (int)$_GET['concours'] : null;
+// Récupération des détails du concours spécifique si demandé
+if ($concoursId) {
+    $stmt = $conn->prepare("
+        SELECT c.*, 
+               COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
+               COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
+               COUNT(DISTINCT d.numDessin) as nb_dessins,
+               COUNT(DISTINCT e.numEvaluation) as nb_evaluations,
+               AVG(e.note) as moyenne_notes
+        FROM Concours c
+        LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
+        LEFT JOIN Jury j ON c.numConcours = j.numConcours
+        LEFT JOIN Dessin d ON c.numConcours = d.numConcours
+        LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
+        WHERE c.numConcours = ?
+        GROUP BY c.numConcours
+    ");
+    $stmt->execute([$concoursId]);
+    $concoursDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
+// Récupération des années pour le filtre
+$stmt = $conn->prepare("SELECT DISTINCT YEAR(dateDeb) as year FROM Concours ORDER BY year DESC");
+$stmt->execute();
+$years = $stmt->fetchAll();
+
+// Traitement du formulaire de filtre par année
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['year'])) {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Invalid CSRF token');
+    }
+    
     $selectedYear = $_POST['year'];
     $order = $_POST['order'] ?? 'ASC';
-
+    
     // Fetch concours details for the selected year
     $stmt = $conn->prepare("SELECT theme, descriptif, dateDeb, dateFin FROM Concours WHERE YEAR(dateDeb) = ?");
     $stmt->execute([$selectedYear]);
@@ -190,6 +206,37 @@ if ($concoursId) {
             <a href="?logout=true" class="btn-logout">Déconnexion</a>
         </div>
     </div>
+
+    <?php if ($concoursDetails): ?>
+    <div class="container">
+        <h1><?php echo htmlspecialchars($concoursDetails['theme']); ?></h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Participants</h3>
+                <div class="stat-number"><?php echo $concoursDetails['nb_participants']; ?></div>
+            </div>
+            <div class="stat-card">
+                <h3>Évaluateurs</h3>
+                <div class="stat-number"><?php echo $concoursDetails['nb_evaluateurs']; ?></div>
+            </div>
+            <div class="stat-card">
+                <h3>Dessins soumis</h3>
+                <div class="stat-number"><?php echo $concoursDetails['nb_dessins']; ?></div>
+            </div>
+            <div class="stat-card">
+                <h3>Évaluations réalisées</h3>
+                <div class="stat-number"><?php echo $concoursDetails['nb_evaluations']; ?></div>
+            </div>
+            <div class="stat-card">
+                <h3>Moyenne des notes</h3>
+                <div class="stat-number">
+                    <?php echo $concoursDetails['moyenne_notes'] ? number_format($concoursDetails['moyenne_notes'], 2) : 'N/A'; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="container">
         <h1>Statistiques des Concours</h1>
