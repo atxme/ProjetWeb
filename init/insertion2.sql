@@ -64,7 +64,8 @@ INSERT INTO Competiteur (numCompetiteur, datePremiereParticipation) VALUES
 (1102, '2023-03-21'),
 (1103, '2023-03-21'),
 (1104, '2023-03-21'),
-(1105, '2024-03-21');
+(1105, '2024-03-21'),
+(20, '2024-09-21');
 
 INSERT INTO Directeur (numDirecteur, numClub, dateDebut) VALUES
 (1010, 1001, '2023-01-01'),
