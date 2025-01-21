@@ -13,7 +13,7 @@ if (
     header('Location: ../../index.php');
     exit;
 }
-
+echo($_SESSION['roles']);
 ?>
 
 <!DOCTYPE html>
