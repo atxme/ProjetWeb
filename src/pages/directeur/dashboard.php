@@ -93,9 +93,13 @@ $sql = "SELECT u.numUtilisateur, u.nom, u.prenom,
         LEFT JOIN President p ON u.numUtilisateur = p.numPresident
         LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
         LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
-        WHERE u.numClub = :numClub";
+        WHERE u.numClub = :numClub 
+        AND u.numUtilisateur != :currentUser";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([':numClub' => $numClubDirecteur]);
+$stmt->execute([
+    ':numClub' => $numClubDirecteur,
+    ':currentUser' => $_SESSION['user_id']
+]);
 $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
