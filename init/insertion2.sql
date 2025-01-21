@@ -74,17 +74,17 @@ INSERT INTO Directeur (numDirecteur, numClub, dateDebut) VALUES
 -- 4. Insertion des Concours
 INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, nbClub, nbParticipant, descriptif, saison, annee) VALUES
 -- 2023
-(1001, 1002, 'Nature Morte', '2023-03-21', '2023-06-20', 'resultat', 6, 36, 'Concours Printemps 2023', 'printemps', 2023),
-(1002, 1003, 'Paysages Urbains', '2023-06-21', '2023-09-20', 'resultat', 6, 36, 'Concours Été 2023', 'ete', 2023),
+(1001, 1002, 'Nature Morte', '2023-03-21', '2023-06-20', 'resultat', 6, 36, 'Concours Printemps 2023 - Nature Morte', 'printemps', 2023),
+(1002, 1003, 'Paysages Urbains', '2023-06-21', '2023-09-20', 'resultat', 6, 36, 'Concours Été 2023 - Paysages', 'ete', 2023),
 -- 2025
-(1003, 1002, 'Art Moderne', '2025-03-21', '2025-06-20', 'pas commence', 6, 36, 'Concours Printemps 2025', 'printemps', 2025),
-(1004, 1003, 'Portrait', '2025-06-21', '2025-09-20', 'pas commence', 6, 36, 'Concours Été 2025', 'ete', 2025),
+(1003, 1002, 'Art Moderne', '2025-03-21', '2025-06-20', 'pas commence', 6, 36, 'Concours Printemps 2025 - Art Moderne', 'printemps', 2025),
+(1004, 1003, 'Portrait', '2025-06-21', '2025-09-20', 'pas commence', 6, 36, 'Concours Été 2025 - Portrait', 'ete', 2025),
 -- 2026
-(1005, 1004, 'Abstract', '2026-03-21', '2026-06-20', 'pas commence', 6, 36, 'Concours Printemps 2026', 'printemps', 2026),
-(1006, 1002, 'Nature', '2026-06-21', '2026-09-20', 'pas commence', 6, 36, 'Concours Été 2026', 'ete', 2026),
+(1005, 1004, 'Abstract', '2026-03-21', '2026-06-20', 'pas commence', 6, 36, 'Concours Printemps 2026 - Abstract', 'printemps', 2026),
+(1006, 1002, 'Nature', '2026-06-21', '2026-09-20', 'pas commence', 6, 36, 'Concours Été 2026 - Nature', 'ete', 2026),
 -- 2024
-(1007, 1005, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024', 'printemps', 2024),
-(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024', 'ete', 2024);
+(1007, 1005, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024 - Digital', 'printemps2', 2024),
+(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024 - Mythologie', 'ete2', 2024);
 
 -- 5. Insertion des participations
 INSERT INTO ClubParticipe (numConcours, numClub) VALUES
