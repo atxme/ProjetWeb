@@ -281,6 +281,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 // Dans la partie traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
     try {
+        // Obtenir la connexion à la base de données
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
         // Validation côté serveur
         if (empty($_POST['theme']) || strlen($_POST['theme']) < 3) {
             throw new Exception("Le thème est invalide");
@@ -305,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
         }
 
         // Insertion dans la base de données
-        $stmt = $pdo->prepare("INSERT INTO Concours (theme, descriptif, dateDeb, dateFin, etat) VALUES (?, ?, ?, ?, 'pas commence')");
+        $stmt = $conn->prepare("INSERT INTO Concours (theme, descriptif, dateDeb, dateFin, etat) VALUES (?, ?, ?, ?, 'pas commence')");
         $success = $stmt->execute([$_POST['theme'], $_POST['description'], $_POST['dateDeb'], $_POST['dateFin']]);
 
         if (!$success) {
