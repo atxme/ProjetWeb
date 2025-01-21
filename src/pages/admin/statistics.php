@@ -37,6 +37,7 @@ $selectedYear = null;
 $participants = [];
 $evaluatedDrawings = [];
 $allEvaluatedDrawings = [];
+$order = isset($_POST['order']) ? $_POST['order'] : 'ASC';
 
 // Récupération des détails du concours spécifique si demandé
 if ($concoursId) {
