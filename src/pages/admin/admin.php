@@ -404,7 +404,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
         <div class="status">
             <?php 
             echo htmlspecialchars($_SESSION['login']) . ' : ' . 
-                 ucfirst(htmlspecialchars($_SESSION['role'])); 
+                 '<span class="role-badge">' . ucfirst(htmlspecialchars($_SESSION['role'])) . '</span>'; 
             ?>
         </div>
         <div class="nav-buttons">

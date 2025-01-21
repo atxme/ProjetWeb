@@ -2,50 +2,34 @@
 require_once '../../include/db.php';
 
 /**
- * Vérifie le nombre de concours pour une année donnée
- * 
- * @param int $annee L'année à vérifier
- * @return bool True si on peut créer un nouveau concours, False sinon
+ * Détermine la saison en fonction de la date
  */
-function verifierNombreConcours($annee) {
-    try {
-        $db = Database::getInstance();
-        $pdo = $db->getConnection();
-        
-        // Requête pour compter le nombre de concours pour l'année spécifiée
-        $sql = "SELECT COUNT(*) as nombre 
-                FROM Concours 
-                WHERE YEAR(dateDeb) = :annee";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':annee' => $annee]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Retourne true si moins de 4 concours existent pour cette année
-        return ($result['nombre'] < 4);
-        
-    } catch (PDOException $e) {
-        error_log("Erreur lors de la vérification du nombre de concours: " . $e->getMessage());
-        return false;
-    }
+function determinerSaison($date) {
+    $mois = (int)date('n', strtotime($date));
+    return match(true) {
+        $mois >= 3 && $mois <= 5 => 'printemps',
+        $mois >= 6 && $mois <= 8 => 'ete',
+        $mois >= 9 && $mois <= 11 => 'automne',
+        default => 'hiver'
+    };
 }
 
 /**
- * Vérifie si un utilisateur est président
+ * Vérifie si un concours existe déjà pour la saison et l'année données
  */
-function verifierEligibilitePresident($numUtilisateur) {
+function verifierConcoursSaison($saison, $annee) {
     try {
         $db = Database::getInstance();
         $pdo = $db->getConnection();
         
-        $sql = "SELECT numPresident FROM President WHERE numPresident = :numUtilisateur";
+        $sql = "SELECT COUNT(*) as nombre FROM Concours WHERE saison = :saison AND annee = :annee";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':numUtilisateur' => $numUtilisateur]);
+        $stmt->execute([':saison' => $saison, ':annee' => $annee]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        return $stmt->rowCount() > 0;
-        
+        return $result['nombre'] === 0;
     } catch (PDOException $e) {
-        error_log("Erreur lors de la vérification d'éligibilité: " . $e->getMessage());
+        error_log("Erreur lors de la vérification du concours par saison: " . $e->getMessage());
         return false;
     }
 }
@@ -53,15 +37,18 @@ function verifierEligibilitePresident($numUtilisateur) {
 /**
  * Crée un nouveau concours après vérification
  */
-function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat = 'pas commence') {
+function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $nbClubMin, $nbParticipantMin) {
     try {
         // Validation des dates
         $dateDebObj = new DateTime($dateDeb);
         $dateFinObj = new DateTime($dateFin);
         $aujourd_hui = new DateTime();
+        
+        // Déterminer la saison et l'année
+        $saison = determinerSaison($dateDeb);
         $annee = (int)$dateDebObj->format('Y');
 
-        // Vérifications de base
+        // Vérifications
         if ($dateDebObj < $aujourd_hui) {
             return ['success' => false, 'message' => 'La date de début ne peut pas être dans le passé'];
         }
@@ -70,23 +57,14 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             return ['success' => false, 'message' => 'La date de fin doit être postérieure à la date de début'];
         }
 
-        // Vérification du nombre de concours pour l'année
-        if (!verifierNombreConcours($annee)) {
-            return ['success' => false, 'message' => 'Le nombre maximum de concours pour l\'année ' . $annee . ' est atteint (4 maximum)'];
-        }
-
-        // Vérification du président
-        if (!verifierEligibilitePresident($numPresident)) {
-            return ['success' => false, 'message' => 'La personne sélectionnée n\'est pas président'];
+        // Vérification de l'unicité saison/année
+        if (!verifierConcoursSaison($saison, $annee)) {
+            return ['success' => false, 'message' => 'Un concours existe déjà pour cette saison et cette année'];
         }
 
         // Validation des nombres minimums
-        if ($nbClubMin < 1 || $nbClubMin > 12) {
-            return ['success' => false, 'message' => 'Le nombre minimum de clubs doit être entre 1 et 12'];
-        }
-
-        if ($nbParticipantMin < 1 || $nbParticipantMin > 12) {
-            return ['success' => false, 'message' => 'Le nombre minimum de participants doit être entre 1 et 12'];
+        if ($nbClubMin < 6) {
+            return ['success' => false, 'message' => 'Le nombre minimum de clubs doit être au moins 6'];
         }
 
         $db = Database::getInstance();
@@ -99,40 +77,56 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             $stmt = $pdo->query($sql);
             $numConcours = $stmt->fetch(PDO::FETCH_ASSOC)['nextNum'];
 
-            // Insertion du concours avec les nouveaux paramètres
+            // Sélection d'un président disponible
+            $sqlPresident = "SELECT numPresident FROM President 
+                           WHERE numPresident NOT IN (
+                               SELECT numPresident FROM Concours 
+                               WHERE dateFin >= :dateDeb
+                           ) LIMIT 1";
+            $stmt = $pdo->prepare($sqlPresident);
+            $stmt->execute([':dateDeb' => $dateDeb]);
+            $president = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$president) {
+                throw new Exception('Aucun président disponible pour cette période');
+            }
+
+            // Insertion du concours
             $sql = "INSERT INTO Concours (
                         numConcours, 
-                        numPresident, 
+                        numPresident,
                         theme, 
                         dateDeb, 
                         dateFin, 
-                        etat, 
-                        descriptif, 
-                        nbClub, 
-                        nbParticipant
+                        etat,
+                        nbClub,
+                        descriptif,
+                        saison,
+                        annee
                     ) VALUES (
-                        :numConcours, 
-                        :numPresident, 
+                        :numConcours,
+                        :numPresident,
                         :theme, 
                         :dateDeb, 
                         :dateFin, 
-                        :etat, 
-                        :descriptif, 
-                        :nbClubMin, 
-                        :nbParticipantMin
+                        'pas commence',
+                        :nbClub,
+                        :descriptif,
+                        :saison,
+                        :annee
                     )";
             
             $stmt = $pdo->prepare($sql);
             $success = $stmt->execute([
                 ':numConcours' => $numConcours,
-                ':numPresident' => $numPresident,
+                ':numPresident' => $president['numPresident'],
                 ':theme' => $theme,
                 ':dateDeb' => $dateDeb,
                 ':dateFin' => $dateFin,
-                ':etat' => $etat,
+                ':nbClub' => $nbClubMin,
                 ':descriptif' => $descriptif,
-                ':nbClubMin' => $nbClubMin,
-                ':nbParticipantMin' => $nbParticipantMin
+                ':saison' => $saison,
+                ':annee' => $annee
             ]);
 
             if (!$success) {
@@ -147,8 +141,6 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
             throw $e;
         }
 
-    } catch (PDOException $e) {
-        return ['success' => false, 'message' => 'Erreur de base de données: ' . $e->getMessage()];
     } catch (Exception $e) {
         return ['success' => false, 'message' => 'Erreur: ' . $e->getMessage()];
     }
@@ -158,7 +150,6 @@ function creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_start();
     
-    // Vérifications d'authentification et CSRF...
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         header('Location: ../../index.php');
         exit;
@@ -169,32 +160,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Invalid CSRF token');
     }
 
-    // Validation et nettoyage des données
     $theme = isset($_POST['theme']) ? trim($_POST['theme']) : '';
     $descriptif = isset($_POST['descriptif']) ? trim($_POST['descriptif']) : '';
     $dateDeb = isset($_POST['dateDeb']) ? trim($_POST['dateDeb']) : '';
     $dateFin = isset($_POST['dateFin']) ? trim($_POST['dateFin']) : '';
-    $numPresident = isset($_POST['president_id']) ? (int)$_POST['president_id'] : 0;
-    $nbClubMin = isset($_POST['nbClubMin']) ? (int)$_POST['nbClubMin'] : 1;
+    $nbClubMin = isset($_POST['nbClubMin']) ? (int)$_POST['nbClubMin'] : 6;
     $nbParticipantMin = isset($_POST['nbParticipantMin']) ? (int)$_POST['nbParticipantMin'] : 1;
-    $etat = 'pas commence';
 
-    // Validations
-    if (empty($theme) || empty($descriptif) || empty($dateDeb) || empty($dateFin) || empty($numPresident)) {
-        $_SESSION['error'] = "Tous les champs obligatoires doivent être remplis";
-        header('Location: admin.php');
+    if (empty($theme) || empty($descriptif) || empty($dateDeb) || empty($dateFin)) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => "Tous les champs obligatoires doivent être remplis"]);
         exit;
     }
 
-    // Création du concours avec les nouveaux paramètres
-    $result = creerConcours($theme, $descriptif, $dateDeb, $dateFin, $numPresident, $nbClubMin, $nbParticipantMin, $etat);
-
-    if ($result['success']) {
-        $_SESSION['success'] = $result['message'];
-    } else {
-        $_SESSION['error'] = $result['message'];
-    }
-
-    header('Location: admin.php');
+    $result = creerConcours($theme, $descriptif, $dateDeb, $dateFin, $nbClubMin, $nbParticipantMin);
+    
+    header('Content-Type: application/json');
+    echo json_encode($result);
     exit;
 } 
