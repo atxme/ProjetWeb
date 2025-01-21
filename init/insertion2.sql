@@ -85,7 +85,9 @@ INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, 
 (1006, 1002, 'Nature', '2026-06-21', '2026-09-20', 'pas commence', 6, 36, 'Concours Été 2026 - Nature', 'ete', 2026),
 -- 2024
 (1007, 1005, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024 - Digital', 'hiver', 2024),
-(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024 - Mythologie', 'automne', 2024);
+(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024 - Mythologie', 'automne', 2024),
+-- New Concours for January 2025
+(1009, 1002, 'Winter Wonderland', '2025-01-01', '2025-01-31', 'pas commence', 6, 36, 'Concours Hiver 2025 - Winter Wonderland', 'hiver', 2025);
 
 -- 5. Insertion des participations
 INSERT INTO ClubParticipe (numConcours, numClub) VALUES
@@ -96,8 +98,8 @@ INSERT INTO ClubParticipe (numConcours, numClub) VALUES
 (1005, 1001), (1005, 1002), (1005, 1003), (1005, 1004),
 (1006, 1001), (1006, 1002), (1006, 1003), (1006, 1004),
 (1007, 1001), (1007, 1002), (1007, 1003), (1007, 1004), (1007, 1005), (1007, 1006),
-(1008, 1001), (1008, 1002), (1008, 1003), (1008, 1004), (1008, 1005), (1008, 1006);
-
+(1008, 1001), (1008, 1002), (1008, 1003), (1008, 1004), (1008, 1005), (1008, 1006),
+(1009, 1001), (1009, 1002), (1009, 1003), (1009, 1004);
 INSERT INTO CompetiteurParticipe (numConcours, numCompetiteur) VALUES
 (1001, 1100), (1001, 1101), (1001, 1102),
 (1002, 1100), (1002, 1101), (1002, 1102),
@@ -106,7 +108,8 @@ INSERT INTO CompetiteurParticipe (numConcours, numCompetiteur) VALUES
 (1005, 1100), (1005, 1101), (1005, 1102),
 (1006, 1100), (1006, 1101), (1006, 1102),
 (1007, 1100), (1007, 1101), (1007, 1102), (1007, 1103), (1007, 1104),
-(1008, 1101), (1008, 1102), (1008, 1103), (1008, 1104), (1008, 1105);
+(1008, 1101), (1008, 1102), (1008, 1103), (1008, 1104), (1008, 1105),
+(1009, 1100); -- Ensure Bernard Lucas is a competitor in the new concours
 
 -- 6. Insertion des Dessins (uniquement pour 2023 car terminé)
 INSERT INTO Dessin (numDessin, numCompetiteur, numConcours, classement, commentaire, dateRemise, leDessin) VALUES
