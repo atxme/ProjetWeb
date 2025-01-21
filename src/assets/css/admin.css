@@ -405,7 +405,7 @@ button[type="submit"]:disabled {
 }
 
 .status-bar .btn-stats {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
 }
 
 .status-bar .btn-logout {
@@ -467,6 +467,7 @@ textarea {
     grid-template-columns: 60% 35%;
     gap: 5%;
     width: 100%;
+    margin-bottom: 40px;
 }
 
 /* Style pour la liste des concours */
@@ -540,9 +541,18 @@ textarea {
 
 /* Ajustement pour la section d'ajout de participants */
 .participant-section {
+    width: 60%;  /* Même largeur que la section de création de concours */
+    margin: 0;   /* Supprime la marge auto */
+}
+
+.participant-section .admin-box {
     width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
+    margin: 0;
+}
+
+.participant-section form {
+    max-width: 100%;  /* Utilise toute la largeur disponible */
+    margin: 0;
 }
 
 /* Animation de secousse */

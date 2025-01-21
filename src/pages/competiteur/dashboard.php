@@ -32,7 +32,7 @@ if (
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <form action="../evaluateur/dashboard.php" method="post">
+            <form action="../evaluateur/evaluateur.php" method="post">
             <!-- Champ caché pour le token CSRF -->
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <button type="submit" class="btn-stats">Go to évaluateur</button>
