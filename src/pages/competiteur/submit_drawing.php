@@ -30,7 +30,7 @@ $concours = $db->getConcours();
                 <select name="contest" id="contest" required>
                     <?php foreach ($concours as $concour): ?>
                         <option value="<?php echo htmlspecialchars($concour['numConcours']); ?>">
-                            <?php echo htmlspecialchars($concour['theme']); ?>
+                            <?php echo htmlspecialchars($concour['saison'] . ' ' . $concour['annee'] . ', ' . $concour['theme']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

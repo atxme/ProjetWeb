@@ -103,17 +103,17 @@ class Database
 
     
     public function getConcours()
-    {
+{
     try {
-            $query = "SELECT numConcours, theme FROM Concours";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
+        $query = "SELECT numConcours, saison, annee, theme FROM Concours";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
         error_log("Erreur lors de la récupération des concours : " . $e->getMessage());
         return [];
-        }
     }
+}
 }
 
 

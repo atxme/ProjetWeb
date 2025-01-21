@@ -13,7 +13,7 @@ $conn = $db->getConnection();
 $userId = $_SESSION['user_id'];
 
 // Fetch drawings from the database
-$stmt = $conn->prepare("SELECT d.numDessin, d.leDessin, d.numConcours, c.theme FROM Dessin d LEFT JOIN Concours c ON d.numConcours = c.numConcours WHERE d.numCompetiteur = ?");
+$stmt = $conn->prepare("SELECT d.numDessin, d.leDessin, d.numConcours, c.saison, c.annee, c.theme FROM Dessin d LEFT JOIN Concours c ON d.numConcours = c.numConcours WHERE d.numCompetiteur = ?");
 $stmt->execute([$userId]);
 $drawings = $stmt->fetchAll();
 ?>
@@ -35,11 +35,11 @@ $drawings = $stmt->fetchAll();
             <select id="sort" onchange="sortDrawings()">
                 <option value="all">Tous</option>
                 <?php
-                $stmt = $conn->prepare("SELECT numConcours, theme FROM Concours");
+                $stmt = $conn->prepare("SELECT numConcours, saison, annee, theme FROM Concours");
                 $stmt->execute();
                 $contests = $stmt->fetchAll();
                 foreach ($contests as $contest) {
-                    echo "<option value='" . htmlspecialchars($contest['numConcours']) . "'>" . htmlspecialchars($contest['theme']) . "</option>";
+                    echo "<option value='" . htmlspecialchars($contest['numConcours']) . "'>" . htmlspecialchars($contest['saison'] . ' ' . $contest['annee'] . ', ' . $contest['theme']) . "</option>";
                 }
                 ?>
             </select>
@@ -48,7 +48,7 @@ $drawings = $stmt->fetchAll();
             <?php foreach ($drawings as $drawing): ?>
                 <div class="drawing" data-contest="<?php echo htmlspecialchars($drawing['numConcours']); ?>">
                     <img src="<?php echo '/dessin/' . htmlspecialchars($drawing['leDessin']); ?>" alt="Drawing">
-                    <p><?php echo htmlspecialchars($drawing['theme']); ?></p>
+                    <p><?php echo htmlspecialchars($drawing['saison'] . ' ' . $drawing['annee'] . ', ' . $drawing['theme']); ?></p>
                 </div>
             <?php endforeach; ?>
         </div>
