@@ -111,6 +111,29 @@ $stmt = $conn->prepare("
 $stmt->execute();
 $allContestParticipants = $stmt->fetchAll();
 
+// Récupérer la région avec la meilleure moyenne des notes
+$stmt = $conn->prepare("
+    SELECT 
+        c.region,
+        ROUND(AVG(e.note), 2) as moyenne_notes
+    FROM Evaluation e
+    JOIN Dessin d ON e.numDessin = d.numDessin
+    JOIN Utilisateur u ON d.numCompetiteur = u.numUtilisateur
+    JOIN Club c ON u.numClub = c.numClub
+    GROUP BY c.region
+    HAVING moyenne_notes = (
+        SELECT ROUND(AVG(e2.note), 2)
+        FROM Evaluation e2
+        JOIN Dessin d2 ON e2.numDessin = d2.numDessin
+        JOIN Utilisateur u2 ON d2.numCompetiteur = u2.numUtilisateur
+        JOIN Club c2 ON u2.numClub = c2.numClub
+        GROUP BY c2.region
+        ORDER BY AVG(e2.note) DESC
+        LIMIT 1
+    )
+");
+$stmt->execute();
+$bestRegion = $stmt->fetch();
 
 // Si un concours spécifique est demandé
 if ($concoursId) {
@@ -346,6 +369,23 @@ if ($concoursId) {
             <?php endif; ?>
         </tbody>
     </table>
+</div>
+<div class="container mt-4">
+    <h3>Région avec la meilleure moyenne des notes</h3>
+    <div class="card">
+        <div class="card-body">
+            <?php if ($bestRegion): ?>
+                <p class="mb-2">
+                    <strong>Région :</strong> <?php echo htmlspecialchars($bestRegion['region']); ?>
+                </p>
+                <p class="mb-0">
+                    <strong>Moyenne des notes :</strong> <?php echo htmlspecialchars($bestRegion['moyenne_notes']); ?>/20
+                </p>
+            <?php else: ?>
+                <p class="text-center mb-0">Aucune donnée disponible</p>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 </body>
