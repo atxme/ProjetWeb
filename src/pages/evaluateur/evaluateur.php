@@ -222,12 +222,6 @@ try {
                 </div>
                 <!-- Liste des concours -->
                 <table class="profile-table">
-                    <tr>
-                        <th class="label-cell">Nom</th>
-                        <th class="label-cell">Date de début</th>
-                        <th class="label-cell">Date de fin</th>
-                        <th class="label-cell">État</th>
-                    </tr>
                     <?php foreach ($concours as $concour) : ?>
                         <tr class="concours-card">
                             <td class="cell"><?= htmlspecialchars($concour['nom_concours']) ?></td>
