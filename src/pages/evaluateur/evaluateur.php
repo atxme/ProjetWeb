@@ -223,14 +223,20 @@ try {
                 <!-- Liste des concours -->
                 <table class="profile-table">
                     <?php foreach ($concours as $concour) : ?>
+                        <!-- <tr class="concours-card">
+                            <td class="cell"><?= htmlspecialchars($concour['nom_concours']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['date_debut']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['date_fin']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['etat_concours']) ?></td>
+                        </tr> -->
                         <div class="concours-card">
                             <div class="concours-info">
-                                <div class="concours-title"><?php echo htmlspecialchars($concours['nom_concours']); ?></div>
+                                <div class="concours-title"><?php echo htmlspecialchars($concour['nom_concours']); ?></div>
                                 <div class="concours-date">
-                                    Du <?php echo date('d/m/Y', strtotime($concours['date_debut'])); ?>
-                                    au <?php echo date('d/m/Y', strtotime($concours['date_fin'])); ?>
+                                    Du <?php echo date('d/m/Y', strtotime($concour['date_debut'])); ?>
+                                    au <?php echo date('d/m/Y', strtotime($concour['date_fin'])); ?>
                                 </div>
-                                <div class="concours-status"><?php echo htmlspecialchars($concours['etat_concours']); ?></div>
+                                <div class="concours-status"><?php echo htmlspecialchars($concour['etat_concours']); ?></div>
                             </div>
                         </div>
                     <?php endforeach; ?>
