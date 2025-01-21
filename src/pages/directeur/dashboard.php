@@ -79,10 +79,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->rollBack();
             $message = "Erreur lors de la suppression du compétiteur : " . $e->getMessage();
         }
+    } elseif ($action === 'ajouter_utilisateur') {
+        $nom = $_POST['nom'];
+        $prenom = $_POST['prenom'];
+        $age = $_POST['age'];
+        $adresse = $_POST['adresse'];
+        $login = $_POST['login'];
+        $mdp = $_POST['mdp'];
+
+        $sql = "INSERT INTO Utilisateur (nom, prenom, dateNaissance, adresse, login, mdp, numClub) VALUES (:nom, :prenom, :dateNaissance, :adresse, :login, :mdp, :numClub)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':nom' => $nom,
+            ':prenom' => $prenom,
+            ':dateNaissance' => date('Y-m-d', strtotime("-$age years")),
+            ':adresse' => $adresse,
+            ':login' => $login,
+            ':mdp' => password_hash($mdp, PASSWORD_DEFAULT),
+            ':numClub' => $numClub
+        ]);
+        $message = "Utilisateur ajouté avec succès.";
     }
 }
 
-$sql = "SELECT u.numUtilisateur, u.nom, u.prenom, u.login,
+$sql = "SELECT u.numUtilisateur, u.login, u.nom, u.prenom, u.dateNaissance,
+        TIMESTAMPDIFF(YEAR, u.dateNaissance, CURDATE()) as age,
         CASE 
             WHEN p.numPresident IS NOT NULL THEN 'Président'
             WHEN c.numCompetiteur IS NOT NULL THEN 'Compétiteur'
@@ -151,14 +172,57 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="admin-box">
             <div class="admin-header">
+                <h2>Ajouter un Nouvel Utilisateur</h2>
+            </div>
+            <form method="post">
+                <input type="hidden" name="action" value="ajouter_utilisateur">
+                <input type="hidden" name="numClub" value="<?php echo htmlspecialchars($numClubDirecteur); ?>">
+
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Âge</label>
+                    <input type="number" id="age" name="age" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="adresse">Adresse</label>
+                    <input type="text" id="adresse" name="adresse" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login">Login</label>
+                    <input type="text" id="login" name="login" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mdp">Mot de passe</label>
+                    <input type="password" id="mdp" name="mdp" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
+            </form>
+        </div>
+
+        <div class="admin-box">
+            <div class="admin-header">
                 <h2>Membres Actuels du Club</h2>
             </div>
             <table>
                 <thead>
                     <tr>
+                        <th>Login</th>
                         <th>Nom</th>
                         <th>Prénom</th>
-                        <th>Login</th>
+                        <th>Âge</th>
                         <th>Rôle</th>
                         <th>Actions</th>
                     </tr>
@@ -166,9 +230,10 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach ($membres as $membre): ?>
                         <tr>
+                            <td><?php echo htmlspecialchars($membre['login']); ?></td>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
-                            <td><?php echo htmlspecialchars($membre['login']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['age']); ?></td>
                             <td><?php echo htmlspecialchars($membre['role']); ?></td>
                             <td>
                                 <div style="display: flex; gap: 10px;">
