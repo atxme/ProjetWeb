@@ -24,6 +24,11 @@ if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) ||
                 <h2>Connexion</h2>
                 <p>Concours de Dessin</p>
             </div>
+            <ul>
+                <?php foreach ($_SESSION['roles'] as $role): ?>
+                    <li><?= htmlspecialchars($role) ?></li>
+                <?php endforeach; ?>
+            </ul>
             
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="alert alert-danger">
