@@ -83,8 +83,8 @@ INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, 
 (1005, 1004, 'Abstract', '2026-03-21', '2026-06-20', 'pas commence', 6, 36, 'Concours Printemps 2026 - Abstract', 'printemps', 2026),
 (1006, 1002, 'Nature', '2026-06-21', '2026-09-20', 'pas commence', 6, 36, 'Concours Été 2026 - Nature', 'ete', 2026),
 -- 2024
-(1007, 1005, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024 - Digital', 'printemps2', 2024),
-(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024 - Mythologie', 'ete2', 2024);
+(1007, 1005, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024 - Digital', 'hiver', 2024),
+(1008, 1006, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024 - Mythologie', 'automne', 2024);
 
 -- 5. Insertion des participations
 INSERT INTO ClubParticipe (numConcours, numClub) VALUES
