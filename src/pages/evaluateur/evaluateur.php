@@ -109,7 +109,7 @@ try {
         ORDER BY 
             c.dateDeb DESC
     ');
-    $concoursQuery->execute(['user_id' => $id_user]);
+    $concoursQuery->execute([':user_id' => $id_user]);
     $concours = $concoursQuery->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
