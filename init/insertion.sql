@@ -59,6 +59,7 @@ INSERT INTO Competiteur (numCompetiteur, datePremiereParticipation) VALUES
 
 -- 4. Insertion des Concours
 INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, nbClub, nbParticipant, descriptif, saison, annee) VALUES
+(1, 2, 'Printemps 2024', '2024-03-21', '2024-06-20', 'resultat', 6, 36, 'Concours Printemps 2024', 'printemps', 2024),
 (2, 3, 'Été 2024', '2024-06-21', '2024-09-20', 'en cours', 6, 36, 'Concours Été 2024', 'ete', 2024),
 (3, 2, 'L''art et la culture, un chemin vers la paix', '2025-01-01', '2025-01-31', 'en cours', 6, 36, 'Concours international d''arts plastiques ouvert aux jeunes de 3 à 25 ans', 'hiver', 2025);
 
