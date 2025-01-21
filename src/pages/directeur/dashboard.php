@@ -238,7 +238,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
     </div>
-    <div class="admin-container">
+    <div class="admin-container" style="margin: 0;">
         <div class="admin-box">
             <div class="admin-header">
                 <h2>Ajouter un Nouvel Utilisateur</h2>
