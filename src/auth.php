@@ -108,20 +108,33 @@ class Auth
 
     private function getUserRoles(int $userId): array
     {
-        $query = "SELECT 
-                    CASE 
-                    WHEN a.numAdmin IS NOT NULL THEN 'admin'
-                    WHEN c.numCompetiteur IS NOT NULL THEN 'competiteur'
-                    WHEN e.numEvaluateur IS NOT NULL THEN 'evaluateur'
-                    WHEN d.numDirecteur IS NOT NULL THEN 'directeur'
-                    ELSE 'user'
-                END AS role
-            FROM Utilisateur u
-            LEFT JOIN Admin a ON u.numUtilisateur = a.numAdmin
-            LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
-            LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
-            LEFT JOIN Directeur d ON u.numUtilisateur = d.numDirecteur
-            WHERE u.numUtilisateur = :userId";
+        $query = $query = "
+        SELECT 
+            'admin' AS role
+        FROM Admin
+        WHERE numAdmin = :userId
+
+        UNION ALL
+
+        SELECT 
+            'competiteur' AS role
+        FROM Competiteur
+        WHERE numCompetiteur = :userId
+
+        UNION ALL
+
+        SELECT 
+            'evaluateur' AS role
+        FROM Evaluateur
+        WHERE numEvaluateur = :userId
+
+        UNION ALL
+
+        SELECT 
+            'directeur' AS role
+        FROM Directeur
+        WHERE numDirecteur = :userId
+        ";
     
         try {
             $stmt = $this->conn->prepare($query);
