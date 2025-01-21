@@ -13,33 +13,33 @@ INSERT INTO Club (numClub, nomClub, adresse, numTel, nbAdherents, ville, departe
 -- 2. Insertion des Utilisateurs
 INSERT INTO Utilisateur (numUtilisateur, numClub, nom, prenom, age, adresse, login, mdp) VALUES
 -- Admin
-(1001, 1001, 'Admin', 'System', 35, '123 Rue Admin', 'admin', 'pwd123'),
+(1001, 1001, 'Admin', 'System', 35, '123 Rue Admin', 'admin2', 'pwd123'),
 -- Présidents
-(1002, 1001, 'Dubois', 'Pierre', 45, '1 Rue Paris', 'pdubois', 'pwd124'),
-(1003, 1002, 'Martin', 'Marie', 42, '2 Rue Lyon', 'mmartin', 'pwd125'),
-(1004, 1003, 'Petit', 'Jean', 48, '3 Rue Marseille', 'jpetit', 'pwd126'),
+(1002, 1001, 'Dubois', 'Pierre', 45, '1 Rue Paris', 'pdubois2', 'pwd124'),
+(1003, 1002, 'Martin', 'Marie', 42, '2 Rue Lyon', 'mmartin2', 'pwd125'),
+(1004, 1003, 'Petit', 'Jean', 48, '3 Rue Marseille', 'jpetit2', 'pwd126'),
 -- Evaluateurs
-(1020, 1001, 'Leroy', 'Paul', 38, '15 Rue Nice', 'pleroy', 'pwd140'),
-(1021, 1002, 'Moreau', 'Claire', 42, '16 Rue Bordeaux', 'cmoreau', 'pwd141'),
-(1022, 1003, 'Dupont', 'Marc', 45, '17 Rue Lyon', 'mdupont', 'pwd142'),
+(1020, 1001, 'Leroy', 'Paul', 38, '15 Rue Nice', 'pleroy2', 'pwd140'),
+(1021, 1002, 'Moreau', 'Claire', 42, '16 Rue Bordeaux', 'cmoreau2', 'pwd141'),
+(1022, 1003, 'Dupont', 'Marc', 45, '17 Rue Lyon', 'mdupont2', 'pwd142'),
 -- Compétiteurs
-(1100, 1001, 'Bernard', 'Lucas', 25, '30 Rue Paris', 'lbernard', 'pwd160'),
-(1101, 1002, 'Thomas', 'Emma', 28, '31 Rue Lyon', 'ethomas', 'pwd161'),
-(1102, 1003, 'Richard', 'Sophie', 30, '32 Rue Marseille', 'srichard', 'pwd162'),
+(1100, 1001, 'Bernard', 'Lucas', 25, '30 Rue Paris', 'lbernard2', 'pwd160'),
+(1101, 1002, 'Thomas', 'Emma', 28, '31 Rue Lyon', 'ethomas2', 'pwd161'),
+(1102, 1003, 'Richard', 'Sophie', 30, '32 Rue Marseille', 'srichard2', 'pwd162'),
 -- Directeurs
-(1010, 1001, 'Durand', 'Sophie', 40, '5 Rue Paris', 'sdurand', 'pwd130'),
-(1011, 1002, 'Lambert', 'Michel', 45, '6 Rue Lyon', 'mlambert', 'pwd131'),
-(1012, 1003, 'Garcia', 'Ana', 42, '7 Rue Marseille', 'agarcia', 'pwd132'),
+(1010, 1001, 'Durand', 'Sophie', 40, '5 Rue Paris', 'sdurand2', 'pwd130'),
+(1011, 1002, 'Lambert', 'Michel', 45, '6 Rue Lyon', 'mlambert2', 'pwd131'),
+(1012, 1003, 'Garcia', 'Ana', 42, '7 Rue Marseille', 'agarcia2', 'pwd132'),
 -- Nouveaux présidents
-(1005, 1004, 'Roux', 'Philippe', 50, '4 Rue Toulouse', 'proux', 'pwd127'),
-(1006, 1005, 'Blanc', 'Catherine', 47, '8 Rue Bordeaux', 'cblanc', 'pwd128'),
+(1005, 1004, 'Roux', 'Philippe', 50, '4 Rue Toulouse', 'proux2', 'pwd127'),
+(1006, 1005, 'Blanc', 'Catherine', 47, '8 Rue Bordeaux', 'cblanc2', 'pwd128'),
 -- Nouveaux évaluateurs
-(1023, 1004, 'Simon', 'Julie', 39, '18 Rue Toulouse', 'jsimon', 'pwd143'),
-(1024, 1005, 'Laurent', 'Thomas', 41, '19 Rue Bordeaux', 'tlaurent', 'pwd144'),
+(1023, 1004, 'Simon', 'Julie', 39, '18 Rue Toulouse', 'jsimon2', 'pwd143'),
+(1024, 1005, 'Laurent', 'Thomas', 41, '19 Rue Bordeaux', 'tlaurent2', 'pwd144'),
 -- Nouveaux compétiteurs
-(1103, 1004, 'Girard', 'Alice', 27, '33 Rue Toulouse', 'agirard', 'pwd163'),
-(1104, 1005, 'Morel', 'Louis', 29, '34 Rue Bordeaux', 'lmorel', 'pwd164'),
-(1105, 1006, 'Fournier', 'Marie', 31, '35 Rue Nantes', 'mfournier', 'pwd165');
+(1103, 1004, 'Girard', 'Alice', 27, '33 Rue Toulouse', 'agirard2', 'pwd163'),
+(1104, 1005, 'Morel', 'Louis', 29, '34 Rue Bordeaux', 'lmorel2', 'pwd164'),
+(1105, 1006, 'Fournier', 'Marie', 31, '35 Rue Nantes', 'mfournier2', 'pwd165');
 
 -- 3. Insertion des rôles spécifiques
 INSERT INTO Admin (numAdmin, dateDebut) VALUES (1001, '2023-01-01');
