@@ -7,7 +7,7 @@ class Auth
     private $db;
     private $conn;
     private const MAX_LOGIN_ATTEMPTS = 3;
-    private const LOCKOUT_TIME = 30;
+    private const LOCKOUT_TIME = 900;
 
     public function __construct()
     {
@@ -106,74 +106,97 @@ class Auth
         return false;
     }
 
-    private function getUserRole(int $userId): string
+    private function getUserRoles(int $userId): array
     {
         $query = "SELECT 
-                CASE 
-                WHEN a.numAdmin IS NOT NULL THEN 'admin'
-                WHEN c.numCompetiteur IS NOT NULL THEN 'competiteur'
-                WHEN e.numEvaluateur IS NOT NULL THEN 'evaluateur'
-                WHEN d.numDirecteur IS NOT NULL THEN 'directeur'
-                ELSE 'user'
-            END AS role
-        FROM Utilisateur u
-        LEFT JOIN Admin a ON u.numUtilisateur = a.numAdmin
-        LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
-        LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
-        LEFT JOIN Directeur d ON u.numUtilisateur = d.numDirecteur
-        WHERE u.numUtilisateur = :userId";
-
+                    CASE 
+                    WHEN a.numAdmin IS NOT NULL THEN 'admin'
+                    WHEN c.numCompetiteur IS NOT NULL THEN 'competiteur'
+                    WHEN e.numEvaluateur IS NOT NULL THEN 'evaluateur'
+                    WHEN d.numDirecteur IS NOT NULL THEN 'directeur'
+                    ELSE 'user'
+                END AS role
+            FROM Utilisateur u
+            LEFT JOIN Admin a ON u.numUtilisateur = a.numAdmin
+            LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
+            LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+            LEFT JOIN Directeur d ON u.numUtilisateur = d.numDirecteur
+            WHERE u.numUtilisateur = :userId";
+    
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute(['userId' => $userId]);
-            $role = $stmt->fetchColumn();
-            $this->debugLog("Rôle récupéré de la base", ['user_id' => $userId, 'role' => $role]);
-            return $role ?: 'user';
+    
+            // Récupérer tous les rôles valides
+            $roles = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                if (!empty($row['role'])) {
+                    $roles[] = $row['role'];
+                }
+            }
+    
+            return $roles;
         } catch (PDOException $e) {
-            $this->debugLog("Erreur lors de la récupération du rôle", ['error' => $e->getMessage()]);
-            return 'user';
+            $this->debugLog("Erreur lors de la récupération des rôles", ['error' => $e->getMessage()]);
+            return ['user'];
         }
     }
+    
 
     private function handleSuccessfulLogin(array $user): void
     {
         $this->debugLog("Début handleSuccessfulLogin", ['user_id' => $user['numUtilisateur']]);
-
+    
         session_regenerate_id(true);
         $this->resetLoginAttempts($user['login']);
-
+    
         $_SESSION['user_id'] = $user['numUtilisateur'];
         $_SESSION['login'] = $user['login'];
         $_SESSION['last_activity'] = time();
-
-        $userRole = $this->getUserRole($user['numUtilisateur']);
-        $_SESSION['role'] = $userRole;
-
-        $this->debugLog("Rôle utilisateur récupéré", ['role' => $userRole]);
-
+    
+        // Récupérer tous les rôles de l'utilisateur
+        $userRoles = $this->getUserRoles($user['numUtilisateur']);
+        $_SESSION['roles'] = $userRoles;
+    
+        $this->debugLog("Rôles utilisateur récupérés", ['roles' => $userRoles]);
+    
         $this->generateCSRFToken();
         $this->logLogin($user['numUtilisateur'], true);
-
-        $this->debugLog("Redirection en cours", ['role' => $userRole]);
-
-        if ($userRole === 'admin') {
-            $this->debugLog("Redirection vers admin");
-            header('Location: pages/admin/admin.php');
-            exit;
-        } elseif ($userRole === 'evaluateur') {
-            header('Location: pages/evaluateur/evaluateur.php');
-            exit;
-        } elseif ($userRole === 'competiteur') {
-            header('Location: pages/competiteur/dashboard.php');
-            exit;
-        } elseif ($userRole === 'directeur') {
-            header('Location: pages/directeur/dashboard.php');
-            exit;
-        } else {
-            header('Location: dashboard.php');
-            exit;
+    
+        // Définir un rôle principal (par exemple, priorité à "admin")
+        $rolePriority = ['admin', 'directeur', 'evaluateur', 'competiteur', 'user'];
+        $primaryRole = 'user'; // Valeur par défaut
+        foreach ($rolePriority as $role) {
+            if (in_array($role, $userRoles)) {
+                $primaryRole = $role;
+                break;
+            }
         }
+    
+        $_SESSION['role'] = $primaryRole;
+    
+        // Rediriger en fonction du rôle principal
+        switch ($primaryRole) {
+            case 'admin':
+                header('Location: pages/admin/admin.php');
+                break;
+            case 'evaluateur':
+                header('Location: pages/evaluateur/evaluateur.php');
+                break;
+            case 'competiteur':
+                header('Location: pages/competiteur/dashboard.php');
+                break;
+            case 'directeur':
+                header('Location: pages/directeur/dashboard.php');
+                break;
+            default:
+                header('Location: dashboard.php');
+                break;
+        }
+    
+        exit;
     }
+    
 
     private function handleFailedLogin(string $login): void
     {
