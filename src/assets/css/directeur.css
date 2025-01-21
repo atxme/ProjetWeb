@@ -35,3 +35,7 @@
   color: #495057;
   padding-left: 15px;
 }
+
+.admin-container {
+  flex-direction: row;
+}
