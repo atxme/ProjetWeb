@@ -377,3 +377,7 @@ width: 70%;
 width: 100%;
 box-sizing: border-box;
 }
+
+.btn-stats {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}

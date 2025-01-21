@@ -142,9 +142,7 @@ try {
         </div>
         <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
         <?php if ($isEvaluateur && $isCompetiteur): ?>
-            <form action="../../pages/competiteur/dashboard.php" method="post">
-                <button type="submit" class="btn-submit">Go to Competiteur</button>
-            </form>
+            <a href="../../pages/competiteur/dashboard.php" class="btn-stats">Go to compétiteur</a>
         <?php endif; ?>
         <div class="logout">
             <?php
