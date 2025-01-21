@@ -14,6 +14,27 @@ if (
     header('Location: ../../index.php');
     exit;
 }
+
+try {
+
+    // Préparer la requête pour vérifier si l'utilisateur est compétiteur
+    $evaluateurQuery = $pdo->prepare('
+        SELECT COUNT(*) AS is_evaluateur
+        FROM Evaluateur
+        WHERE numEvaluateur = :user_id
+    ');
+    
+    $evaluateurQuery->execute(['user_id' => $id_user]);
+    $evaluateur = $evaluateurQuery->fetch(PDO::FETCH_ASSOC);
+
+    // Vérifier si l'utilisateur est à la fois évaluateur et compétiteur
+    $isCompetiteur = ($_SESSION['role'] === 'competiteur');
+    $isEvaluateur = ($evaluateur['is_evaluateur'] > 0);
+} catch (PDOException $e) {
+    // Si une erreur de base de données se produit, l'afficher
+    die('Erreur de base de données : ' . $e->getMessage());
+}
+
 ?>
 
 <!DOCTYPE html>
