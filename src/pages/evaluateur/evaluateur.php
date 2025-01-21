@@ -155,59 +155,51 @@ try {
             <div class="box-info">
                 <div class="header">
                     <h2>Mon profil</h2>
-                    <div class="data">
-                        <label class ="cat"><label type ="cat">Nom :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Prénom :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Âge :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Adresse :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Club :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
-                    </div>
+                    <table class="profile-table">
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Nom :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Prénom :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Âge :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Adresse :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Club :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nomClub']) ?>" disabled></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div class="box-info">
                 <div class="header">
                     <h2>Mes statistiques</h2>
-                </div>
-                <div class="data">
-                <div>
-                    <label class ="cat">Moyenne des notes :</label>
-                    <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
-                    <label class ="cat">Moyenne des notes :</label>
-                    <input class="textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled>
-                </div>
-                <div class="data">
-                <div>
-                    <label class ="cat">Note maximale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
-                    <label class ="cat">Note maximale :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
-                </div>
-                <div class="data">
-                <div>
-                    <label class ="cat">Note minimale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
-                    <label class ="cat">Note minimale :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
-                </div>
-                <div class="data">
-                <div>
-                    <label class ="cat">Dernier concours :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
-                    <label class ="cat">Dernier concours :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
+                    <table class="profile-table">
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Moyenne des notes :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Note maximale :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Note minimale :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Dernier concours :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
