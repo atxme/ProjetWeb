@@ -16,6 +16,12 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([':numDirecteur' => $_SESSION['user_id']]);
 $numClubDirecteur = $stmt->fetchColumn();
 
+// Récupérer les informations du club
+$sql = "SELECT * FROM Club WHERE numClub = :numClub";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':numClub' => $numClubDirecteur]);
+$clubInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
 if (!$numClubDirecteur) {
     // Si le numClub n'est pas trouvé, rediriger vers la page de connexion
     header('Location: ../../index.php');
@@ -129,8 +135,9 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Compétiteurs</title>
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/directeur.css">
+    <title>Gestion des Compétiteurs</title>
 </head>
 
 <body>
@@ -148,24 +155,42 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="admin-container">
         <div class="admin-box">
             <div class="admin-header">
-                <h2>Gestion des Compétiteurs</h2>
+                <h2>Informations du Club</h2>
             </div>
-            <?php if (isset($message)): ?>
-                <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
-            <?php endif; ?>
-
-            <form method="post">
-                <input type="hidden" name="action" value="ajouter">
-                <div class="form-group">
-                    <label for="numCompetiteur">Numéro du Compétiteur à Ajouter</label>
-                    <input type="number" id="numCompetiteur" name="numCompetiteur" required>
+            <div class="club-info">
+                <div class="info-group">
+                    <label>Nom du Club:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['nomClub']); ?></span>
                 </div>
-                <div class="form-group">
-                    <label for="numClub">Numéro du Club</label>
-                    <input type="number" id="numClub" name="numClub" value="<?php echo htmlspecialchars($numClubDirecteur); ?>" readonly>
+                <div class="info-group">
+                    <label>Numéro du Club:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['numClub']); ?></span>
                 </div>
-                <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
-            </form>
+                <div class="info-group">
+                    <label>Adresse:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['adresse']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Téléphone:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['numTel']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Nombre d'Adhérents:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['nbAdherents']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Ville:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['ville']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Département:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['departement']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Région:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['region']); ?></span>
+                </div>
+            </div>
         </div>
 
         <div class="admin-box">
@@ -210,6 +235,8 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
 
+    </div>
+    <div class="admin-container" style="margin-top: 0;">
         <div class="admin-box">
             <div class="admin-header">
                 <h2>Membres Actuels du Club</h2>
@@ -258,4 +285,4 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </body>
 
-</html>&
+</html>
