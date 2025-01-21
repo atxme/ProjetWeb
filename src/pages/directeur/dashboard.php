@@ -102,8 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$sql = "SELECT u.numUtilisateur, u.login, u.nom, u.prenom, u.dateNaissance,
-        TIMESTAMPDIFF(YEAR, u.dateNaissance, CURDATE()) as age,
+$sql = "SELECT u.numUtilisateur, u.login, u.nom, u.prenom, u.age,
         CASE 
             WHEN p.numPresident IS NOT NULL THEN 'Président'
             WHEN c.numCompetiteur IS NOT NULL THEN 'Compétiteur'
