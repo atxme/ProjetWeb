@@ -22,7 +22,7 @@ try {
 
     // Récupérer l'id_user depuis la session
     $id_user = $_SESSION['user_id'];
-    
+
     // Préparer la requête pour vérifier si l'utilisateur est compétiteur
     $evaluateurQuery = $pdo->prepare('
         SELECT COUNT(*) AS is_evaluateur
@@ -30,7 +30,7 @@ try {
         WHERE numEvaluateur = :user_id
     ');
     
-    $evaluateurQuery->execute(['user_id' => $id_user]);
+    $evaluateurQuery->execute([':user_id' => $id_user]);
     $evaluateur = $evaluateurQuery->fetch(PDO::FETCH_ASSOC);
 
     // Vérifier si l'utilisateur est à la fois évaluateur et compétiteur
