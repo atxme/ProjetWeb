@@ -93,10 +93,10 @@ try {
     $concoursQuery = $pdo->prepare('
         SELECT 
             c.theme AS nom_concours,
-            c.dateDebut,
-            c.dateFin,
+            c.dateDeb AS date_debut,
+            c.dateFin AS date_fin,
             CASE 
-                WHEN NOW() BETWEEN c.dateDebut AND c.dateFin THEN "En cours"
+                WHEN NOW() BETWEEN c.dateDeb AND c.dateFin THEN "En cours"
                 WHEN NOW() > c.dateFin THEN "Fini"
                 ELSE "À venir"
             END AS statut
@@ -107,7 +107,7 @@ try {
         WHERE 
             j.numEvaluateur = :user_id
         ORDER BY 
-            c.dateDebut DESC
+            c.dateDeb DESC
     ');
     $concoursQuery->execute(['user_id' => $id_user]);
     $concours = $concoursQuery->fetchAll(PDO::FETCH_ASSOC);
