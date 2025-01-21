@@ -9,9 +9,11 @@ if (
     empty(array_intersect($authorizedRoles, $_SESSION['roles'])) || 
     !isset($_SESSION['login'])
 ) {
+    echo($_SESSION['roles']);
     // Détruire la session si l'accès est non autorisé
     session_destroy();
     header('Location: ../../index.php');
+    echo($_SESSION['roles']);
     exit;
 }
 
