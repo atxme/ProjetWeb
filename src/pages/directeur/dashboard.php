@@ -16,6 +16,12 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([':numDirecteur' => $_SESSION['user_id']]);
 $numClubDirecteur = $stmt->fetchColumn();
 
+// Récupérer les informations du club
+$sql = "SELECT * FROM Club WHERE numClub = :numClub";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':numClub' => $numClubDirecteur]);
+$clubInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
 if (!$numClubDirecteur) {
     // Si le numClub n'est pas trouvé, rediriger vers la page de connexion
     header('Location: ../../index.php');
@@ -129,8 +135,8 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/css/directeur.css">
     <title>Gestion des Compétiteurs</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 
 <body>
@@ -146,6 +152,46 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <div class="admin-container">
+        <div class="admin-box">
+            <div class="admin-header">
+                <h2>Informations du Club</h2>
+            </div>
+            <div class="club-info">
+                <div class="info-group">
+                    <label>Nom du Club:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['nomClub']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Numéro du Club:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['numClub']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Adresse:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['adresse']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Téléphone:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['numTel']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Nombre d'Adhérents:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['nbAdherents']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Ville:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['ville']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Département:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['departement']); ?></span>
+                </div>
+                <div class="info-group">
+                    <label>Région:</label>
+                    <span><?php echo htmlspecialchars($clubInfo['region']); ?></span>
+                </div>
+            </div>
+        </div>
+
         <div class="admin-box">
             <div class="admin-header">
                 <h2>Gestion des Compétiteurs</h2>

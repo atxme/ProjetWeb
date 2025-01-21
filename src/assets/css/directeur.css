@@ -1,0 +1,37 @@
+/* Styles spécifiques au directeur */
+
+/* Informations du club */
+.club-info {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.info-group {
+  display: flex;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.3s ease;
+}
+
+.info-group:hover {
+  background-color: #ffffff;
+}
+
+.info-group:last-child {
+  border-bottom: none;
+}
+
+.info-group label {
+  font-weight: 600;
+  width: 200px;
+  color: #2c3e50;
+  font-size: 0.95em;
+}
+
+.info-group span {
+  flex: 1;
+  color: #495057;
+  padding-left: 15px;
+}
