@@ -217,7 +217,7 @@ try {
                 </table>
                 <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
                 <?php if ($isEvaluateur && $isCompetiteur): ?>
-                    <form action="nouvelle_page.php" method="post">
+                    <form action="../../pages/competiteur/dashboard.php" method="post">
                         <button type="submit" class="button">Mon bouton spécial</button>
                     </form>
                 <?php endif; ?>
