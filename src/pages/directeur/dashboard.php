@@ -23,9 +23,9 @@ if (!$numClubDirecteur) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'];
-    $numCompetiteur = (int)$_POST['numCompetiteur'];
-    $numClub = (int)$_POST['numClub'];
+    $action = $_POST['action'] ?? '';
+    $numCompetiteur = isset($_POST['numCompetiteur']) ? (int)$_POST['numCompetiteur'] : 0;
+    $numClub = isset($_POST['numClub']) ? (int)$_POST['numClub'] : 0;
 
     $db = Database::getInstance();
     $pdo = $db->getConnection();
@@ -87,12 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $login = $_POST['login'];
         $mdp = $_POST['mdp'];
 
-        $sql = "INSERT INTO Utilisateur (nom, prenom, dateNaissance, adresse, login, mdp, numClub) VALUES (:nom, :prenom, :dateNaissance, :adresse, :login, :mdp, :numClub)";
+        $sql = "INSERT INTO Utilisateur (nom, prenom, age, adresse, login, mdp, numClub) VALUES (:nom, :prenom, :age, :adresse, :login, :mdp, :numClub)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':nom' => $nom,
             ':prenom' => $prenom,
-            ':dateNaissance' => date('Y-m-d', strtotime("-$age years")),
+            ':age' => $age,
             ':adresse' => $adresse,
             ':login' => $login,
             ':mdp' => password_hash($mdp, PASSWORD_DEFAULT),
@@ -137,8 +137,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="status-bar">
         <div class="status">
             <?php
-            echo htmlspecialchars($_SESSION['login']) . ' : ' .
-                ucfirst(htmlspecialchars($_SESSION['user_type']));
+            echo htmlspecialchars($_SESSION['login']) . ' : Directeur';
             ?>
         </div>
         <div class="logout">
