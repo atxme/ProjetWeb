@@ -16,7 +16,13 @@ if (
 }
 
 try {
+    // Connexion à la base de données
+    $db = Database::getInstance();
+    $pdo = $db->getConnection();
 
+    // Récupérer l'id_user depuis la session
+    $id_user = $_SESSION['user_id'];
+    
     // Préparer la requête pour vérifier si l'utilisateur est compétiteur
     $evaluateurQuery = $pdo->prepare('
         SELECT COUNT(*) AS is_evaluateur
