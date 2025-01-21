@@ -39,11 +39,7 @@ if (
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <form action="../evaluateur/evaluateur.php" method="post">
-            <!-- Champ caché pour le token CSRF -->
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']); ?>">
-                <button type="submit" class="btn-stats">Go to évaluateur</button>
-            </form>
+            <a href="../evaluateur/evaluateur.php" class="btn-stats">Go to évaluateur</a>
             <a href="../logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
