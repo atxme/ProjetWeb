@@ -337,6 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
     }
 }
 
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
