@@ -2,7 +2,7 @@
 require_once '/srv/siteweb/dessin/include/db.php';
 
 $passwords = [
-    'pwd1231' => 'admin',
+    'pwd123' => 'admin',
     'pwd124' => 'pdubois',
     'pwd125' => 'mmartin', 
     'pwd126' => 'jdupont',

@@ -242,3 +242,33 @@ h1 {
     width: calc(33.333% - 20px);
     box-sizing: border-box;
 }
+
+.status-bar {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar .status {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.role-badge {
+    display: inline-block;
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #4a90e2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}

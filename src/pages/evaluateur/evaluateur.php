@@ -105,10 +105,8 @@ try {
 <body>
     <div class="status-bar">
         <div class="status">
-            <?php 
-            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
-                 ucfirst(htmlspecialchars($_SESSION['role'])); 
-            ?>
+            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
+            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
         <div class="logout">
             <?php
