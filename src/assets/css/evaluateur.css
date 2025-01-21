@@ -361,19 +361,19 @@ text-align: right;
 }
 
 .profile-table {
-width: 100%;
-border-collapse: collapse;
-border-spacing: 0 5em;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0 5em;
 }
 
 .label-cell {
     font-family: "Segoe UI", system-ui, sans-serif;
     text-align: left;
     padding: 5px;
-    width: 45%;
+    width: 30%;
 }
 
-.td{
+.cell {
     font-family: "Segoe UI", system-ui, sans-serif;
 }
 

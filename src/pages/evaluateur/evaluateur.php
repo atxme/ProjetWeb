@@ -230,10 +230,10 @@ try {
                     </tr>
                     <?php foreach ($concours as $concour) : ?>
                         <tr>
-                            <td><?= htmlspecialchars($concour['nom_concours']) ?></td>
-                            <td><?= htmlspecialchars($concour['date_debut']) ?></td>
-                            <td><?= htmlspecialchars($concour['date_fin']) ?></td>
-                            <td><?= htmlspecialchars($concour['etat_concours']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['nom_concours']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['date_debut']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['date_fin']) ?></td>
+                            <td class="cell"><?= htmlspecialchars($concour['etat_concours']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
