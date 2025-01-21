@@ -55,7 +55,6 @@ try {
 
     // Exécuter la requête avec le paramètre id_user
     $query->execute(['user_id' => $id_user]);
-
     // Récupérer les résultats sous forme associative
     $user = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -89,11 +88,34 @@ try {
 
     // Récupérer les résultats sous forme associative
     $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
+
+    // Requête pour la liste des concours
+    $concoursQuery = $pdo->prepare('
+        SELECT 
+            c.theme AS nom_concours,
+            c.dateDebut,
+            c.dateFin,
+            CASE 
+                WHEN NOW() BETWEEN c.dateDebut AND c.dateFin THEN "En cours"
+                WHEN NOW() > c.dateFin THEN "Fini"
+                ELSE "À venir"
+            END AS statut
+        FROM 
+            Jury j
+        INNER JOIN 
+            Concours c ON j.numConcours = c.numConcours
+        WHERE 
+            j.numEvaluateur = :user_id
+        ORDER BY 
+            c.dateDebut DESC
+    ');
+    $concoursQuery->execute(['user_id' => $id_user]);
+    $concours = $concoursQuery->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     // Si une erreur de base de données se produit, l'afficher
     die('Erreur de base de données : ' . $e->getMessage());
 }
-
 
 ?>
 
@@ -183,6 +205,23 @@ try {
             <div class="box">
                 <div class="header">
                     <h2>Liste des concours</h2>
+                    <!-- Liste des concours -->
+                    <table class="profile-table">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Statut</th>
+                        </tr>
+                        <?php foreach ($concours as $concour) : ?>
+                            <tr>
+                                <td><?= htmlspecialchars($concour['nom_concours']) ?></td>
+                                <td><?= htmlspecialchars($concour['dateDebut']) ?></td>
+                                <td><?= htmlspecialchars($concour['dateFin']) ?></td>
+                                <td><?= htmlspecialchars($concour['statut']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
                 </div>
             </div>
         </div>
