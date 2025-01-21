@@ -149,7 +149,7 @@ try {
         <?php if ($isEvaluateur && $isCompetiteur): ?>
             <a href="../competiteur/dashboard.php" class="btn-stats">Mon profil compétiteur</a>
         <?php endif; ?>
-        <div class="btn-logout">
+        <div>
             <?php
             if(isset($_GET['logout'])) {
                 session_destroy();
@@ -157,7 +157,7 @@ try {
                 exit;
             }
             ?>
-            <a href="?logout=true">Déconnexion</a>
+            <a class="btn-logout" href="?logout=true">Déconnexion</a>
         </div>
     </div>
     <div class="container">
