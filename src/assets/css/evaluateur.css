@@ -333,3 +333,38 @@ select[disabled] {
     font-size: 14px;
     font-weight: 500;
 }
+
+
+.data {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data label {
+  flex: 1;
+  text-align: left;
+  margin-right: 10px;
+}
+
+.data input {
+  flex: 2;
+  text-align: right;
+}
+
+/* Ajouter le nouveau style pour le badge de rôle */
+.role-badge {
+    display: inline-block;
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #4a90e2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
