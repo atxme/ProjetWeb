@@ -10,6 +10,18 @@ require_once '../../include/db.php';
 $db = Database::getInstance();
 $pdo = $db->getConnection();
 
+// Récupérer le numClub du directeur connecté
+$sql = "SELECT numClub FROM Directeur WHERE numDirecteur = :numDirecteur";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':numDirecteur' => $_SESSION['user_id']]);
+$numClubDirecteur = $stmt->fetchColumn();
+
+if (!$numClubDirecteur) {
+    // Si le numClub n'est pas trouvé, rediriger vers la page de connexion
+    header('Location: ../../index.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
     $numCompetiteur = (int)$_POST['numCompetiteur'];
@@ -25,17 +37,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':numCompetiteur' => $numCompetiteur]);
         $message = "Compétiteur ajouté avec succès.";
     } elseif ($action === 'supprimer') {
-        // Supprimer un compétiteur
-        $sql = "DELETE FROM Competiteur WHERE numCompetiteur = :numCompetiteur";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':numCompetiteur' => $numCompetiteur]);
-        $message = "Compétiteur supprimé avec succès.";
+        try {
+            $pdo->beginTransaction();
+
+            // Vérifier si l'utilisateur est un président
+            $sql = "SELECT COUNT(*) FROM President WHERE numPresident = :numPresident";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numPresident' => $numCompetiteur]);
+            if ($stmt->fetchColumn() > 0) {
+                throw new PDOException("Impossible de supprimer un président.");
+            }
+
+            // Supprimer les évaluations des dessins du compétiteur
+            $sql = "DELETE FROM Evaluation WHERE numDessin IN (SELECT numDessin FROM Dessin WHERE numCompetiteur = :numCompetiteur)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer les dessins du compétiteur
+            $sql = "DELETE FROM Dessin WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer les participations aux concours
+            $sql = "DELETE FROM CompetiteurParticipe WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer le compétiteur
+            $sql = "DELETE FROM Competiteur WHERE numCompetiteur = :numCompetiteur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numCompetiteur' => $numCompetiteur]);
+
+            // Supprimer l'utilisateur
+            $sql = "DELETE FROM Utilisateur WHERE numUtilisateur = :numUtilisateur";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numUtilisateur' => $numCompetiteur]);
+
+            $pdo->commit();
+            $message = "Compétiteur supprimé avec succès.";
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            $message = "Erreur lors de la suppression du compétiteur : " . $e->getMessage();
+        }
     }
 }
 
-// Récupérer les membres du club
-$numClubDirecteur = $_SESSION['numClub']; // Assurez-vous que le numéro du club est stocké dans la session
-$sql = "SELECT numUtilisateur, nom, prenom FROM Utilisateur WHERE numClub = :numClub";
+$sql = "SELECT u.numUtilisateur, u.nom, u.prenom,
+        CASE 
+            WHEN p.numPresident IS NOT NULL THEN 'Président'
+            WHEN c.numCompetiteur IS NOT NULL THEN 'Compétiteur'
+            WHEN e.numEvaluateur IS NOT NULL THEN 'Évaluateur'
+            ELSE 'Membre'
+        END as role
+        FROM Utilisateur u
+        LEFT JOIN President p ON u.numUtilisateur = p.numPresident
+        LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
+        LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+        WHERE u.numClub = :numClub";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':numClub' => $numClubDirecteur]);
 $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -85,15 +143,6 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
             </form>
-
-            <form method="post">
-                <input type="hidden" name="action" value="supprimer">
-                <div class="form-group">
-                    <label for="numCompetiteur">Numéro du Compétiteur à Supprimer</label>
-                    <input type="number" id="numCompetiteur" name="numCompetiteur" required>
-                </div>
-                <button type="submit" class="btn-submit">Supprimer Compétiteur</button>
-            </form>
         </div>
 
         <div class="admin-box">
@@ -106,6 +155,8 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th>Numéro d'Utilisateur</th>
                         <th>Nom</th>
                         <th>Prénom</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,6 +165,16 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($membre['numUtilisateur']); ?></td>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['role']); ?></td>
+                            <td>
+                                <form method="post" style="margin: 0;">
+                                    <input type="hidden" name="action" value="supprimer">
+                                    <input type="hidden" name="numCompetiteur" value="<?php echo htmlspecialchars($membre['numUtilisateur']); ?>">
+                                    <button type="submit" class="btn-delete" title="Supprimer le compétiteur">
+                                        <i class="fas fa-trash"></i>🗑️
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

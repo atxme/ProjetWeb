@@ -1,123 +1,162 @@
 body {
-    background-image: url('../../images/font.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
+  background-image: url("../../images/font.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 80px auto 20px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 55% 40%;
-    gap: 5%;
-    font-family: 'Segoe UI', system-ui, sans-serif;
+  width: 100%;
+  max-width: 1400px;
+  margin: 80px auto 20px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 55% 40%;
+  gap: 5%;
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 
 .admin-forms {
-    order: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+  order: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .admin-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 30px;
-    width: 100%;
-    box-sizing: border-box;
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 30px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 .admin-header {
-    margin-bottom: 30px;
-    text-align: center;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 .admin-header h2 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    position: relative;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  position: relative;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 
 .admin-header h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-    border-radius: 2px;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  border-radius: 2px;
 }
 
 .admin-header p {
-    font-size: 16px;
-    color: #6c757d;
-    margin-bottom: 15px;
+  font-size: 16px;
+  color: #6c757d;
+  margin-bottom: 15px;
 }
 
+/* Style de base pour les formulaires */
+#creation-concours-form,
+#userForm {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Style des groupes de formulaire */
 .form-group {
-    margin-bottom: 25px;
+  margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #34495e;
+  font-size: 15px;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 500;
-    color: #34495e;
-    font-size: 15px;
+    color: #2c3e50;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 15px;
-    transition: all 0.3s ease;
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
 .form-group input[type="date"] {
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-bottom: 25px;
-    display: block;
-    transition: border-color 0.3s ease;
-    resize: none;
+  padding: 12px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 25px;
+  display: block;
+  transition: border-color 0.3s ease;
+  resize: none;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #4a90e2;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-    outline: none;
+  border-color: #4a90e2;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+  outline: none;
 }
 
 .btn-submit {
+  width: 100%;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+  margin-bottom: 25px;
+}
+
+/* Style des champs désactivés */
+.form-group select:disabled,
+.form-group input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Style des boutons */
+button[type="submit"] {
     width: 100%;
     padding: 14px 28px;
     background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
@@ -129,220 +168,28 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
-    margin-bottom: 25px;
 }
 
-.btn-submit:hover {
+button[type="submit"]:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
 }
 
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.alert-danger {
-    background-color: #fee2e2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.btn-success {
-    background-color: #28a745;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.btn-update {
-    background-color: #007bff;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.btn-delete {
-    background-color: #dc3545;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.btn-back {
-    background-color: #6c757d;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.status-bar {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.status-bar .status {
-    font-weight: 500;
-    color: #2c3e50;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.status-bar .logout a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.status-bar .logout a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
-}
-
-.status-bar .nav-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.status-bar .btn-stats,
-.status-bar .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 36px;
-    padding: 0 16px;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.status-bar .btn-stats {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-}
-
-.status-bar .btn-logout {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-}
-
-.status-bar .btn-stats:hover,
-.status-bar .btn-logout:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.status-bar .btn-stats:hover {
-    background: linear-gradient(135deg, #45a049 0%, #3d8b41 100%);
-}
-
-.status-bar .btn-logout:hover {
-    background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
-}
-
-.form-group small {
-    display: block;
-    color: #666;
-    font-size: 0.85em;
-    margin-top: 5px;
-}
-
-.form-info {
-    color: #666;
-    font-size: 0.9em;
-    margin-top: 15px;
-    text-align: center;
-}
-
-input[readonly], 
-input[disabled], 
-select[disabled] {
-    background-color: #f5f5f5;
+button[type="submit"]:disabled {
+    opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
 }
 
-textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: vertical;
+/* Style des messages d'erreur */
+.field-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    animation: fadeIn 0.3s ease-in;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
+/* Style des popups */
 .popup {
     position: fixed;
     top: 20px;
@@ -365,6 +212,7 @@ textarea {
     box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
 }
 
+/* Animations */
 @keyframes slideIn {
     from {
         transform: translateX(100%);
@@ -376,83 +224,308 @@ textarea {
     }
 }
 
-/* Ajouter le nouveau style pour le badge de rôle */
-.role-badge {
-    display: inline-block;
-    background-color: rgba(74, 144, 226, 0.2);
-    color: #4a90e2;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: 500;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Style spécifique pour les champs invalides */
+.invalid-field {
+    border-color: #dc3545 !important;
+    background-color: #fff8f8 !important;
+}
+
+.invalid-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Style pour le focus des champs */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-danger {
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn-update {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn-back {
+  background-color: #6c757d;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.status-bar {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar .status {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-bar .logout a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar .logout a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
+}
+
+.status-bar .nav-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.status-bar .btn-stats,
+.status-bar .btn-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-bar .btn-stats {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+}
+
+.status-bar .btn-logout {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
+
+.status-bar .btn-stats:hover,
+.status-bar .btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-bar .btn-stats:hover {
+  background: linear-gradient(135deg, #45a049 0%, #3d8b41 100%);
+}
+
+.status-bar .btn-logout:hover {
+  background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
+}
+
+.form-group small {
+  display: block;
+  color: #666;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.form-info {
+  color: #666;
+  font-size: 0.9em;
+  margin-top: 15px;
+  text-align: center;
+}
+
+input[readonly],
+input[disabled],
+select[disabled] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 /* Style pour la liste des concours en cours */
 .concours-list {
-    order: 1;
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    position: sticky;
-    top: 100px;
-    height: fit-content;
+  order: 1;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 100px;
+  height: fit-content;
 }
 
 .concours-cards-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .concours-card {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid #eee;
 }
 
 .concours-card:hover {
-    transform: translateX(5px);
-    background: #f1f3f5;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transform: translateX(5px);
+  background: #f1f3f5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .status-indicator {
-    width: 6px;
-    height: 50px;
-    margin-right: 15px;
-    border-radius: 3px;
+  width: 6px;
+  height: 50px;
+  margin-right: 15px;
+  border-radius: 3px;
 }
 
 .concours-info {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .concours-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 5px;
 }
 
 .concours-date {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 5px;
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
 }
 
 .concours-status {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    text-transform: capitalize;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  text-transform: capitalize;
 }
 
 /* Couleurs pour les différents états */
@@ -461,64 +534,54 @@ textarea {
 .status-evaluation { background-color: #f1c40f; } /* Jaune - En évaluation */
 .status-finished { background-color: #e74c3c; } /* Rouge - Terminé */
 
-/* Style pour les champs invalides */
-.invalid-field {
-    border-color: #dc3545 !important;
-    background-color: #fff8f8 !important;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
-
 /* Animation de secousse */
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
 }
 
 .shake {
-    animation: shake 0.5s ease-in-out;
-}
-
-/* Style au focus pour les champs invalides */
-.invalid-field:focus {
-    border-color: #dc3545 !important;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-    outline: none;
-}
-
-/* Style au hover pour les champs invalides */
-.invalid-field:hover {
-    border-color: #dc3545 !important;
+  animation: shake 0.5s ease-in-out;
 }
 
 /* Transition douce pour les changements d'état */
 .form-group input,
 .form-group textarea,
 .form-group select {
-    transition: all 0.3s ease-in-out;
-}
-
-/* Style pour les messages d'erreur sous les champs */
-.field-error {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-    animation: fadeIn 0.3s ease-in;
-}
-
-/* Animation pour l'apparition des messages d'erreur */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+  transition: all 0.3s ease-in-out;
 }
 
 /* Style pour le bouton désactivé */
 button[type="submit"]:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Transition douce pour les changements d'état */
-input, textarea, button {
-    transition: all 0.3s ease-in-out;
+input,
+textarea,
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 1.1em;
+  transition: color 0.3s ease;
+}
+
+.btn-delete:hover {
+  color: #c82333;
 }
