@@ -10,6 +10,18 @@ require_once '../../include/db.php';
 $db = Database::getInstance();
 $pdo = $db->getConnection();
 
+// Récupérer le numClub du directeur connecté
+$sql = "SELECT numClub FROM Directeur WHERE numDirecteur = :numDirecteur";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':numDirecteur' => $_SESSION['user_id']]);
+$numClubDirecteur = $stmt->fetchColumn();
+
+if (!$numClubDirecteur) {
+    // Si le numClub n'est pas trouvé, rediriger vers la page de connexion
+    header('Location: ../../index.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
     $numCompetiteur = (int)$_POST['numCompetiteur'];
@@ -33,8 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Récupérer les membres du club
-$numClubDirecteur = $_SESSION['numClub']; // Assurez-vous que le numéro du club est stocké dans la session
 $sql = "SELECT numUtilisateur, nom, prenom FROM Utilisateur WHERE numClub = :numClub";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':numClub' => $numClubDirecteur]);
@@ -106,6 +116,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th>Numéro d'Utilisateur</th>
                         <th>Nom</th>
                         <th>Prénom</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,6 +125,15 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($membre['numUtilisateur']); ?></td>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
+                            <td>
+                                <form method="post" style="margin: 0;">
+                                    <input type="hidden" name="action" value="supprimer">
+                                    <input type="hidden" name="numCompetiteur" value="<?php echo htmlspecialchars($membre['numUtilisateur']); ?>">
+                                    <button type="submit" class="btn-delete" title="Supprimer le compétiteur">
+                                        <i class="fas fa-trash"></i>🗑️
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
