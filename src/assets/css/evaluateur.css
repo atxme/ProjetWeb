@@ -395,6 +395,7 @@ box-sizing: border-box;
 
 .concours-card {
     font-family: "Segoe UI", system-ui, sans-serif;
+    text-decoration: none;
     display: flex;
     margin: 20px 20px 20px 20px; 
     align-items: center;
