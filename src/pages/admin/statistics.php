@@ -116,7 +116,70 @@ $stmt = $conn->prepare("
 $stmt->execute();
 $allEvaluatedDrawings = $stmt->fetchAll();
 
+// Récupérer les compétiteurs qui ont participé à tous les concours
+$stmt = $conn->prepare("
+    SELECT u.nom, u.prenom, u.age
+    FROM Utilisateur u
+    JOIN CompetiteurParticipe cp ON u.numUtilisateur = cp.numCompetiteur
+    GROUP BY u.numUtilisateur
+    HAVING COUNT(DISTINCT cp.numConcours) = (SELECT COUNT(*) FROM Concours)
+    ORDER BY u.age " . $order);
+$stmt->execute();
+$allContestParticipants = $stmt->fetchAll();
+
+
+// Si un concours spécifique est demandé
+if ($concoursId) {
+    // Récupérer les détails du concours
+    $stmt = $conn->prepare("
+        SELECT c.*, 
+               COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
+               COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
+               COUNT(DISTINCT d.numDessin) as nb_dessins,
+               COUNT(DISTINCT e.numEvaluation) as nb_evaluations
+        FROM Concours c
+        LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
+        LEFT JOIN Jury j ON c.numConcours = j.numConcours
+        LEFT JOIN Dessin d ON c.numConcours = d.numConcours
+        LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
+        WHERE c.numConcours = ?
+        GROUP BY c.numConcours
+    ");
+    $stmt->execute([$concoursId]);
+    $concoursDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($concoursDetails) {
+        // Afficher les statistiques spécifiques au concours
+        ?>
+        <div class="container">
+            <h1><?php echo htmlspecialchars($concoursDetails['theme']); ?></h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Participants</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_participants']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Évaluateurs</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_evaluateurs']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Dessins soumis</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_dessins']; ?></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Évaluations réalisées</h3>
+                    <div class="stat-number"><?php echo $concoursDetails['nb_evaluations']; ?></div>
+                </div>
+            </div>
+            
+            <!-- Ajouter d'autres statistiques spécifiques au concours ici -->
+        </div>
+        <?php
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -295,5 +358,42 @@ $allEvaluatedDrawings = $stmt->fetchAll();
             </tbody>
         </table>
     </div>
+    <div class="container mt-4">
+    <h3>Compétiteurs ayant participé à tous les concours</h3>
+    
+    <form method="POST" class="mb-3">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        <select name="order" class="form-select" onchange="this.form.submit()">
+            <option value="ASC" <?php echo $order === 'ASC' ? 'selected' : ''; ?>>Âge croissant</option>
+            <option value="DESC" <?php echo $order === 'DESC' ? 'selected' : ''; ?>>Âge décroissant</option>
+        </select>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Âge</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (!empty($allContestParticipants)): ?>
+                <?php foreach ($allContestParticipants as $participant): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($participant['nom']); ?></td>
+                        <td><?php echo htmlspecialchars($participant['prenom']); ?></td>
+                        <td><?php echo htmlspecialchars($participant['age']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="3" class="text-center">Aucun compétiteur n'a participé à tous les concours</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
