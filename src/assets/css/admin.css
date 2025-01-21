@@ -79,15 +79,15 @@ body {
 #creation-concours-form,
 #userForm {
     width: 100%;
-    max-width: 500px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
 }
 
 /* Style des groupes de formulaire */
 .form-group {
-  margin-bottom: 25px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    width: 100%;
 }
 
 .form-group label {
@@ -102,15 +102,15 @@ body {
     color: #2c3e50;
 }
 
-.form-group input,
 .form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: all 0.3s ease;
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .form-group input[type="date"] {
@@ -145,7 +145,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
-  margin-bottom: 25px;
+  margin-top: 20px;
 }
 
 /* Style des champs désactivés */
@@ -605,4 +605,16 @@ button {
 
 .btn-delete:hover {
   color: #c82333;
+}
+
+/* Style pour le badge de rôle */
+.role-badge {
+    display: inline-block;
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #4a90e2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 8px;
 }
