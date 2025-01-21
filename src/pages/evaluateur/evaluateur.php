@@ -215,27 +215,27 @@ try {
             <div class="box">
                 <div class="header">
                     <h2>Liste des concours</h2>
-                    <!-- Liste des concours -->
-                    <table class="profile-table">
-                        <tr>
-                            <th class="label-cell">Nom</th>
-                            <th class="label-cell">Date de début</th>
-                            <th class="label-cell">Date de fin</th>
-                            <th class="label-cell">État</th>
-                        </tr>
-                        <?php foreach ($concours as $concour) : ?>
-                            <tr>
-                                <td><?= htmlspecialchars($concour['nom_concours']) ?></td>
-                                <td><?= htmlspecialchars($concour['date_debut']) ?></td>
-                                <td><?= htmlspecialchars($concour['date_fin']) ?></td>
-                                <td><?= htmlspecialchars($concour['etat_concours']) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
                 </div>
+                <!-- Liste des concours -->
+                <table class="profile-table">
+                    <tr>
+                        <th class="label-cell">Nom</th>
+                        <th class="label-cell">Date de début</th>
+                        <th class="label-cell">Date de fin</th>
+                        <th class="label-cell">État</th>
+                    </tr>
+                    <?php foreach ($concours as $concour) : ?>
+                        <tr>
+                            <td><?= htmlspecialchars($concour['nom_concours']) ?></td>
+                            <td><?= htmlspecialchars($concour['date_debut']) ?></td>
+                            <td><?= htmlspecialchars($concour['date_fin']) ?></td>
+                            <td><?= htmlspecialchars($concour['etat_concours']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
                 <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
                 <?php if ($isEvaluateur && $isCompetiteur): ?>
-                    <form action="nouvelle_page.php" method="post">
+                    <form action="../../pages/competiteur/dashboard.php" method="post">
                         <button type="submit" class="button">Mon bouton spécial</button>
                     </form>
                 <?php endif; ?>
