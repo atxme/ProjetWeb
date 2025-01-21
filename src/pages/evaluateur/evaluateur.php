@@ -95,6 +95,7 @@ try {
     
     $competiteurQuery->execute(['user_id' => $id_user]);
     $competiteur = $competiteurQuery->fetch(PDO::FETCH_ASSOC);
+    
     // Requête pour la liste des concours
     $concoursQuery = $pdo->prepare('
         SELECT 
@@ -139,6 +140,12 @@ try {
             <?php echo htmlspecialchars($_SESSION['login']); ?> : 
             <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
+        <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
+        <?php if ($isEvaluateur && $isCompetiteur): ?>
+            <form action="../../pages/competiteur/dashboard.php" method="post">
+                <button type="submit" class="btn-submit">Go to Competiteur</button>
+            </form>
+        <?php endif; ?>
         <div class="logout">
             <?php
             if(isset($_GET['logout'])) {
@@ -225,12 +232,6 @@ try {
                         </tr>
                     <?php endforeach; ?>
                 </table>
-                <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
-                <?php if ($isEvaluateur && $isCompetiteur): ?>
-                    <form action="../../pages/competiteur/dashboard.php" method="post">
-                        <button type="submit" class="button">Mon bouton spécial</button>
-                    </form>
-                <?php endif; ?>
             </div>
         </div>
     </div>
