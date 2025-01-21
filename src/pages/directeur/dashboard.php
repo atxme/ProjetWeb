@@ -40,6 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
+            // Vérifier si l'utilisateur est un président
+            $sql = "SELECT COUNT(*) FROM President WHERE numPresident = :numPresident";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':numPresident' => $numCompetiteur]);
+            if ($stmt->fetchColumn() > 0) {
+                throw new PDOException("Impossible de supprimer un président.");
+            }
+
             // Supprimer les évaluations des dessins du compétiteur
             $sql = "DELETE FROM Evaluation WHERE numDessin IN (SELECT numDessin FROM Dessin WHERE numCompetiteur = :numCompetiteur)";
             $stmt = $pdo->prepare($sql);
@@ -74,7 +82,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$sql = "SELECT numUtilisateur, nom, prenom FROM Utilisateur WHERE numClub = :numClub";
+$sql = "SELECT u.numUtilisateur, u.nom, u.prenom,
+        CASE 
+            WHEN p.numPresident IS NOT NULL THEN 'Président'
+            WHEN c.numCompetiteur IS NOT NULL THEN 'Compétiteur'
+            WHEN e.numEvaluateur IS NOT NULL THEN 'Évaluateur'
+            ELSE 'Membre'
+        END as role
+        FROM Utilisateur u
+        LEFT JOIN President p ON u.numUtilisateur = p.numPresident
+        LEFT JOIN Competiteur c ON u.numUtilisateur = c.numCompetiteur
+        LEFT JOIN Evaluateur e ON u.numUtilisateur = e.numEvaluateur
+        WHERE u.numClub = :numClub";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':numClub' => $numClubDirecteur]);
 $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -124,15 +143,6 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <button type="submit" class="btn-submit">Ajouter Compétiteur</button>
             </form>
-
-            <form method="post">
-                <input type="hidden" name="action" value="supprimer">
-                <div class="form-group">
-                    <label for="numCompetiteur">Numéro du Compétiteur à Supprimer</label>
-                    <input type="number" id="numCompetiteur" name="numCompetiteur" required>
-                </div>
-                <button type="submit" class="btn-submit">Supprimer Compétiteur</button>
-            </form>
         </div>
 
         <div class="admin-box">
@@ -145,6 +155,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th>Numéro d'Utilisateur</th>
                         <th>Nom</th>
                         <th>Prénom</th>
+                        <th>Rôle</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -154,6 +165,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($membre['numUtilisateur']); ?></td>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['role']); ?></td>
                             <td>
                                 <form method="post" style="margin: 0;">
                                     <input type="hidden" name="action" value="supprimer">
