@@ -30,7 +30,6 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Effets d'animation */
 }
 
-
 .box-info:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
@@ -84,52 +83,6 @@ body {
     font-size: 16px;
     color: #6c757d;
     margin-bottom: 15px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 500;
-    color: #34495e;
-    font-size: 15px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-bottom: 25px;
-    display: block;
-    transition: border-color 0.3s ease;
-    resize: none;
-}
-
-.form-group input[type="date"] {
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-bottom: 25px;
-    display: block;
-    transition: border-color 0.3s ease;
-    resize: none;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: #4a90e2;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-    outline: none;
 }
 
 .btn-submit {
@@ -276,20 +229,6 @@ body {
     background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
 }
 
-.form-group small {
-    display: block;
-    color: #666;
-    font-size: 0.85em;
-    margin-top: 5px;
-}
-
-.form-info {
-    color: #666;
-    font-size: 0.9em;
-    margin-top: 15px;
-    text-align: center;
-}
-
 input[readonly], 
 input[disabled], 
 select[disabled] {
@@ -300,17 +239,19 @@ select[disabled] {
 /* Style des labels */
 .cat {
     font-family: 'Segoe UI', system-ui, sans-serif;
+    position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+    width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
     font-size: 20px;
     color: #34495e;
     font-weight: bold;
     margin-bottom: 8px;
     display: inline-block;
+    text-align: left;
 }
 
 /* Style des textareas */
 .textarea {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    width: 100%;
     padding: 12px 15px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
@@ -328,13 +269,6 @@ select[disabled] {
     background-color: white;
     box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
     outline: none;
-}
-
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
 }
 
 .popup {
@@ -387,6 +321,41 @@ select[disabled] {
         opacity: 0;
         visibility: hidden;
     }
+}
+
+/* Ajouter le nouveau style pour le badge de rôle */
+.role-badge {
+    display: inline-block;
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #4a90e2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+.data {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data label {
+  flex: 1;
+  text-align: left;
+  margin-right: 10px;
+}
+
+.data input {
+  flex: 2;
+  text-align: right;
 }
 
 /* Ajouter le nouveau style pour le badge de rôle */

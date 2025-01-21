@@ -124,23 +124,23 @@ try {
             <div class="box-info">
                 <div class="header">
                     <h2>Mon profil</h2>
-                    <div>
+                    <div class="data">
                         <label class ="cat"><label type ="cat">Nom :</label>
                         <input class="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
                     </div>
-                    <div>
+                    <div class="data">
                         <label class ="cat">Prénom :</label>
                         <input class="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
                     </div>
-                    <div>
+                    <div class="data">
                         <label class ="cat">Âge :</label>
                         <input class="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
                     </div>
-                    <div>
+                    <div class="data">
                         <label class ="cat">Adresse :</label>
                         <input class="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
                     </div>
-                    <div>
+                    <div class="data">
                         <label class ="cat">Club :</label>
                         <input class="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
                     </div>
@@ -150,29 +150,33 @@ try {
                 <div class="header">
                     <h2>Mes statistiques</h2>
                 </div>
+                <div class="data">
                 <div>
                     <label class ="cat">Moyenne des notes :</label>
                     <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
                     <label class ="cat">Moyenne des notes :</label>
-                    <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
+                    <input class="textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled>
                 </div>
+                <div class="data">
                 <div>
                     <label class ="cat">Note maximale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
                     <label class ="cat">Note maximale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
                 </div>
+                <div class="data">
                 <div>
                     <label class ="cat">Note minimale :</label>
                     <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
                     <label class ="cat">Note minimale :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
                 </div>
+                <div class="data">
                 <div>
                     <label class ="cat">Dernier concours :</label>
                     <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
                     <label class ="cat">Dernier concours :</label>
-                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
                 </div>
             </div>
         </div>
