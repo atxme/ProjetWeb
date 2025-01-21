@@ -2,44 +2,35 @@
 require_once '/srv/siteweb/dessin/include/db.php';
 
 $passwords = [
+    // Admin
     'pwd123' => 'admin',
+
+    // Présidents
     'pwd124' => 'pdubois',
-    'pwd125' => 'mmartin', 
-    'pwd126' => 'jdupont',
-    'pwd127' => 'mdurand',
-    'pwd128' => 'plefevre',
-    'pwd129' => 'amoreau',
-    'pwd130' => 'croux',
-    'pwd131' => 'csimon',
-    'pwd140' => 'pleroy1',
-    'pwd141' => 'cmoreau1',
-    'pwd160' => 'lbernard1',
-    'pwd161' => 'ethomas1',
-    'pwd162' => 'spetit',
-    'pwd163' => 'mrobert',
-    'pwd164' => 'jrichard',
-    'pwd165' => 'tlaurent',
-    'pwd166' => 'lgarcia',
-    'pwd167' => 'amichel',
-    'pwd168' => 'sdavid',
-    'pwd169' => 'nbertrand',
-    'pwd170' => 'iroux',
-    'pwd171' => 'pvincent',
-    'pwd172' => 'afournier',
-    'pwd173' => 'emorel',
-    'pwd174' => 'candre',
-    'pwd175' => 'dlefevre',
-    'pwd176' => 'nmercier',
-    'pwd177' => 'sblanc',
-    'pwd178' => 'cguerin',
-    'pwd179' => 'lboyer',
-    'pwd180' => 'vgarnier',
-    'pwd181' => 'pchevalier',
-    'pwd182' => 'sfrancois',
-    'pwd183' => 'jlegrand',
-    'pwd184' => 'srousseau',
-    'pwd185' => 'fgauthier',
-    'pwd186' => 'clopez'
+    'pwd125' => 'mmartin',
+    'pwd126' => 'jpetit',
+    'pwd127' => 'proux',
+    'pwd128' => 'cblanc',
+
+    // Directeurs
+    'pwd130' => 'sdurand',
+    'pwd131' => 'mlambert',
+    'pwd132' => 'agarcia',
+
+    // Evaluateurs
+    'pwd140' => 'pleroy',
+    'pwd141' => 'cmoreau',
+    'pwd142' => 'mdupont',
+    'pwd143' => 'jsimon',
+    'pwd144' => 'tlaurent',
+
+    // Compétiteurs
+    'pwd160' => 'lbernard',
+    'pwd161' => 'ethomas',
+    'pwd162' => 'srichard',
+    'pwd163' => 'agirard',
+    'pwd164' => 'lmorel',
+    'pwd165' => 'mfournier'
 ];
 
 try {
