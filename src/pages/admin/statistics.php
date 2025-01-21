@@ -3,7 +3,7 @@ require_once '../../include/db.php';
 
 // Définir le titre de la page et le CSS additionnel
 $pageTitle = 'Statistiques - Administration';
-$additionalCss = ['/assets/css/statistics.css'];
+$additionalCss = ['../../assets/css/statistics.css'];
 
 // Inclure le header commun
 require_once '../../components/header.php';

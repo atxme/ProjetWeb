@@ -15,12 +15,14 @@ $concours = $db->getConcours();
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soumettre un Dessin</title>
     <link rel="stylesheet" href="../../assets/css/competiteur.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Soumettre un Dessin</h1>
@@ -48,4 +50,5 @@ $concours = $db->getConcours();
         <a href="dashboard.php" class="btn">Retour au tableau de bord</a>
     </div>
 </body>
+
 </html>
