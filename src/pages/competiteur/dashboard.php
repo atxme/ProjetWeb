@@ -2,6 +2,14 @@
 session_start();
 
 $authorizedRoles = ['competiteur']; // Rôles autorisés
+
+// Vérifie que les rôles sont disponibles dans la session
+if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) {
+    echo "Rôles de l'utilisateur : " . implode(', ', $_SESSION['roles']);
+} else {
+    echo "Aucun rôle trouvé pour cet utilisateur.";
+}
+
 if (
     !isset($_SESSION['user_id']) || 
     !isset($_SESSION['roles']) || 
@@ -13,7 +21,6 @@ if (
     header('Location: ../../index.php');
     exit;
 }
-echo($_SESSION['roles']);
 ?>
 
 <!DOCTYPE html>
