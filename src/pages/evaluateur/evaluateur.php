@@ -222,7 +222,7 @@ try {
                 </div>
                 <!-- Liste des concours -->
                 <table class="profile-table">
-                    <tr>
+                    <tr class="concours-card">
                         <th class="label-cell">Nom</th>
                         <th class="label-cell">Date de début</th>
                         <th class="label-cell">Date de fin</th>

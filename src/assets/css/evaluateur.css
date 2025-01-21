@@ -392,3 +392,13 @@ box-sizing: border-box;
     display: flex;
     gap: 10px;
 }
+
+.concours-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    border: 1px solid #eee;
+}
