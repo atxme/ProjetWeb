@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contestId = $_POST['contest'];
     $comment = $_POST['comment'] ?? '';
     $drawing = $_FILES['drawing'];
+    $passSubmit = isset($_POST['pass_submit']) ? true : false;
 
     // Check if the user has already submitted three drawings for the contest
     $db = Database::getInstance();
@@ -54,6 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $drawingId = $conn->lastInsertId();
         $drawingPath = $uploadDir . $drawingId . '.' . $extension;
         $publicPath = "/uploads/" . $drawingId . '.' . $extension;
+
+        // Date validation
+        if (!$passSubmit) {
+            $stmt = $conn->prepare("SELECT dateDeb, dateFin FROM Concours WHERE numConcours = ?");
+            $stmt->execute([$contestId]);
+            $contestDates = $stmt->fetch();
+
+            $currentDate = date('Y-m-d');
+            if ($currentDate < $contestDates['dateDeb'] || $currentDate > $contestDates['dateFin']) {
+                throw new Exception("La date de remise doit être comprise entre la date de début et de fin du concours.");
+            }
+        }
 
         // Update the record with the actual file path
         $stmt = $conn->prepare("UPDATE Dessin SET leDessin = ? WHERE numDessin = ?");

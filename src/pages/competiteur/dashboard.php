@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord - Compétiteur</title>
-    <link rel="stylesheet" href="css/competiteur.css">
+    <link rel="stylesheet" href="../../assets/css/competiteur.css">
 </head>
 <body>
     <!-- Ajout du bandeau de statut -->
@@ -35,11 +35,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
                 <h2>Tableau de bord Compétiteur</h2>
                 <p>Gérez vos participations aux concours</p>
             </div>
-
-            <div class="actions-grid">
-                <a href="soumettre_dessin.php" class="btn-submit">Soumettre un Dessin</a>
-                <a href="mes_dessins.php" class="btn-submit">Voir mes Dessins</a>
-            </div>
+        </div>
+        <div class="actions-grid">
+                <a href="submit_drawing.php" class="btn-submit">Soumettre un Dessin</a>
+                <a href="view_drawings.php" class="btn-submit">Voir mes Dessins</a>
         </div>
     </div>
 </body>
