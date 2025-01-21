@@ -462,3 +462,32 @@ textarea {
 .status-in-progress { background-color: #2ecc71; } /* Vert - En cours */
 .status-evaluation { background-color: #f1c40f; } /* Jaune - En évaluation */
 .status-finished { background-color: #e74c3c; } /* Rouge - Terminé */
+
+/* Style pour les champs invalides */
+.invalid-field {
+    border: 2px solid #dc3545 !important;
+    background-color: #fff8f8 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Animation de secousse */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Style au focus pour les champs invalides */
+.invalid-field:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Transition douce pour les changements d'état */
+input, textarea {
+    transition: all 0.3s ease-in-out;
+}

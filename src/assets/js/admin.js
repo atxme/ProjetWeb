@@ -247,4 +247,182 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Fonction pour valider les dates
+    function validateDates(dateDeb, dateFin) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const dateDebObj = new Date(dateDeb);
+        const dateFinObj = new Date(dateFin);
+        
+        if (dateDebObj < today) {
+            return {
+                error: "La date de début ne peut pas être antérieure à aujourd'hui",
+                field: 'dateDeb'
+            };
+        }
+        if (dateFinObj <= dateDebObj) {
+            return {
+                error: "La date de fin doit être postérieure à la date de début",
+                field: 'dateFin'
+            };
+        }
+        if ((dateFinObj - dateDebObj) / (1000 * 60 * 60 * 24) > 365) {
+            return {
+                error: "La durée du concours ne peut pas dépasser un an",
+                field: 'dateFin'
+            };
+        }
+        return null;
+    }
+
+    // Fonction pour valider le thème
+    function validateTheme(theme) {
+        if (theme.length < 3) {
+            return {
+                error: "Le thème doit contenir au moins 3 caractères",
+                field: 'theme'
+            };
+        }
+        if (theme.length > 100) {
+            return {
+                error: "Le thème ne peut pas dépasser 100 caractères",
+                field: 'theme'
+            };
+        }
+        return null;
+    }
+
+    // Fonction pour valider la description
+    function validateDescription(description) {
+        if (description.length < 10) {
+            return {
+                error: "La description doit contenir au moins 10 caractères",
+                field: 'description'
+            };
+        }
+        if (description.length > 500) {
+            return {
+                error: "La description ne peut pas dépasser 500 caractères",
+                field: 'description'
+            };
+        }
+        return null;
+    }
+
+    // Fonction pour marquer un champ comme invalide
+    function markFieldAsInvalid(fieldName) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (field) {
+            field.classList.add('invalid-field');
+            // Ajouter une animation de secousse
+            field.classList.add('shake');
+            setTimeout(() => field.classList.remove('shake'), 500);
+        }
+    }
+
+    // Fonction pour réinitialiser tous les champs
+    function resetFields() {
+        const fields = form.querySelectorAll('input, textarea');
+        fields.forEach(field => {
+            field.classList.remove('invalid-field');
+            field.classList.remove('shake');
+        });
+    }
+
+    // Fonction pour afficher les messages d'erreur
+    function showError(message, fieldName = null) {
+        const popup = document.createElement('div');
+        popup.className = 'popup popup-error';
+        popup.textContent = message;
+        document.body.appendChild(popup);
+        
+        if (fieldName) {
+            markFieldAsInvalid(fieldName);
+        }
+        
+        setTimeout(() => {
+            popup.remove();
+        }, 5000);
+    }
+
+    // Fonction pour afficher les messages de succès
+    function showSuccess(message) {
+        const popup = document.createElement('div');
+        popup.className = 'popup popup-success';
+        popup.textContent = message;
+        document.body.appendChild(popup);
+        
+        setTimeout(() => {
+            popup.remove();
+        }, 3000);
+    }
+
+    // Gestionnaire de soumission du formulaire
+    const form = document.getElementById('creation-concours-form');
+    if (form) {
+        // Ajouter des écouteurs pour retirer la classe invalid-field lors de la modification
+        form.querySelectorAll('input, textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                this.classList.remove('invalid-field');
+            });
+        });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            resetFields();
+            
+            const theme = form.querySelector('[name="theme"]').value.trim();
+            const description = form.querySelector('[name="description"]').value.trim();
+            const dateDeb = form.querySelector('[name="dateDeb"]').value;
+            const dateFin = form.querySelector('[name="dateFin"]').value;
+
+            // Validation du thème
+            const themeError = validateTheme(theme);
+            if (themeError) {
+                showError(themeError.error, themeError.field);
+                return;
+            }
+
+            // Validation de la description
+            const descriptionError = validateDescription(description);
+            if (descriptionError) {
+                showError(descriptionError.error, descriptionError.field);
+                return;
+            }
+
+            // Validation des dates
+            const dateError = validateDates(dateDeb, dateFin);
+            if (dateError) {
+                showError(dateError.error, dateError.field);
+                return;
+            }
+
+            // Si toutes les validations sont passées, soumettre le formulaire
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la création du concours');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Concours créé avec succès !');
+                    form.reset();
+                    location.reload();
+                } else {
+                    showError(result.message || 'Erreur lors de la création du concours');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Une erreur est survenue lors de la création du concours');
+            }
+        });
+    }
 });
