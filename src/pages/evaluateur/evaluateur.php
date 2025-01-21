@@ -3,12 +3,10 @@ session_start();
 require_once '../../include/db.php';
 
 // Vérification plus stricte de l'authentification et du rôle
-if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'evaluateur' ||
-    !isset($_SESSION['login'])
-) {
+if (!isset($_SESSION['user_id']) || 
+    !isset($_SESSION['role']) || 
+    $_SESSION['role'] !== 'evaluateur' || 
+    !isset($_SESSION['login'])) {
     // Détruire la session si l'accès est non autorisé
     session_destroy();
     header('Location: ../../index.php');
@@ -16,11 +14,9 @@ if (
 }
 
 // Régénérer le token CSRF si nécessaire
-if (
-    empty($_SESSION['csrf_token']) ||
-    !isset($_SESSION['csrf_token_time']) ||
-    (time() - $_SESSION['csrf_token_time']) > 3600
-) {
+if (empty($_SESSION['csrf_token']) || 
+    !isset($_SESSION['csrf_token_time']) || 
+    (time() - $_SESSION['csrf_token_time']) > 3600) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     $_SESSION['csrf_token_time'] = time();
 }
@@ -55,6 +51,7 @@ try {
 
     // Exécuter la requête avec le paramètre id_user
     $query->execute(['user_id' => $id_user]);
+
     // Récupérer les résultats sous forme associative
     $user = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -89,53 +86,44 @@ try {
     // Récupérer les résultats sous forme associative
     $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
 
-    // Requête pour la liste des concours
-    $concoursQuery = $pdo->prepare('
-        SELECT 
-            c.theme AS nom_concours,
-            c.dateDeb AS date_debut,
-            c.dateFin AS date_fin,
-            c.etat AS etat_concours
-        FROM 
-            Jury j
-        INNER JOIN 
-            Concours c ON j.numConcours = c.numConcours
-        WHERE 
-            j.numEvaluateur = :user_id
-        ORDER BY 
-            c.dateDeb DESC
+    // Préparer la requête pour vérifier si l'utilisateur est compétiteur
+    $competiteurQuery = $pdo->prepare('
+        SELECT COUNT(*) AS is_competiteur
+        FROM Competiteur
+        WHERE numCompetiteur = :user_id
     ');
-    $concoursQuery->execute(['user_id' => $id_user]);
-    $concours = $concoursQuery->fetchAll(PDO::FETCH_ASSOC);
+    
+    $competiteurQuery->execute(['user_id' => $id_user]);
+    $competiteur = $competiteurQuery->fetch(PDO::FETCH_ASSOC);
 
+    // Vérifier si l'utilisateur est à la fois évaluateur et compétiteur
+    $isEvaluateur = ($_SESSION['role'] === 'evaluateur');
+    $isCompetiteur = ($competiteur['is_competiteur'] > 0);
 } catch (PDOException $e) {
     // Si une erreur de base de données se produit, l'afficher
     die('Erreur de base de données : ' . $e->getMessage());
 }
 
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluateur - Concours de Dessin</title>
     <link rel="stylesheet" href="../../assets/css/evaluateur.css">
 </head>
-
 <body>
     <div class="status-bar">
         <div class="status">
-            <?php
-            echo htmlspecialchars($_SESSION['login']) . ' : ' .
-                ucfirst(htmlspecialchars($_SESSION['role']));
-            ?>
+            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
+            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
         <div class="logout">
             <?php
-            if (isset($_GET['logout'])) {
+            if(isset($_GET['logout'])) {
                 session_destroy();
                 header('Location: ../../index.php');
                 exit;
@@ -149,51 +137,59 @@ try {
             <div class="box-info">
                 <div class="header">
                     <h2>Mon profil</h2>
-                    <table class="profile-table">
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Nom :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Prénom :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Âge :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Adresse :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Club :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nomClub']) ?>" disabled></td>
-                        </tr>
-                    </table>
+                    <div class="data">
+                        <label class ="cat"><label type ="cat">Nom :</label>
+                        <input class="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
+                    </div>
+                    <div class="data">
+                        <label class ="cat">Prénom :</label>
+                        <input class="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
+                    </div>
+                    <div class="data">
+                        <label class ="cat">Âge :</label>
+                        <input class="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
+                    </div>
+                    <div class="data">
+                        <label class ="cat">Adresse :</label>
+                        <input class="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
+                    </div>
+                    <div class="data">
+                        <label class ="cat">Club :</label>
+                        <input class="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
+                    </div>
                 </div>
             </div>
             <div class="box-info">
                 <div class="header">
                     <h2>Mes statistiques</h2>
-                    <table class="profile-table">
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Moyenne des notes :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Note maximale :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Note minimale :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled></td>
-                        </tr>
-                        <tr class="profile-row">
-                            <td class="label-cell"><label class="cat">Dernier concours :</label></td>
-                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled></td>
-                        </tr>
-                    </table>
+                </div>
+                <div class="data">
+                <div>
+                    <label class ="cat">Moyenne des notes :</label>
+                    <textarea disabled><?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?></textarea>
+                    <label class ="cat">Moyenne des notes :</label>
+                    <input class="textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled>
+                </div>
+                <div class="data">
+                <div>
+                    <label class ="cat">Note maximale :</label>
+                    <textarea disabled><?= htmlspecialchars($stats['note_max']) ?></textarea>
+                    <label class ="cat">Note maximale :</label>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
+                </div>
+                <div class="data">
+                <div>
+                    <label class ="cat">Note minimale :</label>
+                    <textarea disabled><?= htmlspecialchars($stats['note_min']) ?></textarea>
+                    <label class ="cat">Note minimale :</label>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
+                </div>
+                <div class="data">
+                <div>
+                    <label class ="cat">Dernier concours :</label>
+                    <textarea disabled><?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?></textarea>
+                    <label class ="cat">Dernier concours :</label>
+                    <input class="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
                 </div>
             </div>
         </div>
@@ -219,50 +215,13 @@ try {
                         <?php endforeach; ?>
                     </table>
                 </div>
+                <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
+                <?php if ($isEvaluateur && $isCompetiteur): ?>
+                    <form action="nouvelle_page.php" method="post">
+                        <button type="submit" class="button">Mon bouton spécial</button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </body>
- <div class="concours-list">
-            <div class="header">
-                <h2>Prochains Concours</h2>
-            </div>
-            <div class="concours-cards-container">
-                <?php
-                $db = Database::getInstance();
-                $pdo = $db->getConnection();
-                $sql = "SELECT numConcours, theme, dateDeb, dateFin, etat 
-                        FROM Concours 
-                        WHERE dateFin >= CURRENT_DATE()
-                        ORDER BY dateDeb ASC
-                        LIMIT 12";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute();
-                
-                while ($concours = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $statusClass = match($concours['etat']) {
-                        'pas commence' => 'status-not-started',
-                        'en cours' => 'status-in-progress',
-                        'evaluation' => 'status-evaluation',
-                        'termine' => 'status-finished',
-                        default => 'status-not-started'
-                    };
-                    ?>
-                    <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>" 
-                       class="concours-card">
-                        <div class="status-indicator <?php echo $statusClass; ?>"></div>
-                        <div class="concours-info">
-                            <div class="concours-title"><?php echo htmlspecialchars($concours['theme']); ?></div>
-                            <div class="concours-date">
-                                Du <?php echo date('d/m/Y', strtotime($concours['dateDeb'])); ?>
-                                au <?php echo date('d/m/Y', strtotime($concours['dateFin'])); ?>
-                            </div>
-                            <div class="concours-status">
-                                <?php echo ucfirst(htmlspecialchars($concours['etat'])); ?>
-                            </div>
-                        </div>
-                    </a>
-                    <?php
-                }
-                ?>
-            </div>
