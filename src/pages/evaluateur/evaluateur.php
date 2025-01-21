@@ -145,19 +145,21 @@ try {
             <?php echo htmlspecialchars($_SESSION['login']); ?> : 
             <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
         </div>
-        <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
-        <?php if ($isEvaluateur && $isCompetiteur): ?>
-            <a href="../competiteur/dashboard.php" class="btn-stats">Mon profil compétiteur</a>
-        <?php endif; ?>
-        <div>
-            <?php
-            if(isset($_GET['logout'])) {
-                session_destroy();
-                header('Location: ../../index.php');
-                exit;
-            }
-            ?>
-            <a class="btn-logout" href="?logout=true">Déconnexion</a>
+        <div class="nav-buttons">
+            <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
+            <?php if ($isEvaluateur && $isCompetiteur): ?>
+                <a href="../competiteur/dashboard.php" class="btn-stats">Mon profil compétiteur</a>
+            <?php endif; ?>
+            <div>
+                <?php
+                if(isset($_GET['logout'])) {
+                    session_destroy();
+                    header('Location: ../../index.php');
+                    exit;
+                }
+                ?>
+                <a class="btn-logout" href="?logout=true">Déconnexion</a>
+            </div>
         </div>
     </div>
     <div class="container">
