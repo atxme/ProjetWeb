@@ -1,11 +1,19 @@
 <?php
 session_start();
 
-// Vérification de la session
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
-    header('Location: ../index.php');
+$authorizedRoles = ['competiteur']; // Rôles autorisés
+if (
+    !isset($_SESSION['user_id']) || 
+    !isset($_SESSION['roles']) || 
+    empty(array_intersect($authorizedRoles, $_SESSION['roles'])) || 
+    !isset($_SESSION['login'])
+) {
+    // Détruire la session si l'accès est non autorisé
+    session_destroy();
+    header('Location: ../../index.php');
     exit;
 }
+
 ?>
 
 <!DOCTYPE html>

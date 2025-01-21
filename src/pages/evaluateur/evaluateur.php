@@ -2,16 +2,19 @@
 session_start();
 require_once '../../include/db.php';
 
-// Vérification plus stricte de l'authentification et du rôle
-if (!isset($_SESSION['user_id']) || 
-    !isset($_SESSION['role']) || 
-    $_SESSION['role'] !== 'evaluateur' || 
-    !isset($_SESSION['login'])) {
+$authorizedRoles = ['evaluateur']; // Rôles autorisés
+if (
+    !isset($_SESSION['user_id']) || 
+    !isset($_SESSION['roles']) || 
+    empty(array_intersect($authorizedRoles, $_SESSION['roles'])) || 
+    !isset($_SESSION['login'])
+) {
     // Détruire la session si l'accès est non autorisé
     session_destroy();
     header('Location: ../../index.php');
     exit;
 }
+
 
 // Régénérer le token CSRF si nécessaire
 if (empty($_SESSION['csrf_token']) || 
