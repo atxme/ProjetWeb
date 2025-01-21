@@ -95,11 +95,7 @@ try {
             c.theme AS nom_concours,
             c.dateDeb AS date_debut,
             c.dateFin AS date_fin,
-            CASE 
-                WHEN NOW() BETWEEN c.dateDeb AND c.dateFin THEN "En cours"
-                WHEN NOW() > c.dateFin THEN "Fini"
-                ELSE "À venir"
-            END AS statut
+            c.etat AS etat_concours
         FROM 
             Jury j
         INNER JOIN 
@@ -211,14 +207,14 @@ try {
                             <th>Nom</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
-                            <th>Statut</th>
+                            <th>État</th>
                         </tr>
                         <?php foreach ($concours as $concour) : ?>
                             <tr>
                                 <td><?= htmlspecialchars($concour['nom_concours']) ?></td>
-                                <td><?= htmlspecialchars($concour['dateDebut']) ?></td>
-                                <td><?= htmlspecialchars($concour['dateFin']) ?></td>
-                                <td><?= htmlspecialchars($concour['statut']) ?></td>
+                                <td><?= htmlspecialchars($concour['date_debut']) ?></td>
+                                <td><?= htmlspecialchars($concour['date_fin']) ?></td>
+                                <td><?= htmlspecialchars($concour['etat_concours']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
