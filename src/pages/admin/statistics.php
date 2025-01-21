@@ -2,10 +2,38 @@
 session_start();
 require_once '../../include/db.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Vérification plus stricte de l'authentification et du rôle
+if (!isset($_SESSION['user_id']) || 
+    !isset($_SESSION['role']) || 
+    $_SESSION['role'] !== 'admin' || 
+    !isset($_SESSION['login'])) {
+    session_destroy();
     header('Location: ../../index.php');
     exit;
+}
+
+// Régénérer le token CSRF si nécessaire
+if (empty($_SESSION['csrf_token']) || 
+    !isset($_SESSION['csrf_token_time']) || 
+    (time() - $_SESSION['csrf_token_time']) > 3600) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token_time'] = time();
+}
+
+// Vérifier l'expiration de la session (30 minutes d'inactivité)
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
+    session_destroy();
+    header('Location: ../../index.php');
+    exit;
+}
+$_SESSION['last_activity'] = time();
+
+// Vérification du token CSRF pour les requêtes POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Invalid CSRF token');
+    }
 }
 
 // Fetch years from the database
@@ -75,13 +103,32 @@ $allEvaluatedDrawings = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques</title>
+    <title>Statistiques - Administration</title>
     <link rel="stylesheet" href="../../assets/css/statistics.css">
 </head>
 <body>
+    <div class="status-bar">
+        <div class="status">
+            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
+            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
+        </div>
+        <div class="nav-buttons">
+            <a href="admin.php" class="btn-stats">Retour</a>
+            <?php
+            if(isset($_GET['logout'])) {
+                session_destroy();
+                header('Location: ../../index.php');
+                exit;
+            }
+            ?>
+            <a href="?logout=true" class="btn-logout">Déconnexion</a>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Statistiques des Concours</h1>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="form-group">
                 <label for="year">Sélectionnez une année</label>
                 <select name="year" id="year" required>
