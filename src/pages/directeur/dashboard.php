@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$sql = "SELECT u.numUtilisateur, u.nom, u.prenom,
+$sql = "SELECT u.numUtilisateur, u.nom, u.prenom, u.login,
         CASE 
             WHEN p.numPresident IS NOT NULL THEN 'Président'
             WHEN c.numCompetiteur IS NOT NULL THEN 'Compétiteur'
@@ -158,6 +158,7 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <th>Nom</th>
                         <th>Prénom</th>
+                        <th>Login</th>
                         <th>Rôle</th>
                         <th>Actions</th>
                     </tr>
@@ -167,15 +168,24 @@ $membres = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr>
                             <td><?php echo htmlspecialchars($membre['nom']); ?></td>
                             <td><?php echo htmlspecialchars($membre['prenom']); ?></td>
+                            <td><?php echo htmlspecialchars($membre['login']); ?></td>
                             <td><?php echo htmlspecialchars($membre['role']); ?></td>
                             <td>
-                                <form method="post" style="margin: 0;">
-                                    <input type="hidden" name="action" value="supprimer">
-                                    <input type="hidden" name="numCompetiteur" value="<?php echo htmlspecialchars($membre['numUtilisateur']); ?>">
-                                    <button type="submit" class="btn-delete" title="Supprimer le compétiteur">
-                                        <i class="fas fa-trash"></i>🗑️
-                                    </button>
-                                </form>
+                                <div style="display: flex; gap: 10px;">
+                                    <form method="post" style="margin: 0;">
+                                        <input type="hidden" name="action" value="supprimer">
+                                        <input type="hidden" name="numCompetiteur" value="<?php echo htmlspecialchars($membre['numUtilisateur']); ?>">
+                                        <button type="submit" class="btn-delete" title="Supprimer le compétiteur">
+                                            <i class="fas fa-trash"></i>🗑️
+                                        </button>
+                                    </form>
+                                    <form action="change_password.php" method="get" style="margin: 0;">
+                                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($membre['numUtilisateur']); ?>">
+                                        <button type="submit" class="btn-edit" title="Changer le mot de passe">
+                                            🔑
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
