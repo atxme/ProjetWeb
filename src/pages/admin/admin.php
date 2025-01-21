@@ -278,6 +278,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     }
 }
 
+// Dans la partie traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
+    try {
+        // Validation côté serveur
+        if (empty($_POST['theme']) || strlen($_POST['theme']) < 3) {
+            throw new Exception("Le thème est invalide");
+        }
+        if (empty($_POST['description']) || strlen($_POST['description']) < 10) {
+            throw new Exception("La description est invalide");
+        }
+        if (empty($_POST['dateDeb']) || empty($_POST['dateFin'])) {
+            throw new Exception("Les dates sont invalides");
+        }
+
+        // Vérification des dates
+        $dateDeb = new DateTime($_POST['dateDeb']);
+        $dateFin = new DateTime($_POST['dateFin']);
+        $today = new DateTime();
+        
+        if ($dateDeb < $today) {
+            throw new Exception("La date de début ne peut pas être dans le passé");
+        }
+        if ($dateFin <= $dateDeb) {
+            throw new Exception("La date de fin doit être après la date de début");
+        }
+
+        // Insertion dans la base de données
+        $stmt = $pdo->prepare("INSERT INTO Concours (theme, descriptif, dateDeb, dateFin, etat) VALUES (?, ?, ?, ?, 'pas commence')");
+        $success = $stmt->execute([$_POST['theme'], $_POST['description'], $_POST['dateDeb'], $_POST['dateFin']]);
+
+        if (!$success) {
+            throw new Exception("Erreur lors de l'insertion en base de données");
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Concours créé avec succès']);
+        exit;
+
+    } catch (Exception $e) {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        exit;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
