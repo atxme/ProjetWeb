@@ -229,7 +229,7 @@ try {
                             <td class="cell"><?= htmlspecialchars($concour['date_fin']) ?></td>
                             <td class="cell"><?= htmlspecialchars($concour['etat_concours']) ?></td>
                         </tr> -->
-                        <a href="dashboard.php" class="concours-card">
+                        <a href="dashboard.php?concours_id=<?php echo urlencode($concour['nom_concours']); ?>" class="concours-card">
                             <div class="concours-info">
                                 <div class="concours-title"><?php echo htmlspecialchars($concour['nom_concours']); ?></div>
                                 <div class="concours-date">
