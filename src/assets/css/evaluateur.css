@@ -213,13 +213,13 @@ gap: 8px;
 
 .btn-stats,
 .btn-logout {
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 36px;
     padding: 0 16px;
     color: white;
-    text-decoration: none;
     border-radius: 6px;
     transition: all 0.3s ease;
     font-weight: 500;

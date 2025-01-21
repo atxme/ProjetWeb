@@ -216,7 +216,7 @@ try {
         <div class="right-column">
             <div class="box">
                 <div class="header">
-                    <h2>Liste des concours</h2>
+                    <h2>Liste des concours assignés</h2>
                 </div>
                 <!-- Liste des concours -->
                 <table class="profile-table">
