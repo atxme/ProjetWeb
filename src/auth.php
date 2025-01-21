@@ -7,7 +7,7 @@ class Auth
     private $db;
     private $conn;
     private const MAX_LOGIN_ATTEMPTS = 3;
-    private const LOCKOUT_TIME = 900;
+    private const LOCKOUT_TIME = 30;
 
     public function __construct()
     {
