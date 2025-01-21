@@ -43,21 +43,24 @@ $order = isset($_POST['order']) ? $_POST['order'] : 'ASC';
 try {
     // Si un concours spécifique est demandé
     if ($concoursId) {
-        // Récupérer les détails du concours
+        // Récupérer les détails du concours avec une requête préparée
         $stmt = $conn->prepare("
-            SELECT c.*, 
+            SELECT 
+                c.*,
                 COUNT(DISTINCT cp.numCompetiteur) as nb_participants,
                 COUNT(DISTINCT j.numEvaluateur) as nb_evaluateurs,
                 COUNT(DISTINCT d.numDessin) as nb_dessins,
                 COUNT(DISTINCT e.numEvaluation) as nb_evaluations,
-                ROUND(AVG(e.note), 2) as moyenne_notes
+                ROUND(AVG(CASE WHEN e.note IS NOT NULL THEN e.note END), 2) as moyenne_notes
             FROM Concours c
             LEFT JOIN CompetiteurParticipe cp ON c.numConcours = cp.numConcours
             LEFT JOIN Jury j ON c.numConcours = j.numConcours
             LEFT JOIN Dessin d ON c.numConcours = d.numConcours
             LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
             WHERE c.numConcours = :concoursId
-            GROUP BY c.numConcours
+            GROUP BY 
+                c.numConcours, c.theme, c.descriptif, 
+                c.dateDeb, c.dateFin, c.etat
         ");
         
         $stmt->execute(['concoursId' => $concoursId]);
@@ -69,26 +72,32 @@ try {
 
         // Récupérer les participants du concours
         $stmt = $conn->prepare("
-            SELECT u.nom, u.prenom, u.age, u.adresse, c.nomClub, c.departement
+            SELECT DISTINCT
+                u.nom, u.prenom, u.age, u.adresse, 
+                c.nomClub, c.departement
             FROM CompetiteurParticipe cp
             JOIN Utilisateur u ON cp.numCompetiteur = u.numUtilisateur
             JOIN Club c ON u.numClub = c.numClub
             WHERE cp.numConcours = :concoursId
+            ORDER BY u.nom, u.prenom
         ");
         $stmt->execute(['concoursId' => $concoursId]);
         $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Récupérer les évaluations du concours
         $stmt = $conn->prepare("
-            SELECT d.numDessin, e.note, e.commentaire, 
-                   u_comp.nom as competiteur_nom, 
-                   u_eval.nom as evaluateur_nom
+            SELECT 
+                d.numDessin,
+                e.note,
+                e.commentaire,
+                u_comp.nom as competiteur_nom,
+                u_eval.nom as evaluateur_nom
             FROM Dessin d
             LEFT JOIN Evaluation e ON d.numDessin = e.numDessin
             LEFT JOIN Utilisateur u_comp ON d.numCompetiteur = u_comp.numUtilisateur
             LEFT JOIN Utilisateur u_eval ON e.numEvaluateur = u_eval.numUtilisateur
             WHERE d.numConcours = :concoursId
-            ORDER BY e.note " . $order
+            ORDER BY e.note " . ($order === 'DESC' ? 'DESC' : 'ASC')
         );
         $stmt->execute(['concoursId' => $concoursId]);
         $evaluatedDrawings = $stmt->fetchAll(PDO::FETCH_ASSOC);

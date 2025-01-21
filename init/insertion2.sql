@@ -98,7 +98,7 @@ INSERT INTO Concours (numConcours, numPresident, theme, dateDeb, dateFin, etat, 
 (5, 4, 'Abstract', '2026-03-21', '2026-06-20', 'pas commence', 6, 36, 'Concours Printemps 2026', 'printemps', 2026),
 (6, 2, 'Nature', '2026-06-21', '2026-09-20', 'pas commence', 6, 36, 'Concours Été 2026', 'ete', 2026),
 -- 2024
-(7, 5, 'Art Digital', '2024-03-21', '2024-06-20', 'en cours', 6, 36, 'Concours Printemps 2024', 'printemps', 2024),
+(7, 5, 'Art Digital', '2024-01-21', '2024-02-20', 'en cours', 6, 36, 'Concours Printemps 2024', 'printemps', 2024),
 (8, 6, 'Mythologie', '2024-06-21', '2024-09-20', 'pas commence', 6, 36, 'Concours Été 2024', 'ete', 2024);
 
 -- 5. Insertion des participations
