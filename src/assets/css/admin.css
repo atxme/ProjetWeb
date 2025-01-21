@@ -14,9 +14,15 @@ body {
     margin: 80px auto 20px;
     padding: 20px;
     display: grid;
-    grid-template-columns: 60% 35%;
-    gap: 30px;
+    grid-template-columns: 55% 40%;
+    gap: 5%;
     font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.admin-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .admin-box {
@@ -25,7 +31,7 @@ body {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     width: 100%;
 }
 
@@ -391,19 +397,27 @@ textarea {
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 100px;
+}
+
+.concours-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .concours-card {
     display: flex;
     align-items: center;
     padding: 15px;
-    margin-bottom: 15px;
     background: #f8f9fa;
     border-radius: 10px;
     transition: all 0.2s ease;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
+    border: 1px solid #eee;
 }
 
 .concours-card:hover {
@@ -412,22 +426,12 @@ textarea {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.concours-card:active {
-    transform: translateX(5px) scale(0.98);
-}
-
 .status-indicator {
     width: 6px;
     height: 50px;
     margin-right: 15px;
     border-radius: 3px;
 }
-
-/* Couleurs pour les différents états */
-.status-not-started { background-color: #4a90e2; } /* Bleu - Pas commencé */
-.status-in-progress { background-color: #2ecc71; } /* Vert - En cours */
-.status-evaluation { background-color: #f1c40f; } /* Jaune - En évaluation */
-.status-finished { background-color: #e74c3c; } /* Rouge - Terminé */
 
 .concours-info {
     flex-grow: 1;
@@ -443,4 +447,18 @@ textarea {
 .concours-date {
     font-size: 14px;
     color: #7f8c8d;
+    margin-bottom: 5px;
 }
+
+.concours-status {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    text-transform: capitalize;
+}
+
+/* Couleurs pour les différents états */
+.status-not-started { background-color: #4a90e2; } /* Bleu - Pas commencé */
+.status-in-progress { background-color: #2ecc71; } /* Vert - En cours */
+.status-evaluation { background-color: #f1c40f; } /* Jaune - En évaluation */
+.status-finished { background-color: #e74c3c; } /* Rouge - Terminé */

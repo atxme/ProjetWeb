@@ -459,40 +459,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         <!-- Nouvelle colonne droite - Liste des concours -->
         <div class="concours-list">
             <div class="header">
-                <h2>Concours en cours</h2>
+                <h2>Prochains Concours</h2>
             </div>
-            <?php
-            $db = Database::getInstance();
-            $pdo = $db->getConnection();
-            $sql = "SELECT numConcours, theme, dateDeb, dateFin, etat 
-                    FROM Concours 
-                    ORDER BY dateDeb DESC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute();
-            
-            while ($concours = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $statusClass = match($concours['etat']) {
-                    'pas commence' => 'status-not-started',
-                    'en cours' => 'status-in-progress',
-                    'evaluation' => 'status-evaluation',
-                    'termine' => 'status-finished',
-                    default => 'status-not-started'
-                };
-                ?>
-                <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>" 
-                   class="concours-card">
-                    <div class="status-indicator <?php echo $statusClass; ?>"></div>
-                    <div class="concours-info">
-                        <div class="concours-title"><?php echo htmlspecialchars($concours['theme']); ?></div>
-                        <div class="concours-date">
-                            Du <?php echo date('d/m/Y', strtotime($concours['dateDeb'])); ?>
-                            au <?php echo date('d/m/Y', strtotime($concours['dateFin'])); ?>
-                        </div>
-                    </div>
-                </a>
+            <div class="concours-cards-container">
                 <?php
-            }
-            ?>
+                $db = Database::getInstance();
+                $pdo = $db->getConnection();
+                $sql = "SELECT numConcours, theme, dateDeb, dateFin, etat 
+                        FROM Concours 
+                        WHERE dateFin >= CURRENT_DATE()
+                        ORDER BY dateDeb ASC
+                        LIMIT 12";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+                
+                while ($concours = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $statusClass = match($concours['etat']) {
+                        'pas commence' => 'status-not-started',
+                        'en cours' => 'status-in-progress',
+                        'evaluation' => 'status-evaluation',
+                        'termine' => 'status-finished',
+                        default => 'status-not-started'
+                    };
+                    ?>
+                    <a href="statistics.php?concours=<?php echo $concours['numConcours']; ?>" 
+                       class="concours-card">
+                        <div class="status-indicator <?php echo $statusClass; ?>"></div>
+                        <div class="concours-info">
+                            <div class="concours-title"><?php echo htmlspecialchars($concours['theme']); ?></div>
+                            <div class="concours-date">
+                                Du <?php echo date('d/m/Y', strtotime($concours['dateDeb'])); ?>
+                                au <?php echo date('d/m/Y', strtotime($concours['dateFin'])); ?>
+                            </div>
+                            <div class="concours-status">
+                                <?php echo ucfirst(htmlspecialchars($concours['etat'])); ?>
+                            </div>
+                        </div>
+                    </a>
+                    <?php
+                }
+                ?>
+            </div>
         </div>
     </div>
     <script src="../../assets/js/admin.js"></script>
