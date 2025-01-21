@@ -1,19 +1,4 @@
 -- Nettoyage des tables
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE Evaluation;
-TRUNCATE TABLE Jury;
-TRUNCATE TABLE Dessin;
-TRUNCATE TABLE CompetiteurParticipe;
-TRUNCATE TABLE ClubParticipe;
-TRUNCATE TABLE Concours;
-TRUNCATE TABLE Evaluateur;
-TRUNCATE TABLE Competiteur;
-TRUNCATE TABLE President;
-TRUNCATE TABLE Admin;
-TRUNCATE TABLE Directeur;
-TRUNCATE TABLE Utilisateur;
-TRUNCATE TABLE Club;
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Insertion des Clubs
 INSERT INTO Club (numClub, nomClub, adresse, numTel, nbAdherents, ville, departement, region) VALUES
