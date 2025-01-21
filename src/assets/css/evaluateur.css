@@ -256,13 +256,12 @@ select[disabled] {
     font-weight: bold;
     margin-bottom: 8px;
     display: inline-block;
-
+    text-align: left;
 }
 
 /* Style des textareas */
 .textarea {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    width: 100%;
     padding: 12px 15px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
