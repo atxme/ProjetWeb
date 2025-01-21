@@ -2,13 +2,6 @@
 session_start();
 require_once '../../include/db.php';
 
-// Vérifie que les rôles sont disponibles dans la session
-if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) {
-    echo "Rôles de l'utilisateur : " . implode(', ', $_SESSION['roles']);
-} else {
-    echo "Aucun rôle trouvé pour cet utilisateur.";
-}
-
 $authorizedRoles = ['evaluateur']; // Rôles autorisés
 if (
     !isset($_SESSION['user_id']) || 
