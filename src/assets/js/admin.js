@@ -312,133 +312,115 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!description) {
             return {
                 error: "La description est obligatoire",
-                field: 'description'
+                field: 'descriptif_detaille'
             };
         }
         if (description.length < 10) {
             return {
                 error: "La description doit contenir au moins 10 caractères",
-                field: 'description'
+                field: 'descriptif_detaille'
             };
         }
         if (description.length > 500) {
             return {
                 error: "La description ne peut pas dépasser 500 caractères",
-                field: 'description'
+                field: 'descriptif_detaille'
             };
         }
         return null;
     }
 
-    // Fonction pour marquer un champ comme invalide
-    function markFieldAsInvalid(fieldName) {
-        const field = form.querySelector(`[name="${fieldName}"]`);
-        if (field) {
-            // Retirer d'abord toutes les classes
-            field.classList.remove('invalid-field', 'shake');
-            // Forcer un reflow pour assurer que l'animation se déclenche
-            void field.offsetWidth;
-            // Ajouter les classes
-            field.classList.add('invalid-field');
-            field.classList.add('shake');
-            
-            // Retirer l'animation après qu'elle soit terminée
-            setTimeout(() => {
-                field.classList.remove('shake');
-            }, 500);
-
-            // Focus sur le champ invalide
-            field.focus();
+    // Fonction pour afficher l'erreur sous le champ
+    function showFieldError(field, message) {
+        const existingError = field.parentElement.querySelector('.field-error');
+        if (existingError) {
+            existingError.textContent = message;
+        } else {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error';
+            errorDiv.textContent = message;
+            field.parentElement.appendChild(errorDiv);
         }
+        field.classList.add('invalid-field');
     }
 
-    // Fonction pour réinitialiser tous les champs
-    function resetFields() {
-        const fields = form.querySelectorAll('input, textarea, select');
-        fields.forEach(field => {
-            field.classList.remove('invalid-field', 'shake');
-        });
+    // Fonction pour retirer l'erreur
+    function removeFieldError(field) {
+        const errorDiv = field.parentElement.querySelector('.field-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        field.classList.remove('invalid-field');
     }
 
-    // Ajouter des écouteurs pour retirer la classe invalid-field lors de la modification
-    form.querySelectorAll('input, textarea, select').forEach(field => {
-        field.addEventListener('input', function() {
-            this.classList.remove('invalid-field');
-        });
-        
-        field.addEventListener('focus', function() {
-            if (this.classList.contains('invalid-field')) {
-                this.classList.add('focused-invalid');
-            }
-        });
-        
-        field.addEventListener('blur', function() {
-            this.classList.remove('focused-invalid');
-        });
+    // Validation en temps réel pour le thème
+    const themeInput = document.getElementById('theme');
+    themeInput.addEventListener('input', function() {
+        const error = validateTheme(this.value.trim());
+        if (error) {
+            showFieldError(this, error.error);
+        } else {
+            removeFieldError(this);
+        }
     });
 
-    // Fonction pour afficher les messages d'erreur
-    function showError(message, fieldName = null) {
-        const popup = document.createElement('div');
-        popup.className = 'popup popup-error';
-        popup.textContent = message;
-        document.body.appendChild(popup);
-        
-        if (fieldName) {
-            markFieldAsInvalid(fieldName);
+    // Validation en temps réel pour la description
+    const descInput = document.getElementById('descriptif_detaille');
+    descInput.addEventListener('input', function() {
+        const error = validateDescription(this.value.trim());
+        if (error) {
+            showFieldError(this, error.error);
+        } else {
+            removeFieldError(this);
         }
-        
-        setTimeout(() => {
-            popup.remove();
-        }, 5000);
+    });
+
+    // Validation en temps réel pour les dates
+    const dateDebInput = document.getElementById('dateDeb');
+    const dateFinInput = document.getElementById('dateFin');
+
+    function validateDateInputs() {
+        const error = validateDates(dateDebInput.value, dateFinInput.value);
+        if (error) {
+            const field = error.field === 'dateDeb' ? dateDebInput : dateFinInput;
+            showFieldError(field, error.error);
+        } else {
+            removeFieldError(dateDebInput);
+            removeFieldError(dateFinInput);
+        }
     }
 
-    // Fonction pour afficher les messages de succès
-    function showSuccess(message) {
-        const popup = document.createElement('div');
-        popup.className = 'popup popup-success';
-        popup.textContent = message;
-        document.body.appendChild(popup);
-        
-        setTimeout(() => {
-            popup.remove();
-        }, 3000);
+    dateDebInput.addEventListener('input', validateDateInputs);
+    dateFinInput.addEventListener('input', validateDateInputs);
+
+    // Désactiver le bouton de soumission si des erreurs sont présentes
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('creation-concours-form').querySelector('button[type="submit"]');
+        const hasErrors = document.querySelectorAll('.field-error').length > 0;
+        submitBtn.disabled = hasErrors;
+        submitBtn.style.opacity = hasErrors ? '0.5' : '1';
     }
 
-    // Gestionnaire de soumission du formulaire
+    // Ajouter les écouteurs pour mettre à jour le bouton
+    document.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('input', updateSubmitButton);
+    });
+
+    // Soumission du formulaire
     const form = document.getElementById('creation-concours-form');
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            resetFields();
             
-            const theme = form.querySelector('[name="theme"]').value.trim();
-            const description = form.querySelector('[name="description"]').value.trim();
-            const dateDeb = form.querySelector('[name="dateDeb"]').value;
-            const dateFin = form.querySelector('[name="dateFin"]').value;
+            // Vérifier une dernière fois toutes les validations
+            const themeError = validateTheme(themeInput.value.trim());
+            const descError = validateDescription(descInput.value.trim());
+            const dateError = validateDates(dateDebInput.value, dateFinInput.value);
 
-            // Validation du thème
-            const themeError = validateTheme(theme);
-            if (themeError) {
-                showError(themeError.error, themeError.field);
+            if (themeError || descError || dateError) {
                 return;
             }
 
-            // Validation de la description
-            const descriptionError = validateDescription(description);
-            if (descriptionError) {
-                showError(descriptionError.error, descriptionError.field);
-                return;
-            }
-
-            // Validation des dates
-            const dateError = validateDates(dateDeb, dateFin);
-            if (dateError) {
-                showError(dateError.error, dateError.field);
-                return;
-            }
-
-            // Si toutes les validations sont passées, soumettre le formulaire
             try {
                 const formData = new FormData(form);
                 const response = await fetch(form.action, {
@@ -449,17 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error('Réponse invalide du serveur');
-                }
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Erreur lors de la création du concours');
-                }
-
+                const result = await response.json();
                 if (result.success) {
                     showSuccess('Concours créé avec succès !');
                     form.reset();
