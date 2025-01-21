@@ -49,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->beginTransaction();
 
         // Insert the drawing record to get the primary key
-        $stmt = $conn->prepare("INSERT INTO Dessin (numCompetiteur, numConcours, commentaire, leDessin) VALUES (?, ?, ?, '')");
-        $stmt->execute([$userId, $contestId, $comment]);
+        $stmt = $conn->prepare("INSERT INTO Dessin (numCompetiteur, numConcours, commentaire, leDessin, dateRemise) VALUES (?, ?, ?, '', ?)");
+        $stmt->execute([$userId, $contestId, $comment, date('Y-m-d')]);
 
         $drawingId = $conn->lastInsertId();
         $drawingPath = $uploadDir . $drawingId . '.' . $extension;
