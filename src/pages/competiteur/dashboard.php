@@ -24,11 +24,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'competiteur') {
             <span class="role-badge">Compétiteur</span>
         </div>
         <div class="nav-buttons">
-            <a href="../evaluateur/evaluateur.php" class="btn-stats">Go to évaluateur</a>
+            <form action="../evaluateur/dashboard.php" method="post">
+            <!-- Champ caché pour le token CSRF -->
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <button type="submit" class="btn-stats">Go to évaluateur</button>
+            </form>
             <a href="../logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
-
     <div class="competitor-container">
         <div class="admin-box">
             <div class="admin-header">
