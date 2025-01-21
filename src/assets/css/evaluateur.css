@@ -191,19 +191,15 @@ border-radius: 8px;
 }
 
 .status-bar {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+font-family: "Segoe UI", system-ui, sans-serif;
+/*font-size: 14px;*/
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 15px 30px;
+background-color: rgba(255, 255, 255, 0.9);
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar .status {
@@ -220,7 +216,6 @@ gap: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
     height: 36px;
     padding: 0 16px;
     color: white;
