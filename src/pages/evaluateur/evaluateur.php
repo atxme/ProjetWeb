@@ -3,10 +3,12 @@ session_start();
 require_once '../../include/db.php';
 
 // Vérification plus stricte de l'authentification et du rôle
-if (!isset($_SESSION['user_id']) || 
-    !isset($_SESSION['role']) || 
-    $_SESSION['role'] !== 'evaluateur' || 
-    !isset($_SESSION['login'])) {
+if (
+    !isset($_SESSION['user_id']) ||
+    !isset($_SESSION['role']) ||
+    $_SESSION['role'] !== 'evaluateur' ||
+    !isset($_SESSION['login'])
+) {
     // Détruire la session si l'accès est non autorisé
     session_destroy();
     header('Location: ../../index.php');
@@ -14,9 +16,11 @@ if (!isset($_SESSION['user_id']) ||
 }
 
 // Régénérer le token CSRF si nécessaire
-if (empty($_SESSION['csrf_token']) || 
-    !isset($_SESSION['csrf_token_time']) || 
-    (time() - $_SESSION['csrf_token_time']) > 3600) {
+if (
+    empty($_SESSION['csrf_token']) ||
+    !isset($_SESSION['csrf_token_time']) ||
+    (time() - $_SESSION['csrf_token_time']) > 3600
+) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     $_SESSION['csrf_token_time'] = time();
 }
@@ -85,7 +89,6 @@ try {
 
     // Récupérer les résultats sous forme associative
     $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
-
 } catch (PDOException $e) {
     // Si une erreur de base de données se produit, l'afficher
     die('Erreur de base de données : ' . $e->getMessage());
@@ -96,23 +99,25 @@ try {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluateur - Concours de Dessin</title>
     <link rel="stylesheet" href="../../assets/css/evaluateur.css">
 </head>
+
 <body>
     <div class="status-bar">
         <div class="status">
-            <?php 
-            echo htmlspecialchars($_SESSION['login']) . ' : ' . 
-                 ucfirst(htmlspecialchars($_SESSION['role'])); 
+            <?php
+            echo htmlspecialchars($_SESSION['login']) . ' : ' .
+                ucfirst(htmlspecialchars($_SESSION['role']));
             ?>
         </div>
         <div class="logout">
             <?php
-            if(isset($_GET['logout'])) {
+            if (isset($_GET['logout'])) {
                 session_destroy();
                 header('Location: ../../index.php');
                 exit;
@@ -126,47 +131,51 @@ try {
             <div class="box-info">
                 <div class="header">
                     <h2>Mon profil</h2>
-                    <div class="data">
-                        <label class ="cat"><label type ="cat">Nom :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Prénom :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Âge :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Adresse :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled>
-                    </div>
-                    <div class="data">
-                        <label class ="cat">Club :</label>
-                        <input class="textarea" value="<?= htmlspecialchars($user['numClub']) ?>" disabled>
-                    </div>
+                    <table class="profile-table">
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Nom :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nom']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Prénom :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['prenom']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Âge :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['age']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Adresse :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['adresse']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Club :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($user['nomClub']) ?>" disabled></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div class="box-info">
                 <div class="header">
                     <h2>Mes statistiques</h2>
-                </div>
-                <div class="data">
-                    <label class ="cat">Moyenne des notes :</label>
-                    <input class="textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled>
-                </div>
-                <div class="data">
-                    <label class ="cat">Note maximale :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled>
-                </div>
-                <div class="data">
-                    <label class ="cat">Note minimale :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled>
-                </div>
-                <div class="data">
-                    <label class ="cat">Dernier concours :</label>
-                    <input class="textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled>
+                    <table class="profile-table">
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Moyenne des notes :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars(strval(round($stats['moyenne_notes'], 2))) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Note maximale :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_max']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Note minimale :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['note_min']) ?>" disabled></td>
+                        </tr>
+                        <tr class="profile-row">
+                            <td class="label-cell"><label class="cat">Dernier concours :</label></td>
+                            <td class="input-cell"><input class="profile-input textarea" value="<?= htmlspecialchars($stats['nom_concours'] . ' (' . $stats['dernier_concours'] . ')') ?>" disabled></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
