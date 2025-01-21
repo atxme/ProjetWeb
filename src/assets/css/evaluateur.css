@@ -1,379 +1,379 @@
 body {
-  background-image: url("../../images/font.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
+background-image: url("../../images/font.jpg");
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+min-height: 100vh;
+margin: 0;
+padding: 0;
 }
 
 .admin-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  font-family: "Segoe UI", system-ui, sans-serif;
+width: 100%;
+max-width: 800px;
+margin: 40px auto;
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 30px;
+font-family: "Segoe UI", system-ui, sans-serif;
 }
 
 .box-info {
-  position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
-  margin: 20px 20px 20px 0; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
-  padding: 10px; /* Ajustez les marges internes si nécessaire */
-  width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
-  background: white; /* Couleur de fond */
-  border-radius: 15px; /* Coins arrondis */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Ombre */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Effets d'animation */
+position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+margin: 20px 20px 20px 0; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
+padding: 10px; /* Ajustez les marges internes si nécessaire */
+width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
+background: white; /* Couleur de fond */
+border-radius: 15px; /* Coins arrondis */
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Ombre */
+transition: transform 0.3s ease, box-shadow 0.3s ease; /* Effets d'animation */
 }
 
 .box-info:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+transform: translateY(-5px);
+box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 .box {
-  position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
-  margin: 20px 20px 20px 20px; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
-  padding: 10px; /* Ajustez les marges internes si nécessaire */
-  width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
-  background: white; /* Couleur de fond */
-  border-radius: 15px; /* Coins arrondis */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+margin: 20px 20px 20px 20px; /* Marge en haut, droite et bas (20px), et pas de marge à gauche */
+padding: 10px; /* Ajustez les marges internes si nécessaire */
+width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
+background: white; /* Couleur de fond */
+border-radius: 15px; /* Coins arrondis */
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+transform: translateY(-5px);
+box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 .header {
-  margin-bottom: 30px;
-  text-align: center;
+margin-bottom: 30px;
+text-align: center;
 }
 
 .header h2 {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 15px;
-  position: relative;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+font-family: "Segoe UI", system-ui, sans-serif;
+font-size: 28px;
+font-weight: 600;
+color: #2c3e50;
+margin-bottom: 15px;
+position: relative;
+padding-bottom: 15px;
+border-bottom: 1px solid #eee;
 }
 
 .header h2::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  border-radius: 2px;
+content: "";
+position: absolute;
+bottom: 0;
+left: 0;
+width: 60px;
+height: 4px;
+background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+border-radius: 2px;
 }
 
 .header p {
-  font-size: 16px;
-  color: #6c757d;
-  margin-bottom: 15px;
+font-size: 16px;
+color: #6c757d;
+margin-bottom: 15px;
 }
 
 .btn-submit {
-  width: 100%;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
-  margin-bottom: 25px;
+width: 100%;
+padding: 14px 28px;
+background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+margin-bottom: 25px;
 }
 
 .btn-submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
 }
 
 .alert {
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+padding: 15px;
+margin-bottom: 20px;
+border-radius: 8px;
+font-size: 14px;
+display: flex;
+align-items: center;
+gap: 10px;
 }
 
 .alert-danger {
-  background-color: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+background-color: #fee2e2;
+border: 1px solid #fecaca;
+color: #dc2626;
 }
 
 .btn-danger {
-  background-color: #dc3545;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
+background-color: #dc3545;
+border: none;
+color: white;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 8px;
 }
 
 .btn-success {
-  background-color: #28a745;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
+background-color: #28a745;
+border: none;
+color: white;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 8px;
 }
 
 .btn-update {
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
+background-color: #007bff;
+border: none;
+color: white;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 8px;
 }
 
 .btn-delete {
-  background-color: #dc3545;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
+background-color: #dc3545;
+border: none;
+color: white;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 8px;
 }
 
 .btn-back {
-  background-color: #6c757d;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
+background-color: #6c757d;
+border: none;
+color: white;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 8px;
 }
 
 .status-bar {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  /*font-size: 14px;*/
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+font-family: "Segoe UI", system-ui, sans-serif;
+/*font-size: 14px;*/
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 15px 30px;
+background-color: rgba(255, 255, 255, 0.9);
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar .status {
-  font-weight: 500;
-  color: #2c3e50;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+font-weight: 500;
+color: #2c3e50;
+font-size: 16px;
+display: flex;
+align-items: center;
+gap: 8px;
 }
 
 .status-bar .logout a {
-  color: white;
-  text-decoration: none;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+color: white;
+text-decoration: none;
+padding: 8px 16px;
+background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+border-radius: 6px;
+transition: all 0.3s ease;
+font-weight: 500;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar .logout a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+background: linear-gradient(135deg, #357abd 0%, #2868a9 100%);
 }
 
 input[readonly],
 input[disabled],
 select[disabled] {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
+background-color: #f5f5f5;
+cursor: not-allowed;
 }
 
 /* Style des labels */
 .cat {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
-  width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
-  font-size: 20px;
-  color: #34495e;
-  font-weight: bold;
-  margin-bottom: 8px;
-  display: inline-block;
-  text-align: left;
+font-family: "Segoe UI", system-ui, sans-serif;
+position: relative; /* Assurez-vous qu'elle reste dans le flux normal */
+width: auto; /* Ajustez la largeur ou mettez une valeur fixe */
+font-size: 20px;
+color: #34495e;
+font-weight: bold;
+margin-bottom: 8px;
+display: inline-block;
+text-align: left;
 }
 
 /* Style des textareas */
 .textarea {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  padding: 12px 15px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 15px;
-  background-color: #f9f9f9; /* Couleur de fond */
-  color: #2c3e50; /* Couleur du texte */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Ombre */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  resize: vertical;
+font-family: "Segoe UI", system-ui, sans-serif;
+padding: 12px 15px;
+border: 2px solid #e9ecef;
+border-radius: 8px;
+font-size: 15px;
+background-color: #f9f9f9; /* Couleur de fond */
+color: #2c3e50; /* Couleur du texte */
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Ombre */
+transition: border-color 0.3s ease, box-shadow 0.3s ease;
+resize: vertical;
 }
 
 .textarea:focus {
-  border-color: #4a90e2;
-  background-color: white;
-  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-  outline: none;
+border-color: #4a90e2;
+background-color: white;
+box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+outline: none;
 }
 
 .popup {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 15px 25px;
-  border-radius: 5px;
-  color: white;
-  font-weight: 500;
-  transform: translateX(150%);
-  animation: slideIn 0.5s forwards, fadeOut 0.5s 3s forwards;
-  z-index: 1000;
+position: fixed;
+top: 20px;
+right: 20px;
+padding: 15px 25px;
+border-radius: 5px;
+color: white;
+font-weight: 500;
+transform: translateX(150%);
+animation: slideIn 0.5s forwards, fadeOut 0.5s 3s forwards;
+z-index: 1000;
 }
 
 .popup-success {
-  background-color: #28a745;
-  box-shadow: 0 2px 10px rgba(40, 167, 69, 0.2);
+background-color: #28a745;
+box-shadow: 0 2px 10px rgba(40, 167, 69, 0.2);
 }
 
 .popup-error {
-  background-color: #dc3545;
-  box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
+background-color: #dc3545;
+box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
 }
 
 .container {
-  display: grid; /* Active Grid Layout */
-  grid-template-columns: 40% 60%; /* Colonne gauche à 40% et droite à 60% */
-  width: 100%; /* Utilise toute la largeur */
-  height: 100vh; /* Hauteur de la fenêtre */
+display: grid; /* Active Grid Layout */
+grid-template-columns: 40% 60%; /* Colonne gauche à 40% et droite à 60% */
+width: 100%; /* Utilise toute la largeur */
+height: 100vh; /* Hauteur de la fenêtre */
 }
 
 .left-column {
-  padding: 20px;
+padding: 20px;
 }
 
 .right-column {
-  /*opacity: 0;*/
-  padding: 20px;
+/*opacity: 0;*/
+padding: 20px;
 }
 
 @keyframes slideIn {
-  to {
+to {
     transform: translateX(0);
-  }
+}
 }
 
 @keyframes fadeOut {
-  to {
+to {
     opacity: 0;
     visibility: hidden;
-  }
+}
 }
 
 /* Ajouter le nouveau style pour le badge de rôle */
 .role-badge {
-  display: inline-block;
-  background-color: rgba(74, 144, 226, 0.2);
-  color: #4a90e2;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 14px;
-  font-weight: 500;
+display: inline-block;
+background-color: rgba(74, 144, 226, 0.2);
+color: #4a90e2;
+padding: 4px 12px;
+border-radius: 15px;
+font-size: 14px;
+font-weight: 500;
 }
 
 .data {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
 }
 
 .data div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 
 .data label {
-  flex: 1;
-  text-align: left;
-  margin-right: 10px;
+flex: 1;
+text-align: left;
+margin-right: 10px;
 }
 
 .data input {
-  flex: 2;
-  text-align: right;
+flex: 2;
+text-align: right;
 }
 
 .profile-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0 5em;
+width: 100%;
+border-collapse: collapse;
+border-spacing: 0 5em;
 }
 
 .label-cell {
-  text-align: left;
-  padding: 5px;
-  width: 45%;
+text-align: left;
+padding: 5px;
+width: 45%;
 }
 
 .input-cell {
-  text-align: right;
-  padding: 5px;
-  width: 70%;
+text-align: right;
+padding: 5px;
+width: 70%;
 }
 
 .profile-input {
-  width: 100%;
-  box-sizing: border-box;
+width: 100%;
+box-sizing: border-box;
 }
