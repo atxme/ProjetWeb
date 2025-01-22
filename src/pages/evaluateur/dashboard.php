@@ -13,8 +13,6 @@ if (isset($_GET['concours_id'])) {
 }
 ?>
 
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
