@@ -31,10 +31,6 @@ if (isset($_GET['concours_id'])) {
         </div>
         <div><?php echo htmlspecialchars($concours_id); ?></div>
         <div class="nav-buttons">
-            <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
-            <?php if ($isEvaluateur && $isCompetiteur): ?>
-                <a href="../evaluateur/evaluateur.php" class="btn-stats">Retour</a>
-            <?php endif; ?>
             <div>
                 <?php
                 if(isset($_GET['logout'])) {
