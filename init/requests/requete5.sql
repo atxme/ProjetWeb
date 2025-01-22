@@ -1,11 +1,23 @@
 ------------------------------------------------------
 --Requête 5 - Meilleure Région
 ------------------------------------------------------
-SELECT cl.region, AVG(e.note) AS moyenne_notes
-FROM CLUB cl
-JOIN CLUB_CONCOURS cc ON cl.id_club = cc.id_club
-JOIN DESSIN d ON d.id_concours = cc.id_concours
-JOIN EVALUATION e ON d.id_dessin = e.id_dessin
-GROUP BY cl.region
-ORDER BY moyenne_notes DESC
-LIMIT 1;
+WITH RegionMoyenne AS (
+    SELECT 
+        cl.region,
+        AVG(e.note) AS moyenne_notes
+    FROM 
+        Club cl
+        INNER JOIN Utilisateur u ON cl.numClub = u.numClub
+        INNER JOIN Competiteur comp ON u.numUtilisateur = comp.numCompetiteur
+        INNER JOIN Dessin d ON comp.numCompetiteur = d.numCompetiteur
+        INNER JOIN Evaluation e ON d.numDessin = e.numDessin
+    GROUP BY 
+        cl.region
+)
+SELECT 
+    region,
+    ROUND(moyenne_notes, 2) AS moyenne_notes
+FROM 
+    RegionMoyenne
+WHERE 
+    moyenne_notes = (SELECT MAX(moyenne_notes) FROM RegionMoyenne);

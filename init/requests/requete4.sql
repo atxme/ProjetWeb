@@ -1,17 +1,22 @@
 ------------------------------------------------------
 --Requête 4 - Participants à Tous les Concours
 ------------------------------------------------------
-SELECT DISTINCT u.nom, u.prenom
-FROM UTILISATEUR u
-JOIN COMPETITEUR c ON u.id_utilisateur = c.id_competiteur
+SELECT 
+    u.nom,
+    u.prenom,
+    u.age
+FROM 
+    Utilisateur u
+    INNER JOIN Competiteur comp ON u.numUtilisateur = comp.numCompetiteur
 WHERE NOT EXISTS (
-    SELECT co.id_concours
-    FROM CONCOURS co
+    SELECT numConcours 
+    FROM Concours c
     WHERE NOT EXISTS (
-        SELECT d.id_dessin
-        FROM DESSIN d
-        WHERE d.id_competiteur = c.id_competiteur
-        AND d.id_concours = co.id_concours
+        SELECT 1 
+        FROM CompetiteurParticipe cp
+        WHERE cp.numConcours = c.numConcours
+        AND cp.numCompetiteur = comp.numCompetiteur
     )
 )
-ORDER BY u.nom ASC;
+ORDER BY 
+    u.age ASC;
