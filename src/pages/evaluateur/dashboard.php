@@ -1,17 +1,3 @@
-<?php
-if (isset($_GET['concours_id'])) {
-    $concours_id = urldecode($_GET['concours_id']);
-    // Recherchez les informations du concours en fonction de l'ID dans la base de données
-    // Exemple :
-    // $query = $pdo->prepare('SELECT * FROM Concours WHERE nom = :nom');
-    // $query->execute(['nom' => $concours_id]);
-    // $concours = $query->fetch(PDO::FETCH_ASSOC);
-
-    echo "Vous consultez les détails pour le concours : " . htmlspecialchars($concours_id);
-} else {
-    echo "Aucun concours sélectionné.";
-}
-?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -24,10 +10,7 @@ if (isset($_GET['concours_id'])) {
 <body>
     <div class="status-bar">
         <div class="status">
-            <?php echo htmlspecialchars($_SESSION['login']); ?> : 
-            <span class="role-badge"><?php echo ucfirst(htmlspecialchars($_SESSION['role'])); ?></span>
-        </div>
-        <div><?php
+            <div class="role-badge" ><?php 
             if (isset($_GET['concours_id'])) {
                 $concours_id = urldecode($_GET['concours_id']);
                 // Recherchez les informations du concours en fonction de l'ID dans la base de données
@@ -36,11 +19,13 @@ if (isset($_GET['concours_id'])) {
                 // $query->execute(['nom' => $concours_id]);
                 // $concours = $query->fetch(PDO::FETCH_ASSOC);
 
-                echo "Vous consultez les détails pour le concours : " . htmlspecialchars($concours_id);
+                echo "Concours : " . htmlspecialchars($concours_id);
             } else {
                 echo "Aucun concours sélectionné.";
             }
         ?></div>
+        </div>
+
         <div class="nav-buttons">
             <!-- Afficher le bouton si l'utilisateur est à la fois évaluateur et compétiteur -->
             <a href="../evaluateur/evaluateur.php" class="btn-stats">Retour</a>
