@@ -1,10 +1,28 @@
-------------------------------------------------------
---Requête 6 - Top Évaluateurs
-------------------------------------------------------   
-SELECT u.nom, u.prenom, COUNT(e.id_evaluation) AS nb_evaluations
-FROM UTILISATEUR u
-JOIN EVALUATEUR ev ON u.id_utilisateur = ev.id_evaluateur
-JOIN EVALUATION e ON ev.id_evaluateur = e.id_evaluateur
-GROUP BY u.id_utilisateur, u.nom, u.prenom
-HAVING COUNT(e.id_evaluation) > 5
-ORDER BY nb_evaluations DESC;
+-------------------------------------------------------
+---Requête 6 - Clubs eligible pour un concours
+-------------------------------------------------------   
+
+SELECT DISTINCT c.numClub, c.nomClub 
+FROM Club c 
+INNER JOIN Utilisateur u ON c.numClub = u.numClub
+WHERE NOT EXISTS (
+    SELECT 1 FROM ClubParticipe cp 
+    WHERE cp.numClub = c.numClub 
+    AND cp.numConcours = :concours
+)
+AND (
+    EXISTS (
+        SELECT 1 FROM Utilisateur u2 
+        WHERE u2.numClub = c.numClub
+        AND NOT EXISTS (
+            SELECT 1 FROM CompetiteurParticipe cp 
+            WHERE cp.numCompetiteur = u2.numUtilisateur 
+            AND cp.numConcours = :concours
+        )
+        AND NOT EXISTS (
+            SELECT 1 FROM Jury j 
+            WHERE j.numEvaluateur = u2.numUtilisateur 
+            AND j.numConcours = :concours
+        )
+    )
+)
