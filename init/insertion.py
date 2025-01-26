@@ -11,6 +11,8 @@ class DataGenerator:
         self.users_by_role = {'admin': [], 'president': [], 'evaluateur': [], 'competiteur': []}
         self.clubs = []
         self.concours = []
+        # Ajout d'un ensemble pour stocker les logins déjà générés afin d'éviter les doublons
+        self.generated_logins = set()
         
     def generate_phone(self):
         return f"0{''.join(str(random.randint(0,9)) for _ in range(9))}"
@@ -19,8 +21,15 @@ class DataGenerator:
         return f"{random.randint(1,100)} Rue {names.get_last_name()}"
     
     def generate_login(self, nom, prenom):
-        return f"{prenom[0].lower()}{nom.lower()}{random.randint(1,999)}"
-    
+        """
+        Génère un login unique en réessayant tant qu'une collision survient.
+        """
+        while True:
+            candidate = f"{prenom[0].lower()}{nom.lower()}{random.randint(1,999)}"
+            if candidate not in self.generated_logins:
+                self.generated_logins.add(candidate)
+                return candidate
+
     def generate_password(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=8))
 
@@ -52,7 +61,7 @@ class DataGenerator:
             ("Wallis-et-Futuna", "986", "Mata-Utu"),
             ("Polynésie française", "987", "Papeete"),
             ("Nouvelle-Calédonie", "988", "Nouméa")
-            ]
+        ]
         
         for i in range(1, self.scale_factor + 1):
             for region, dept, ville in regions:
@@ -64,6 +73,18 @@ class DataGenerator:
                     f"{random.randint(20,100)}, '{ville}', '{dept}', '{region}');"
                 )
         return sql_lines
+
+    def generate_user_sql(self, user_id, club_id, nom=None, prenom=None):
+        nom = nom or names.get_last_name()
+        prenom = prenom or names.get_first_name()
+        address = self.generate_address()
+        user_login = self.generate_login(nom, prenom)
+        user_password = self.generate_password()
+        age = random.randint(18,70)
+        return (
+            f"INSERT INTO Utilisateur VALUES ({user_id}, {club_id}, '{nom}', '{prenom}', "
+            f"{age}, '{address}', '{user_login}', '{user_password}');"
+        )
 
     def generate_users(self):
         sql_lines = ["-- Insertion des Utilisateurs"]
@@ -81,8 +102,8 @@ class DataGenerator:
             sql_lines.append(self.generate_user_sql(self.current_user_id, random.choice(self.clubs)))
             self.current_user_id += 1
 
-        # Évaluateurs (2 par concours prévu)
-        num_evaluateurs = (self.scale_factor * 4) * 2  # 4 saisons
+        # Évaluateurs (2 par concours prévu : 4 saisons * scale_factor => on met *2)
+        num_evaluateurs = (self.scale_factor * 4) * 2
         for _ in range(num_evaluateurs):
             self.users_by_role['evaluateur'].append(self.current_user_id)
             sql_lines.append(self.generate_user_sql(self.current_user_id, random.choice(self.clubs)))
@@ -96,15 +117,6 @@ class DataGenerator:
                 self.current_user_id += 1
 
         return sql_lines
-
-    def generate_user_sql(self, user_id, club_id, nom=None, prenom=None):
-        nom = nom or names.get_last_name()
-        prenom = prenom or names.get_first_name()
-        return (
-            f"INSERT INTO Utilisateur VALUES ({user_id}, {club_id}, '{nom}', '{prenom}', "
-            f"{random.randint(18,70)}, '{self.generate_address()}', "
-            f"'{self.generate_login(nom, prenom)}', '{self.generate_password()}');"
-        )
 
     def generate_roles(self):
         sql_lines = ["-- Insertion des rôles"]
@@ -125,8 +137,7 @@ class DataGenerator:
         specialites = ["Peinture", "Dessin", "Sculpture", "Art numérique", "Photographie"]
         for evaluateur_id in self.users_by_role['evaluateur']:
             sql_lines.append(
-                f"INSERT INTO Evaluateur VALUES ({evaluateur_id}, "
-                f"'{random.choice(specialites)}');"
+                f"INSERT INTO Evaluateur VALUES ({evaluateur_id}, '{random.choice(specialites)}');"
             )
 
         # Compétiteurs
@@ -197,9 +208,7 @@ class DataGenerator:
             for comp_id in competiteurs:
                 for _ in range(random.randint(1, 3)):  # Max 3 dessins par compétiteur
                     sql_lines.append(
-                        f"INSERT INTO Dessin VALUES ({self.current_dessin_id}, "
-                        f"{comp_id}, {concours_id}, NULL, 'Commentaire', "
-                        f"'2024-01-15', 'dessin_{self.current_dessin_id}.jpg');"
+                        f"INSERT INTO Dessin VALUES ({self.current_dessin_id}, {comp_id}, {concours_id}, NULL, 'Commentaire', '2024-01-15', 'dessin_{self.current_dessin_id}.jpg');"
                     )
                     self.current_dessin_id += 1
         return sql_lines
@@ -218,13 +227,16 @@ class DataGenerator:
                     f"INSERT INTO Jury VALUES ({eval_id}, {concours_id});"
                 )
 
+        # Évaluations (si besoin, on peut les ajouter ici)
+        # On n'en génère pas dans cet exemple, mais vous pouvez ajouter des lignes
+        # pour Evaluation dans la même logique en tenant compte des triggers
+        # et du nombre maximum d'évaluations
+
         return sql_lines
 
 def main():
-    # Initialisation
     generator = DataGenerator(scale_factor=30)
     
-    # Génération du contenu SQL
     sql_content = [
         "SET FOREIGN_KEY_CHECKS = 0;",
         "-- Nettoyage des tables",
@@ -236,7 +248,6 @@ def main():
         "SET FOREIGN_KEY_CHECKS = 1;\n"
     ]
     
-    # Génération des données
     generation_order = [
         generator.generate_clubs,
         generator.generate_users,
@@ -247,11 +258,10 @@ def main():
         generator.generate_jury_and_evaluations
     ]
     
-    for generate_func in generation_order:
-        sql_content.extend(generate_func())
-        sql_content.append("")  # Ligne vide pour la lisibilité
-    
-    # Écriture dans le fichier
+    for func in generation_order:
+        sql_content.extend(func())
+        sql_content.append("")
+
     with open("insertion5.sql", "w", encoding="utf-8") as f:
         f.write("\n".join(sql_content))
 

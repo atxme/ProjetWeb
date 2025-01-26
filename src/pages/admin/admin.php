@@ -2,6 +2,24 @@
 session_start();
 require_once '../../include/db.php';
 
+// Gestion de la déconnexion
+if(isset($_GET['logout'])) {
+    // Détruire toutes les variables de session
+    $_SESSION = array();
+    
+    // Détruire le cookie de session si il existe
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time()-42000, '/');
+    }
+    
+    // Détruire la session
+    session_destroy();
+    
+    // Rediriger vers la page de connexion
+    header('Location: ../../index.php');
+    exit;
+}
+
 // Vérification plus stricte de l'authentification et du rôle
 if (!isset($_SESSION['user_id']) || 
     !isset($_SESSION['role']) || 
@@ -409,7 +427,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['theme'])) {
         </div>
         <div class="nav-buttons">
             <a href="statistics.php" class="btn-stats">Statistiques</a>
-            <a href="?logout=true" class="btn-logout">Déconnexion</a>
+            <a href="?logout=true" class="btn-logout" onclick="return confirm('Êtes-vous sûr de vouloir vous déconnecter ?');">Déconnexion</a>
         </div>
     </div>
     <div class="admin-container">
