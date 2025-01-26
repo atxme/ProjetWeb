@@ -1,199 +1,265 @@
 import random
+import string
 from datetime import datetime, timedelta
 import names  # pip install names
-import string
 
 class DataGenerator:
+    """
+    Génère des données d'insertion SQL pour la base "dessin" en respectant :
+     - Logins uniques
+     - Dates de remise de dessins comprises entre dateDeb et dateFin du concours
+     - Maximum 3 dessins par compétiteur par concours
+     - Principales contraintes de la base (FK, triggers)
+    """
     def __init__(self, scale_factor=30):
         self.scale_factor = scale_factor
+
+        # Compteurs pour générer des identifiants uniques
         self.current_user_id = 1
         self.current_dessin_id = 1
-        self.users_by_role = {'admin': [], 'president': [], 'evaluateur': [], 'competiteur': []}
+
+        # Ensembles et listes pour stocker les données
+        self.users_by_role = {
+            'admin': [],
+            'president': [],
+            'evaluateur': [],
+            'competiteur': []
+        }
         self.clubs = []
-        self.concours = []
-        # Ajout d'un ensemble pour stocker les logins déjà générés afin d'éviter les doublons
+        self.concours = []  # liste de concours_id
+
+        # Stocke, pour chaque concours_id, son intervalle de dates
+        # ex. concours_info[concours_id] = { 'start': '2024-03-21', 'end': '2024-06-20' }
+        self.concours_info = {}
+
+        # Pour gérer l'unicité des logins
         self.generated_logins = set()
-        
+
     def generate_phone(self):
-        return f"0{''.join(str(random.randint(0,9)) for _ in range(9))}"
-    
+        return "0" + "".join(str(random.randint(0, 9)) for _ in range(9))
+
     def generate_address(self):
-        return f"{random.randint(1,100)} Rue {names.get_last_name()}"
-    
-    def generate_login(self, nom, prenom):
+        return f"{random.randint(1, 100)} Rue {names.get_last_name()}"
+
+    def generate_unique_login(self, last_name, first_name):
         """
-        Génère un login unique en réessayant tant qu'une collision survient.
+        Génère un login unique depuis un nom/prénom, en réessayant tant qu'une collision survient.
         """
         while True:
-            candidate = f"{prenom[0].lower()}{nom.lower()}{random.randint(1,999)}"
+            candidate = f"{first_name[0].lower()}{last_name.lower()}{random.randint(1,999)}"
             if candidate not in self.generated_logins:
                 self.generated_logins.add(candidate)
                 return candidate
 
     def generate_password(self):
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        return "".join(random.choices(string.ascii_letters + string.digits, k=8))
 
     def generate_clubs(self):
+        """
+        Génère un ensemble de clubs, en se basant sur un panel de régions.
+        """
         sql_lines = ["-- Insertion des Clubs"]
         regions = [
-            ("Ile-de-France", "75", "Paris"),
+            ("Ile-de-France", "75", "Paris"), 
             ("PACA", "13", "Marseille"),
-            ("Rhône-Alpes", "69", "Lyon"),
+            ("Rhône-Alpes", "69", "Lyon"), 
             ("Occitanie", "31", "Toulouse"),
-            ("Bretagne", "35", "Rennes"),
+            ("Bretagne", "35", "Rennes"), 
             ("Nouvelle-Aquitaine", "33", "Bordeaux"),
-            ("Hauts-de-France", "59", "Lille"),
+            ("Hauts-de-France", "59", "Lille"), 
             ("Auvergne-Rhône-Alpes", "74", "Annecy"),
-            ("Grand Est", "67", "Strasbourg"),
+            ("Grand Est", "67", "Strasbourg"), 
             ("Normandie", "76", "Rouen"),
-            ("Centre-Val de Loire", "45", "Orléans"),
+            ("Centre-Val de Loire", "45", "Orléans"), 
             ("Pays de la Loire", "44", "Nantes"),
-            ("Bourgogne-Franche-Comté", "21", "Dijon"),
+            ("Bourgogne-Franche-Comté", "21", "Dijon"), 
             ("Corse", "20", "Ajaccio"),
-            ("Guadeloupe", "971", "Basse-Terre"),
+            ("Nouvelle-Calédonie", "988", "Nouméa"),
+            ("Guadeloupe", "971", "Pointe-à-Pitre"),
             ("Martinique", "972", "Fort-de-France"),
             ("Guyane", "973", "Cayenne"),
-            ("La Réunion", "974", "Saint-Denis"),
-            ("Mayotte", "976", "Mamoudzou"),
-            ("Saint-Pierre-et-Miquelon", "975", "Saint-Pierre"),
-            ("Saint-Barthélemy", "977", "Gustavia"),
-            ("Saint-Martin", "978", "Marigot"),
-            ("Wallis-et-Futuna", "986", "Mata-Utu"),
-            ("Polynésie française", "987", "Papeete"),
-            ("Nouvelle-Calédonie", "988", "Nouméa")
+            ("Réunion", "974", "Saint-Denis"),
+            ("Mayotte", "976", "Mamoudzou")
         ]
-        
+        # On génère scale_factor * len(regions) clubs
         for i in range(1, self.scale_factor + 1):
-            for region, dept, ville in regions:
+            for (region, dept, ville) in regions:
                 club_id = len(self.clubs) + 1
                 self.clubs.append(club_id)
                 sql_lines.append(
-                    f"INSERT INTO Club VALUES ({club_id}, 'Club {ville} {i}', "
-                    f"'{self.generate_address()}', '{self.generate_phone()}', "
-                    f"{random.randint(20,100)}, '{ville}', '{dept}', '{region}');"
+                    f"INSERT INTO Club VALUES ("
+                    f"{club_id}, 'Club {ville} {i}', '{self.generate_address()}', "
+                    f"'{self.generate_phone()}', {random.randint(20,100)}, '{ville}', '{dept}', '{region}');"
                 )
         return sql_lines
 
-    def generate_user_sql(self, user_id, club_id, nom=None, prenom=None):
-        nom = nom or names.get_last_name()
-        prenom = prenom or names.get_first_name()
+    def generate_user_sql(self, user_id, club_id, last_name=None, first_name=None):
+        """
+        Construit l'instruction INSERT de l'utilisateur user_id dans un club club_id,
+        avec un login unique et un mot de passe aléatoire.
+        """
+        last_name = last_name or names.get_last_name()
+        first_name = first_name or names.get_first_name()
         address = self.generate_address()
-        user_login = self.generate_login(nom, prenom)
+        user_login = self.generate_unique_login(last_name, first_name)
         user_password = self.generate_password()
-        age = random.randint(18,70)
+        age = random.randint(18, 70)
         return (
-            f"INSERT INTO Utilisateur VALUES ({user_id}, {club_id}, '{nom}', '{prenom}', "
+            f"INSERT INTO Utilisateur VALUES ("
+            f"{user_id}, {club_id}, '{last_name}', '{first_name}', "
             f"{age}, '{address}', '{user_login}', '{user_password}');"
         )
 
     def generate_users(self):
+        """
+        Génère divers utilisateurs : 1 admin, plusieurs présidents, évaluateurs, compétiteurs.
+        """
         sql_lines = ["-- Insertion des Utilisateurs"]
-        
+
         # Admin (1 par défaut)
         admin_id = self.current_user_id
         self.users_by_role['admin'].append(admin_id)
-        sql_lines.append(self.generate_user_sql(admin_id, random.choice(self.clubs), "Admin", "System"))
+        sql_lines.append(
+            self.generate_user_sql(
+                admin_id, random.choice(self.clubs),
+                last_name="Admin", first_name="System"
+            )
+        )
         self.current_user_id += 1
 
         # Présidents (1 par 5 clubs)
         num_presidents = len(self.clubs) // 5
         for _ in range(num_presidents):
             self.users_by_role['president'].append(self.current_user_id)
-            sql_lines.append(self.generate_user_sql(self.current_user_id, random.choice(self.clubs)))
+            sql_lines.append(
+                self.generate_user_sql(self.current_user_id, random.choice(self.clubs))
+            )
             self.current_user_id += 1
 
-        # Évaluateurs (2 par concours prévu : 4 saisons * scale_factor => on met *2)
+        # Évaluateurs (2 par concours prévu : 4 saisons * scale_factor => *2)
         num_evaluateurs = (self.scale_factor * 4) * 2
         for _ in range(num_evaluateurs):
             self.users_by_role['evaluateur'].append(self.current_user_id)
-            sql_lines.append(self.generate_user_sql(self.current_user_id, random.choice(self.clubs)))
+            sql_lines.append(
+                self.generate_user_sql(self.current_user_id, random.choice(self.clubs))
+            )
             self.current_user_id += 1
 
         # Compétiteurs (10 par club)
         for club_id in self.clubs:
             for _ in range(10):
                 self.users_by_role['competiteur'].append(self.current_user_id)
-                sql_lines.append(self.generate_user_sql(self.current_user_id, club_id))
+                sql_lines.append(
+                    self.generate_user_sql(self.current_user_id, club_id)
+                )
                 self.current_user_id += 1
 
         return sql_lines
 
     def generate_roles(self):
+        """
+        Génère les rôles Admin, President, Evaluateur, Competiteur,
+        en liant les identifiants d'utilisateurs déjà créés.
+        """
         sql_lines = ["-- Insertion des rôles"]
-        
+
         # Admin
+        admin_id = self.users_by_role['admin'][0]
         sql_lines.append(
-            f"INSERT INTO Admin VALUES ({self.users_by_role['admin'][0]}, '2023-01-01');"
+            f"INSERT INTO Admin VALUES ({admin_id}, '2023-01-01');"
         )
 
         # Présidents
-        for president_id in self.users_by_role['president']:
+        for pres_id in self.users_by_role['president']:
+            prime = random.randint(800, 1500)
             sql_lines.append(
-                f"INSERT INTO President VALUES ({president_id}, "
-                f"'2023-01-01', {random.randint(800,1500)}.00);"
+                f"INSERT INTO President VALUES ({pres_id}, '2023-01-01', {prime}.00);"
             )
 
         # Évaluateurs
         specialites = ["Peinture", "Dessin", "Sculpture", "Art numérique", "Photographie"]
-        for evaluateur_id in self.users_by_role['evaluateur']:
+        for eval_id in self.users_by_role['evaluateur']:
             sql_lines.append(
-                f"INSERT INTO Evaluateur VALUES ({evaluateur_id}, '{random.choice(specialites)}');"
+                f"INSERT INTO Evaluateur VALUES ({eval_id}, '{random.choice(specialites)}');"
             )
 
         # Compétiteurs
-        for competiteur_id in self.users_by_role['competiteur']:
+        for comp_id in self.users_by_role['competiteur']:
             sql_lines.append(
-                f"INSERT INTO Competiteur VALUES ({competiteur_id}, '2024-01-01');"
+                f"INSERT INTO Competiteur VALUES ({comp_id}, '2024-01-01');"
             )
 
         return sql_lines
 
+    def get_season_dates(self, season, year):
+        """
+        Retourne le dictionnaire { 'start': 'YYYY-MM-DD', 'end': 'YYYY-MM-DD' }
+        en fonction de la saison et de l'année.
+        """
+        dates = {
+            'printemps': {'start': f'{year}-03-21', 'end': f'{year}-06-20'},
+            'ete':       {'start': f'{year}-06-21', 'end': f'{year}-09-20'},
+            'automne':   {'start': f'{year}-09-21', 'end': f'{year}-12-20'},
+            'hiver':     {'start': f'{year}-12-21', 'end': f'{year+1}-03-20'}
+        }
+        return dates[season]
+
     def generate_concours(self):
+        """
+        Génère les concours pour 2 années (ex. 2024, 2025) et 4 saisons par an.
+        Stocke dans self.concours_info le start/end de chaque concours_id.
+        """
         sql_lines = ["-- Insertion des Concours"]
         seasons = ['printemps', 'ete', 'automne', 'hiver']
-        
+
         for year in range(2024, 2026):
             for season in seasons:
                 concours_id = len(self.concours) + 1
                 self.concours.append(concours_id)
-                
+
                 president_id = random.choice(self.users_by_role['president'])
-                dates = self.get_season_dates(season, year)
-                
+                date_info = self.get_season_dates(season, year)
+                start_date_str = date_info['start']
+                end_date_str = date_info['end']
+
                 sql_lines.append(
-                    f"INSERT INTO Concours VALUES ({concours_id}, {president_id}, "
-                    f"'Concours {season.capitalize()} {year}', '{dates['start']}', '{dates['end']}', "
-                    f"'en cours', 6, {random.randint(20,50)}, 'Description du concours', "
-                    f"'{season}', {year});"
+                    f"INSERT INTO Concours VALUES ("
+                    f"{concours_id}, {president_id}, "
+                    f"'Concours {season.capitalize()} {year}', "
+                    f"'{start_date_str}', '{end_date_str}', "
+                    f"'en cours', 6, {random.randint(20,50)}, "
+                    f"'Description du concours', '{season}', {year});"
                 )
+
+                # On stocke l'intervalle de dates dans un dict
+                self.concours_info[concours_id] = {
+                    'start': start_date_str,
+                    'end':   end_date_str
+                }
+
         return sql_lines
 
-    def get_season_dates(self, season, year):
-        dates = {
-            'printemps': {'start': f'{year}-03-21', 'end': f'{year}-06-20'},
-            'ete': {'start': f'{year}-06-21', 'end': f'{year}-09-20'},
-            'automne': {'start': f'{year}-09-21', 'end': f'{year}-12-20'},
-            'hiver': {'start': f'{year}-12-21', 'end': f'{year+1}-03-20'}
-        }
-        return dates[season]
-
     def generate_participations(self):
+        """
+        Génère les participations ClubParticipe et CompetiteurParticipe
+        sur une base aléatoire raisonnable.
+        """
         sql_lines = ["-- Insertion des participations"]
-        
-        # ClubParticipe
+
+        # ClubParticipe (chaque concours, 6 clubs aléatoires)
         for concours_id in self.concours:
-            selected_clubs = random.sample(self.clubs, min(len(self.clubs), 6))
+            # Au moins 6 clubs (la table Concours impose nbClub >= 6)
+            how_many = min(len(self.clubs), 6)
+            selected_clubs = random.sample(self.clubs, how_many)
             for club_id in selected_clubs:
                 sql_lines.append(
                     f"INSERT INTO ClubParticipe VALUES ({concours_id}, {club_id});"
                 )
 
-        # CompetiteurParticipe
+        # CompetiteurParticipe (on met par ex. 20 compétiteurs au hasard par concours)
         for concours_id in self.concours:
-            selected_competiteurs = random.sample(
-                self.users_by_role['competiteur'],
-                min(len(self.users_by_role['competiteur']), 20)
-            )
+            how_many = min(len(self.users_by_role['competiteur']), 20)
+            selected_competiteurs = random.sample(self.users_by_role['competiteur'], how_many)
             for comp_id in selected_competiteurs:
                 sql_lines.append(
                     f"INSERT INTO CompetiteurParticipe VALUES ({concours_id}, {comp_id});"
@@ -202,41 +268,66 @@ class DataGenerator:
         return sql_lines
 
     def generate_dessins(self):
+        """
+        Génère entre 1 et 3 dessins par compétiteur pour chaque concours,
+        en veillant à ce que dateRemise soit dans l'intervalle [dateDeb, dateFin].
+        """
         sql_lines = ["-- Insertion des Dessins"]
+
         for concours_id in self.concours:
+            # Récupération des dates de début/fin pour ce concours
+            info = self.concours_info[concours_id]
+            start_date = datetime.strptime(info['start'], '%Y-%m-%d')
+            end_date = datetime.strptime(info['end'], '%Y-%m-%d')
+
+            # On choisit un petit lot de compétiteurs (par ex. 10)
             competiteurs = random.sample(self.users_by_role['competiteur'], 10)
+
             for comp_id in competiteurs:
-                for _ in range(random.randint(1, 3)):  # Max 3 dessins par compétiteur
+                # Chaque compétiteur peut soumettre 1 à 3 dessins
+                num_dessins = random.randint(1, 3)
+                for _ in range(num_dessins):
+                    # Génération d'une date de remise random dans l'intervalle
+                    days_between = (end_date - start_date).days
+                    offset = random.randint(0, max(days_between, 0))
+                    remise_date = start_date + timedelta(days=offset)
+                    remise_str = remise_date.strftime('%Y-%m-%d')
+
                     sql_lines.append(
-                        f"INSERT INTO Dessin VALUES ({self.current_dessin_id}, {comp_id}, {concours_id}, NULL, 'Commentaire', '2024-01-15', 'dessin_{self.current_dessin_id}.jpg');"
+                        f"INSERT INTO Dessin VALUES ("
+                        f"{self.current_dessin_id}, {comp_id}, {concours_id}, NULL, "
+                        f"'Commentaire', '{remise_str}', 'dessin_{self.current_dessin_id}.jpg');"
                     )
                     self.current_dessin_id += 1
+
         return sql_lines
 
     def generate_jury_and_evaluations(self):
+        """
+        Génère aléatoirement quelques entrées dans la table Jury (qui évalue quel concours).
+        Ne génère pas forcèment d'Evaluation (on peut en ajouter si besoin).
+        """
         sql_lines = ["-- Insertion des Jury et Evaluations"]
-        
+
         # Jury
         for concours_id in self.concours:
-            evaluateurs = random.sample(
-                self.users_by_role['evaluateur'],
-                min(len(self.users_by_role['evaluateur']), 5)
-            )
-            for eval_id in evaluateurs:
+            # On sélectionne 5 évaluateurs arbitrairement pour chaque concours
+            how_many = min(len(self.users_by_role['evaluateur']), 5)
+            selected_evaluateurs = random.sample(self.users_by_role['evaluateur'], how_many)
+            for eval_id in selected_evaluateurs:
                 sql_lines.append(
                     f"INSERT INTO Jury VALUES ({eval_id}, {concours_id});"
                 )
 
-        # Évaluations (si besoin, on peut les ajouter ici)
-        # On n'en génère pas dans cet exemple, mais vous pouvez ajouter des lignes
-        # pour Evaluation dans la même logique en tenant compte des triggers
-        # et du nombre maximum d'évaluations
+        # Si vous le souhaitez, vous pouvez générer ici des Evaluations
+        # en veillant à ne pas dépasser 8 par évaluateur et 2 par dessin,
+        # en respectant la contrainte de dateEvaluation, etc.
 
         return sql_lines
 
 def main():
     generator = DataGenerator(scale_factor=30)
-    
+
     sql_content = [
         "SET FOREIGN_KEY_CHECKS = 0;",
         "-- Nettoyage des tables",
@@ -247,7 +338,8 @@ def main():
         ]],
         "SET FOREIGN_KEY_CHECKS = 1;\n"
     ]
-    
+
+    # Ordre logique de génération
     generation_order = [
         generator.generate_clubs,
         generator.generate_users,
@@ -257,13 +349,17 @@ def main():
         generator.generate_dessins,
         generator.generate_jury_and_evaluations
     ]
-    
+
     for func in generation_order:
+        print("Generating", func)
         sql_content.extend(func())
-        sql_content.append("")
+        sql_content.append("")  # Ligne vide pour la lisibilité
+
 
     with open("insertion5.sql", "w", encoding="utf-8") as f:
         f.write("\n".join(sql_content))
+
+    print("Le fichier insertion5.sql a été généré. Les dates de remise sont bien dans l'intervalle du concours, et les logins sont uniques.")
 
 if __name__ == "__main__":
     main()
