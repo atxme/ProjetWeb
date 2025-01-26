@@ -238,6 +238,25 @@ class DataGenerator:
                 }
 
         return sql_lines
+    
+    def generate_directeurs(self):
+        sql_lines = ["-- Insertion des Directeurs"]
+        
+        # On assigne un directeur par club
+        # On prend des utilisateurs qui ne sont pas déjà admin/président/évaluateur/compétiteur
+        for club_id in self.clubs:
+            # Créer un nouvel utilisateur spécifiquement pour être directeur
+            sql_lines.append(self.generate_user_sql(self.current_user_id, club_id))
+            
+            # Ajouter l'entrée dans la table Directeur
+            sql_lines.append(
+                f"INSERT INTO Directeur VALUES ({self.current_user_id}, {club_id}, '2023-01-01');"
+            )
+            
+            self.current_user_id += 1
+        
+        return sql_lines
+
 
     def generate_participations(self):
         """
@@ -344,6 +363,7 @@ def main():
         generator.generate_clubs,
         generator.generate_users,
         generator.generate_roles,
+        generator.generate_directeurs,
         generator.generate_concours,
         generator.generate_participations,
         generator.generate_dessins,
@@ -359,7 +379,7 @@ def main():
     with open("insertion5.sql", "w", encoding="utf-8") as f:
         f.write("\n".join(sql_content))
 
-    print("Le fichier insertion5.sql a été généré. Les dates de remise sont bien dans l'intervalle du concours, et les logins sont uniques.")
+    print("Le fichier insertion5.sql a été généré.")
 
 if __name__ == "__main__":
     main()
